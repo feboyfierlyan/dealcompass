@@ -5,7 +5,7 @@ Tidak ada perubahan dependency, kontrak API, dataset, backend, ranking atau atur
 Redesign UI/UX dikerjakan Ical atas penugasan pengguna/Main di area frontend Boy;
 riwayat dan hasil uji BOY-02..04 tetap milik Boy (lihat `docs/handoffs/BOY.md`).
 
-## Build dan seluruh tes frontend (70)
+## Build dan seluruh tes frontend (73)
 
 Backend lokal **rules** wajib menyala karena sebagian tes memanggil HTTP nyata:
 
@@ -13,19 +13,15 @@ Backend lokal **rules** wajib menyala karena sebagian tes memanggil HTTP nyata:
 env -u TYPESAFE_API_KEY DEALCOMPASS_ENGINE_MODE=rules python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
-Terminal kedua, dari root repo. `BUILD` boleh folder sementara mana pun yang terbaca Node
+Terminal kedua, dari root repo. `UX_BUILD` boleh folder sementara mana pun yang terbaca Node
 (di Windows/Git Bash pakai path Windows, bukan `/tmp`).
 
 ```bash
+UX_BUILD=/tmp/dealcompass-desktop-tests
 npm --prefix frontend run build
-node --test frontend/tests/contracts.test.mjs frontend/tests/graph.test.mjs
-frontend/node_modules/.bin/tsc frontend/src/lib/api.ts --target ES2022 --module commonjs --outDir "$API_BUILD" --skipLibCheck --strict
-API_TEST_BUILD="$API_BUILD" node --test frontend/tests/api.test.cjs
-node --test frontend/tests/session.test.mjs frontend/tests/present.test.mjs
-frontend/node_modules/.bin/tsc frontend/src/components/DealTabs.tsx frontend/src/components/EvidencePanel.tsx frontend/src/components/ContextGraph.tsx frontend/src/components/Phase3Panels.tsx frontend/src/lib/graphView.ts frontend/src/lib/api.ts frontend/src/lib/resource.ts --target ES2022 --module commonjs --jsx react-jsx --outDir "$BUILD" --skipLibCheck --strict
-NODE_PATH="$PWD/frontend/node_modules" ANALYSIS_TEST_BUILD="$BUILD" node --test frontend/tests/analysis.test.cjs
-NODE_PATH="$PWD/frontend/node_modules" PHASE3_TEST_BUILD="$BUILD" node --test frontend/tests/phase3.test.cjs
-NODE_PATH="$PWD/frontend/node_modules" REDESIGN_TEST_BUILD="$BUILD" node --test frontend/tests/redesign.test.cjs
+node --test frontend/tests/contracts.test.mjs frontend/tests/graph.test.mjs frontend/tests/session.test.mjs frontend/tests/present.test.mjs
+frontend/node_modules/.bin/tsc frontend/src/components/DealTabs.tsx frontend/src/components/EvidencePanel.tsx frontend/src/components/ContextGraph.tsx frontend/src/components/Phase3Panels.tsx frontend/src/lib/graphView.ts frontend/src/lib/api.ts frontend/src/lib/resource.ts --target ES2022 --module commonjs --jsx react-jsx --outDir "$UX_BUILD" --skipLibCheck --strict
+NODE_PATH="$PWD/frontend/node_modules" API_TEST_BUILD="$UX_BUILD/lib" ANALYSIS_TEST_BUILD="$UX_BUILD" PHASE3_TEST_BUILD="$UX_BUILD" REDESIGN_TEST_BUILD="$UX_BUILD" node --test frontend/tests/api.test.cjs frontend/tests/analysis.test.cjs frontend/tests/phase3.test.cjs frontend/tests/redesign.test.cjs
 ```
 
 | Suite | Tes | Isi | Nyata / mock |
@@ -37,7 +33,7 @@ NODE_PATH="$PWD/frontend/node_modules" REDESIGN_TEST_BUILD="$BUILD" node --test 
 | present | 12 | pilihan default/pilihan pengguna, versi saran, tab keyboard, unknowns, owner, judul bukti, arah jalur | sintetis murni |
 | analysis | 8 | POST rules nyata lima deal dirender ActionTab+ReasonsTab; teks API utuh; urutan lapisan 1; bukti → graph | HTTP nyata + 3 sintetis |
 | phase3 | 18 | ranking/diagnostic nyata, join ID/snapshot, corruption, lifecycle | HTTP nyata + mock/sintetis berlabel |
-| redesign | 6 | lapisan 1 lima deal, state loading/gagal, versi analisis ulang, panel bukti I0348, jalur di peta, guard tanpa POST otomatis | HTTP nyata (GET saja), MOCK, STATIC berlabel |
+| redesign | 9 | lapisan 1 lima deal, state loading/gagal, versi analisis ulang, panel bukti I0348, jalur di peta, guard tanpa POST otomatis, ID sumber terverifikasi/ambigu, field sumber/null | HTTP nyata (GET saja), MOCK, STATIC berlabel |
 
 Tes real API mengharuskan mode rules; tidak ada fallback fixture diam-diam.
 `GRAPH_API_URL` mengganti host backend. Ekspektasi angka mengikuti snapshot 2026-10-01
@@ -46,22 +42,22 @@ Tes real API mengharuskan mode rules; tidak ada fallback fixture diam-diam.
 ## Struktur tampilan yang diuji
 
 - **Beranda** “Prioritas tindak lanjut”: lima deal dalam urutan API (nomor, nama, tahap,
-  potensi tahunan, syarat utama verbatim dari faktor `gate_approval_izin`; label “Lengkapi
-  informasi” hanya untuk jenis discovery agar daftar tetap tenang).
+  potensi tahunan; “Perlu persetujuan” bila API mencantumkan approval dan “Lengkapi
+  informasi” untuk discovery). Syarat lengkap tersedia di detail.
   Prioritas #1 terbuka otomatis setelah ranking tiba; pilihan pengguna tidak ditimpa.
   Ranking gagal: daftar tetap bisa dibuka dalam urutan CRM dengan pemberitahuan jelas.
-- **Detail, tab Saran tindakan** (lapisan 1): Mengapa perlu diperhatikan → Tindakan yang
-  disarankan → Penanggung jawab → Target langkah berikutnya → Persetujuan yang diperlukan →
-  Yang masih perlu dipastikan → tombol “Lihat alasan & bukti” dan “Lihat hubungan yang
-  mendukung saran ini”. Asal saran satu baris (“Dari urutan prioritas · data per …”);
+- **Detail, tab Saran tindakan** (lapisan 1): Tindakan yang disarankan, tombol
+  “Lihat alasan & bukti” dan “Lihat hubungan yang mendukung saran ini” → teks tindakan →
+  Penanggung jawab → Target langkah berikutnya → Persetujuan yang diperlukan →
+  Yang masih perlu dipastikan → Mengapa perlu diperhatikan. Asal saran satu baris (“Dari urutan prioritas · data per …”);
   analisis ulang hanya lewat tombol “Jalankan analisis ulang”.
 - **Alasan & bukti** (lapisan 2): bukti yang dirujuk, keputusan terdahulu (hanya bila ada di
   data), hubungan data pendukung, alasan urutan termasuk skor (terlipat), penjelasan analisis,
   informasi yang belum diketahui.
 - **Jelajahi data** (lapisan 3): Peta hubungan, Semua bukti, Cara prioritas dihitung,
   Temuan dari data, Rincian teknis (ID, status CRM, endpoint, JSON mentah).
-- **Panel bukti**: hanya saat dipilih. ≥1200 px panel samping non-modal (Esc menutup);
-  <1200 px `dialog` modal (Esc/latar/tombol Tutup). Fokus pindah ke judul panel dan kembali
+- **Panel bukti**: hanya saat dipilih. ≥1800 px panel samping non-modal (Esc menutup);
+  <1800 px `dialog` modal (Esc/latar/tombol Tutup). Fokus pindah ke judul panel dan kembali
   ke pemicu saat ditutup.
 
 ## Pemeriksaan browser nyata
@@ -106,7 +102,8 @@ filter langsung/dugaan, zoom, daftar relasi dan halaman bukti. Label titik 14 px
 ## Acceptance P01–P05
 
 Ekspektasi khusus snapshot 2026-10-01, **bukan aturan di komponen**. UI hanya mengurutkan
-berdasarkan rank API dan menampilkan teks API utuh.
+berdasarkan rank API. ID terverifikasi pada tindakan ditampilkan sebagai tautan nama/tanggal;
+teks asli API utuh ada di disclosure. Tidak mengubah kata tindakan, syarat atau negasi.
 
 | Deal | Prioritas API | Yang harus tetap terlihat | Bukti / batas |
 | --- | --- | --- | --- |
@@ -172,7 +169,7 @@ PLAYWRIGHT_MODULE=/path/to/playwright node frontend/tests/browser.mjs
 
 **0:00–0:15.** “Ini prioritas tindak lanjut dari API. Nomor 1 Nirwana Hotel & Resto sudah
 terbuka. Ini urutan perhatian sales, bukan peluang closing.”
-**0:15–0:40.** Saran tindakan P04: kutipan pelanggan, syarat utama, tindakan (cek pengalaman
+**0:15–0:40.** Saran tindakan P04: tindakan (cek pengalaman
 terbaru, kesediaan dan izin kontak Saiyo Group sebelum perkenalan), Bagus Prakoso, target,
 persetujuan 0 yang bukan berarti disetujui.
 **0:40–0:55.** “Lihat bukti I0335” → email asli, tanggal, pengirim. Esc menutup.
@@ -202,3 +199,24 @@ tinjauan manusia; kami belum mengukur dampak closing; demo ini rules, bukan Jev 
 
 Hasil aktual, screenshot sebelum/sesudah, keterbatasan dan waktu WIB ada di
 `docs/handoffs/BOY.md`.
+
+## Hasil lanjutan Main/Codex — desktop saja
+
+9 Oktober 2026, macOS. **73/73 lulus, build lulus**. Rincian perintah di atas:
+31 tes helper/graph/session/presentation + 42 transport/render. Backend rules lokal 8000,
+frontend review PR #29 port 5174. Tiga tes baru memeriksa ID terverifikasi, penolakan ID
+interaksi ambigu/tidak cocok, dan label sumber yang mempertahankan null/0/JSON asli.
+Assertion urutan render di analysis/phase3 diubah mengikuti tindakan lebih dahulu;
+assertion bisnis/provenance tetap dipertahankan.
+
+CUA browser nyata: P01–P05, 1280×720 dan 1440×900 tanpa overflow horizontal, sumber E06
+berlabel, I0348 dalam drawer, preseden D-2024-02 terbuka, Jalur 1 P02 dengan Enter,
+gabungan tiga jalur P04, overlap inferred melalui daftar relasi, Escape dan fokus kembali.
+Warn/error log yang tersedia pada pengecekan akhir kosong. Klik SVG via alat otomasi
+mengalami timeout; relasi yang sama berhasil dibuka melalui daftar relasi. Tidak mengklaim
+seluruh harness atau `browser.mjs` sudah dijalankan; tes lifecycle otomatis tetap lulus.
+
+Screenshot lanjutan: `tests/screenshots/main-desktop-1440.jpg`, `main-desktop-1280.jpg`,
+`main-source-1440.jpg`, `main-graph-p04-1440.jpg`. Foto baseline/hasil Ical tetap disimpan.
+Riset Mobbin, alasan keputusan dan batas di [UX_DESKTOP_RESEARCH.md](UX_DESKTOP_RESEARCH.md).
+Uji kegunaan manusia, mobile terbaru, Jev live dan dampak bisnis belum diukur.

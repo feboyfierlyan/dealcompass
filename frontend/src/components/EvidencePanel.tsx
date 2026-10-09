@@ -22,6 +22,20 @@ function SourceGraphLinks({ evidence, context, onGraph }: { evidence: Evidence; 
     {links.edges.length ? <details className="disclosure compact"><summary>Relasi yang memakai record ini <span className="count">{links.edges.length}</span></summary><p className="small muted">Pilih relasi untuk melihat kedua ujung dan buktinya di peta. {page * 6 + 1}–{Math.min((page + 1) * 6, links.edges.length)} dari {links.edges.length}</p>{links.edges.slice(page * 6, (page + 1) * 6).map(edge => <button className="edge-row" key={edge.id} onClick={() => onGraph({ kind: 'edge', id: edge.id })}><span><strong>{relationPhrase(edge.relation)}</strong><span className="mono">{edge.source} → {edge.target} · {edge.relation}</span></span><span className={`tag ${edge.evidence_type}`}>{kindLabel[edge.evidence_type]}</span><span className="muted small">{dateLabel(edge.valid_from)}</span></button>)}{links.edges.length > 6 && <div className="pagination"><button disabled={!page} onClick={() => setPage(p => p - 1)}>Relasi sebelumnya</button><button disabled={(page + 1) * 6 >= links.edges.length} onClick={() => setPage(p => p + 1)}>Relasi berikutnya</button></div>}</details> : <p className="inline-warning">Tidak ada relasi di peta yang merujuk record ini. Record tetap bisa diperiksa; hubungan tidak dibuat-buat.</p>}
   </div>;
 }
+/** Source records are readable fields by default; raw JSON stays in source details. */
+export function SourceContent({ evidence }: { evidence: Evidence }) {
+  const excerpt = evidenceExcerpt(evidence.excerpt);
+  const meta = interactionMeta(evidence);
+  if (meta?.message || !excerpt.structured) return <blockquote>{meta?.message || excerpt.text || 'Kutipan belum tersedia.'}</blockquote>;
+  let data: unknown;
+  try { data = JSON.parse(evidence.excerpt); } catch { return <blockquote>{excerpt.text}</blockquote>; }
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return <blockquote>{excerpt.text}</blockquote>;
+  const labels: Record<string, string> = { nama:'Nama', jabatan:'Jabatan', organisasi:'Organisasi', mulai:'Mulai', selesai:'Selesai',
+    contact_id:'ID kontak', account_id:'ID akun', employee_id:'ID karyawan', decision_id:'ID keputusan', deal_id:'ID deal',
+    tanggal:'Tanggal', alasan:'Alasan', keputusan:'Keputusan', nilai:'Nilai', tipe:'Jenis', diputuskan_oleh:'Diputuskan oleh', diminta_oleh:'Diminta oleh' };
+  const value = (v: unknown): string => v === null || v === '' ? 'Tidak dicantumkan' : typeof v === 'object' ? JSON.stringify(v) : String(v);
+  return <dl className="source-fields">{Object.entries(data).map(([key, v]) => <div key={key}><dt>{labels[key] ?? key.replaceAll('_', ' ')}</dt><dd>{value(v)}</dd></div>)}</dl>;
+}
 export function EvidenceCard({ evidence, context, onGraph, hideTitle = false }: { evidence: Evidence; context: DealContext; onGraph: (target: GraphTarget) => void; hideTitle?: boolean }) {
   const url = sourceUrl(evidence.source_file);
   const excerpt = evidenceExcerpt(evidence.excerpt);
@@ -30,7 +44,7 @@ export function EvidenceCard({ evidence, context, onGraph, hideTitle = false }: 
     <div className="evidence-card-head"><span className="tag">{kind}</span><span className={`tag ${evidence.evidence_type}`}>{kindLabel[evidence.evidence_type]}</span></div>
     {!hideTitle && <h4>{title}</h4>}
     <p className="evidence-date"><Icon name="clock" size={14}/>{dateLabel(evidence.date)}{meta?.from && <span> · dari {meta.from}</span>}{meta?.to && <span> · ke {meta.to}</span>}</p>
-    <blockquote>{excerpt.text || 'Kutipan belum tersedia.'}</blockquote>
+    <SourceContent evidence={evidence}/>
     <details className="raw-source"><summary>Detail sumber · {evidence.source_id}</summary>
       <dl className="source-details"><div><dt>File sumber</dt><dd>{url ? <a href={url} target="_blank" rel="noreferrer">{evidence.source_file}<span className="visually-hidden"> (membuka tab baru)</span></a> : evidence.source_file}</dd></div><div><dt>ID record</dt><dd className="mono">{evidence.source_id}</dd></div><div><dt>ID bukti</dt><dd className="mono">{evidence.id}</dd></div></dl>
       {excerpt.structured && <><p className="small muted">Record asli (JSON)</p><pre>{evidence.excerpt}</pre></>}

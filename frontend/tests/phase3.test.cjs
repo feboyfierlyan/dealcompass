@@ -58,7 +58,7 @@ for (const id of ['DL-001','DL-002','DL-003','DL-004','DL-005']) test(`${id} REA
   const gate = gateSummary(item);
   if (gate) assert.ok(action.includes(escape(gate)),'Ranking gate stays in layer 1');
   for (const text of [...item.recommendation.approvals_needed,...splitUnknowns(item.recommendation,joined).specific]) assert.ok(action.includes(escape(text)),`Layer 1 keeps approval/unknown: ${text.slice(0,60)}`);
-  assert.ok(action.indexOf('Mengapa perlu diperhatikan') < action.indexOf('Tindakan yang disarankan') && action.indexOf('Tindakan yang disarankan') < action.indexOf('Penanggung jawab'));
+  assert.ok(action.indexOf('Tindakan yang disarankan') < action.indexOf('Penanggung jawab') && action.indexOf('Penanggung jawab') < action.indexOf('Mengapa perlu diperhatikan'));
   assert.ok(action.includes('Dari urutan prioritas · data per 1 Okt 2026'));
   for (const label of ['Status request sesi','GET ranking','POST analisis','Tier acceleration']) assert.ok(!action.includes(label),`No technical label in layer 1: ${label}`);
   for (const text of [...item.rationale,...item.limitations,item.recommendation.action,item.recommendation.milestone,...item.recommendation.approvals_needed,...item.recommendation.unknowns,...item.recommendation.precedent_comparison,...d.boundaries]) assert.ok(html.includes(escape(text)),text);

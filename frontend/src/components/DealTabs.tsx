@@ -42,7 +42,6 @@ export function ActionTab({ context, priority, rankingState, view, fixture, snap
   const rerunNote = useId();
   const pathsLabel = view.source === 'session' ? 'Lihat hubungan data dari analisis prioritas' : 'Lihat hubungan yang mendukung saran ini';
   return <div className="tab-stack">
-    <WhyBlock priority={priority} context={context} rankingState={rankingState} onEvidence={onEvidence}/>
     {r ? <ActionSummary recommendation={r} context={context} fixture={fixture} onEvidence={onEvidence} actions={<>
       <button className="button primary" onClick={onReasons}>Lihat alasan & bukti<Icon name="arrow" size={17}/></button>
       <button className="button secondary" onClick={onShowPaths} disabled={!priority?.evidence_paths.length}><Icon name="graph" size={17}/>{pathsLabel}</button>
@@ -54,6 +53,7 @@ export function ActionTab({ context, priority, rankingState, view, fixture, snap
         {running && <p className="status-line" role="status"><span className="spinner"/>Menjalankan analisis…</p>}
         {session.status === 'failed' && session.error && <ErrorNotice error={session.error} retry={onAnalyze} subject="Analisis"/>}
       </section>}
+    <WhyBlock priority={priority} context={context} rankingState={rankingState} onEvidence={onEvidence}/>
     {r && <section className="origin" aria-label="Asal saran">
       <div className="origin-row">
         <p><Icon name="history" size={16}/>{view.source === 'session'

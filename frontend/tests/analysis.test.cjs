@@ -45,7 +45,7 @@ for (const [id, acceptance] of cases) test(`${id}: real rules response renders i
   // Layer 1 reads action -> owner -> target -> approvals -> analysis-specific unknowns; reasons follow in the second tab.
   const order=(markup,headings)=>{for(let i=1;i<headings.length;i++) assert.ok(markup.indexOf(headings[i-1])>=0&&markup.indexOf(headings[i-1])<markup.indexOf(headings[i]),`${headings[i-1]} before ${headings[i]}`);};
   const specific=splitUnknowns(r,context).specific;
-  order(action,['Tindakan yang disarankan',escape(r.action),'Penanggung jawab','Target langkah berikutnya','Persetujuan yang diperlukan',...(specific.length?['Yang masih perlu dipastikan']:[]),'Lihat alasan &amp; bukti']);
+  order(action,['Tindakan yang disarankan','Lihat alasan &amp; bukti',escape(r.action),'Penanggung jawab','Target langkah berikutnya','Persetujuan yang diperlukan',...(specific.length?['Yang masih perlu dipastikan']:[]),'Mengapa perlu diperhatikan']);
   for(const text of specific) assert.ok(action.includes(escape(text)),`Analysis-specific unknown stays next to the action: ${text.slice(0,60)}`);
   for(const text of r.approvals_needed) assert.ok(action.includes(escape(text)),'Approvals stay in layer 1');
   if(!r.approvals_needed.length) assert.ok(action.includes('Ini tidak berarti tindakan sudah disetujui.'));

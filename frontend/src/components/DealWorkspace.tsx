@@ -79,7 +79,7 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
   const view = recommendationView({ dealId: deal.deal_id, priority: joined.validPriority, session: request, preferred });
   const sessionError = request.status === 'failed' ? request.error instanceof ApiError ? request.error : new ApiError(0, 'Analisis belum dapat dimuat.') : null;
 
-  const wide = useMedia('(min-width: 1200px)');
+  const wide = useMedia('(min-width: 1800px)');
   const [selection, setSelection] = useState<Selection>(null);
   const trigger = useRef<HTMLElement | SVGElement | null>(null);
   // Focus moves after React commits the target (drawer title, map heading, tab panel or the original trigger).
@@ -139,7 +139,7 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
         <h2 id={ids.title} tabIndex={-1}>{deal.account_name}</h2>
         <div className="detail-meta">
           {priority ? <span className="rank-pill">Prioritas {priority.rank}{rankTotal ? ` dari ${rankTotal}` : ''}</span> : <span className="rank-pill quiet">{rankingState === 'loading' ? 'Prioritas sedang disusun' : 'Prioritas belum tersedia'}</span>}
-          {priority && <span className={`kind ${priority.priority_kind}`}>{priorityKindLabel[priority.priority_kind]}</span>}
+          {priority?.priority_kind === 'discovery' && <span className="kind discovery">{priorityKindLabel.discovery}</span>}
           <span>Tahap {shownDeal.stage} · {shownDeal.stage_age_days} hari</span>
           <span>Potensi {rupiah(shownDeal.annual_value)} per tahun</span>
         </div>

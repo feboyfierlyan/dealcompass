@@ -45,12 +45,12 @@ const acceptance = {
   'DL-005': [/menjadwalkan discovery/, /bukan berarti tidak ada risiko/, /Ini bukan tanda deal gagal, kalah, atau bebas risiko\./],
 };
 
-test('REAL HTTP layer 1: each API priority shows why, action, owner, target and approvals in that order, in plain words', () => {
+test('REAL HTTP layer 1: each API priority shows action and proof controls first, then owner, target, approvals and context, in plain words', () => {
   for (const item of ranking.items) {
     const context = joined(item.deal_id), r = item.recommendation;
     const { view, html } = action({ id: item.deal_id, priority: item, context });
     assert.equal(view.source, 'priority');
-    const steps = ['Mengapa perlu diperhatikan', 'Tindakan yang disarankan', escape(r.action), 'Penanggung jawab', 'Target langkah berikutnya', 'Persetujuan yang diperlukan', 'Lihat alasan &amp; bukti'];
+    const steps = ['Tindakan yang disarankan', 'Lihat alasan &amp; bukti', escape(r.action), 'Penanggung jawab', 'Target langkah berikutnya', 'Persetujuan yang diperlukan', 'Mengapa perlu diperhatikan'];
     for (let i = 1; i < steps.length; i++) assert.ok(html.indexOf(steps[i - 1]) >= 0 && html.indexOf(steps[i - 1]) < html.indexOf(steps[i]), `${item.deal_id}: ${steps[i - 1]} before ${steps[i]}`);
     for (const pattern of acceptance[item.deal_id]) assert.match(html, pattern, `${item.deal_id} acceptance`);
     for (const label of ['Status request sesi', 'GET ', 'POST ', 'Tier acceleration', 'tier acceleration', 'Status konteks CRM']) assert.ok(!html.includes(label), `${item.deal_id}: no technical label ${label}`);
@@ -131,4 +131,41 @@ test('STATIC guard: the analysis POST only starts from an explicit button, never
   assert.match(workspace, /createAnalysisSession\(signal => api\.analyze\(deal\.deal_id, signal\)\)/);
   assert.ok(!/analy[sz]e/i.test(dashboard.replace(/initial-analysis/g, '')), 'Dashboard never requests an analysis');
   assert.deepEqual(tabs.match(/[A-Za-z]+=\{onAnalyze\}/g), ['onClick={onAnalyze}', 'retry={onAnalyze}', 'onClick={onAnalyze}', 'retry={onAnalyze}']);
+});
+
+// Desktop copy improvement must never guess identity or discard policy words.
+test('verified source links preserve original action and negation; unknown IDs stay literal', () => {
+  const { ReadableAction } = require(path.join(build, 'components/AnalysisReport.js'));
+  const context = joined('DL-002');
+  const text = 'USULAN: E07 membaca I0348. Jangan menjanjikan diskon sebelum persetujuan. E999 I9999 tetap belum diketahui.';
+  const html = render(React.createElement(ReadableAction, {text, context, onEvidence: noop}));
+  const visible = html.split('<details')[0];
+  const owner = employeeFromContext(context, 'E07');
+  assert.ok(owner && visible.includes(escape(owner.name)));
+  assert.ok(visible.includes('Buka sumber I0348:'));
+  assert.ok(visible.includes('Jangan menjanjikan diskon sebelum persetujuan. E999 I9999 tetap belum diketahui.'));
+  assert.ok(html.includes(escape(text)), 'Complete original action is still available');
+});
+test('source link refuses interaction identity mismatch and ambiguous matching records', () => {
+  const { ReadableAction } = require(path.join(build, 'components/AnalysisReport.js'));
+  const record = {id:'interactions.jsonl:I1234',source_file:'dataset_kasirnusa/interactions.jsonl',source_id:'I1234',date:null,excerpt:JSON.stringify({interaction_id:'I9999',isi:'x'})};
+  for (const evidence of [[record], [record, {...record,id:'duplicate'}]]) {
+    const html = render(React.createElement(ReadableAction, {text:'Baca I1234 sebelum menawarkan.',context:{evidence},onEvidence:noop}));
+    assert.ok(html.includes('Baca I1234 sebelum menawarkan.'));
+    assert.ok(!html.includes('<button'));
+  }
+});
+
+test('structured evidence reads as source fields; missing is not zero and raw source is retained', () => {
+  const { SourceContent, EvidenceCard } = require(path.join(build, 'components/EvidencePanel.js'));
+  const context = joined('DL-004');
+  const record = context.evidence.find(e => e.source_file.endsWith('contact_employment_history.csv'));
+  assert.ok(record);
+  const fields = render(React.createElement(SourceContent, {evidence:record}));
+  assert.ok(fields.includes('<dl') && fields.includes('Organisasi') && fields.includes('Tidak dicantumkan'));
+  const card = render(React.createElement(EvidenceCard, {evidence:record,context,onGraph:noop}));
+  assert.ok(card.includes(escape(record.excerpt)), 'Full raw record remains in source details');
+  const message = joined('DL-002').evidence.find(e => e.source_id === 'I0348');
+  const quote = render(React.createElement(SourceContent, {evidence:message}));
+  assert.ok(quote.includes(escape(interactionMeta(message).message)));
 });

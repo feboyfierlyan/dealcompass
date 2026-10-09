@@ -10,7 +10,7 @@ import { ErrorNotice, asApiError } from './components/Notice';
 import { createResource } from './lib/resource';
 import { matchPipeline, rankedDeals } from './lib/phase3';
 import { Methodology } from './components/Phase3Panels';
-import { compactRupiah, effectiveSelection, gateSummary, priorityKindLabel } from './lib/present';
+import { compactRupiah, effectiveSelection, priorityKindLabel } from './lib/present';
 import { useMedia } from './lib/useMedia';
 import './style.css';
 
@@ -79,7 +79,7 @@ export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) 
     <section className="queue" aria-labelledby="queue-title" hidden={detailOnly}>
       <div className="queue-head">
         <h1 id="queue-title">Prioritas tindak lanjut</h1>
-        <p>Lihat deal yang perlu didahulukan dan langkah berikutnya.</p>
+        <p>Mulai dari urutan teratas. Pilih deal untuk melihat langkah berikutnya.</p>
       </div>
       <div className="queue-status">
         {rankingState === 'loading' && <p role="status" className="status-line"><span className="spinner"/>Menyusun urutan prioritas…</p>}
@@ -92,14 +92,15 @@ export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) 
       {error && <ErrorNotice error={error} retry={() => setRefresh(v => v + 1)} subject="Daftar deal"/>}
       {!loading && !error && !deals.length && <div className="empty-state"><h2>Belum ada deal dalam daftar</h2><p>Layanan mengembalikan daftar kosong. Muat ulang setelah data tersedia.</p><button className="button secondary" onClick={() => setRefresh(v => v + 1)}>Muat ulang</button></div>}
       {!!deals.length && <ol className="queue-list">{deals.map(deal => {
-        const item = itemFor(deal.deal_id), current = deal.deal_id === selected, gate = gateSummary(item);
+        const item = itemFor(deal.deal_id), current = deal.deal_id === selected;
         return <li key={deal.deal_id}><button className={`queue-item ${current ? 'current' : ''} ${deal.rank === null ? 'no-rank' : ''}`} data-deal={deal.deal_id} aria-current={current ? 'true' : undefined} onClick={() => open(deal.deal_id)}>
           {deal.rank !== null && <span className="queue-rank"><span className="visually-hidden">Prioritas </span>{deal.rank}</span>}
           <span className="queue-body">
             <span className="queue-name">{deal.account_name}</span>
             <span className="queue-meta">Tahap {deal.stage} · {compactRupiah(deal.annual_value)}/tahun</span>
-            {/* Most items speed up follow-up; only the exception gets a label so the list stays quiet. */}
-            {item && (item.priority_kind === 'discovery' || gate) && <span className="queue-reason">{item.priority_kind === 'discovery' && <span className={`kind ${item.priority_kind}`}>{priorityKindLabel[item.priority_kind]}</span>}{gate && <span>Syarat utama: {gate}</span>}</span>}
+            {item && (item.priority_kind === 'discovery' || item.recommendation.approvals_needed.length > 0) && <span className="queue-reason">
+              {item.priority_kind === 'discovery' ? <span className="kind discovery">{priorityKindLabel.discovery}</span> : <span className="queue-approval">Perlu persetujuan</span>}
+            </span>}
           </span>
           <Icon name="chevron" size={18}/>
         </button></li>;

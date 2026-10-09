@@ -56,11 +56,12 @@ export function EvidencePaths({ item, context, onEvidence, onEdge, onShowPath }:
     <h3>Hubungan data yang mendukung <span className="count">{item.evidence_paths.length}</span></h3>
     <p className="note">Panah menunjukkan arah relasi asli. Label “dugaan” berarti hasil penalaran dari data, bukan fakta langsung.</p>
     {!item.evidence_paths.length && <p className="muted">Ranking tidak mencantumkan jalur graph untuk deal ini; record sumber tetap bisa dibuka.</p>}
-    <ol className="path-list">{item.evidence_paths.map((path, i) => <li key={i} className="path-card">
+    <ol className="path-list">{item.evidence_paths.map((path, i) => <li key={i}><details className="path-card">
+      <summary><span>Jalur {i + 1}</span><strong>{pathSteps(path, context).at(-1)?.name ?? 'Bukti pendukung'}</strong><span className="count">{path.edge_ids.length} relasi</span></summary>
       <ol className="path-chain">{pathSteps(path, context).map((step, j) => <li key={j}>{step.edge && <span className={`path-link ${step.edge.evidence_type}`}><span className={`direction ${step.forward ? 'along' : 'against'}`}><Icon name="arrow" size={14}/></span>{relationPhrase(step.edge.relation)}<span className="visually-hidden">{step.forward ? ' (searah relasi asli)' : ' (dibaca melawan arah relasi asli)'}</span>{step.edge.evidence_type === 'inferred' && <span className="tag inferred">dugaan</span>}</span>}<span className="path-node"><strong>{step.name}</strong>{step.type && <span className="muted"> · {step.type}</span>} <span className="id-chip">{step.id}</span></span></li>)}</ol>
       <div className="path-actions"><button className="button secondary small" onClick={() => onShowPath(path)}><Icon name="graph" size={16}/>Lihat jalur ini di peta</button>
         <details className="disclosure compact"><summary>Relasi dalam jalur ini <span className="count">{path.edge_ids.length}</span></summary><p className="mono path-arrows">{pathArrows(path, context)}</p>{path.edge_ids.map(id => edges.get(id)).filter((e): e is GraphEdge => !!e).map(e => <EdgeButton key={e.id} edge={e} onEdge={onEdge}/>)}<Sources ids={path.evidence_ids} onEvidence={onEvidence}/></details></div>
-    </li>)}</ol>
+    </details></li>)}</ol>
   </section>;
 }
 

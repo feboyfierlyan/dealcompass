@@ -3,10 +3,10 @@
 Pelaksana tugas redesign: Ical, atas penugasan pengguna/Main; area frontend sebelumnya dikerjakan Boy.
 
 ## Task dan status
-**Redesign UI/UX frontend untuk sales non-teknis: IN_PROGRESS — diserahkan ke Codex
-untuk dilanjutkan.** Pelaksana Ical (GitHub IXALS) dibantu Claude Code. Implementasi inti,
-tes dan dokumentasi sudah ada; sisa pekerjaan di bagian “Tugas berikutnya”. Main menetapkan
-VERIFIED/MERGED. Tidak merge sendiri, tidak deploy.
+**Redesign UI/UX frontend untuk sales non-teknis: READY_FOR_REVIEW.**
+Fondasi Ical (GitHub IXALS)/Claude Code; WIP 3b683dd dilanjutkan Main/Codex atas instruksi
+pengguna, fokus desktop. Implementasi dan verifikasi lokal selesai; PR #29 diperbarui,
+belum merged/deployed. Hasil uji Main dipisahkan dari run Ical di bawah.
 
 Instruksi terbaru pengguna di tengah pengerjaan: fokus **desktop**, tampilan bersih dan
 profesional, buang informasi yang tidak penting, lewati masalah mobile. Tata letak mobile
@@ -16,7 +16,7 @@ penyederhanaan terakhir.
 Riwayat yang tetap milik Boy: BOY-02..04 dikerjakan Boy; BOY-04 MERGED #22 (ea96e23) dan
 VERIFIED oleh Main menurut `docs/coordination/MAIN.md`. Catatan lengkap BOY-04 ada di riwayat
 git file ini (commit a392907) dan `docs/reviews/2026-10-09-boy04.md`. Hasil uji Boy tidak
-diklaim ulang di sini; angka di bawah adalah run Ical.
+diklaim ulang di sini; run awal di bawah milik Ical; run lanjutan Main ditandai terpisah.
 
 - [x] Mulai dari origin/main terbaru b766770; branch baru; checkout sendiri.
 - [x] Membaca AGENTS.md, MAIN.md, API_CONTRACT.md, BOY.md, ICAL.md, frontend/TESTING.md,
@@ -24,7 +24,9 @@ diklaim ulang di sini; angka di bawah adalah run Ical.
 - [x] Beranda prioritas, detail “saran dulu”, tiga lapisan informasi, panel bukti saat
   diminta, peta hubungan sebagai bukti saran.
 - [x] Tanpa POST otomatis; versi saran eksplisit; state loading/gagal tidak tampil sebagai sukses.
-- [x] 70/70 tes frontend, build produksi, browser nyata desktop, screenshot sebelum/sesudah.
+- [x] Run awal Ical: 70/70 tes; lanjutan Main: 73/73 tes, build dan browser desktop.
+- [x] Riset Mobbin MCP (5 screen), tindakan lebih dahulu, antrean ringkas, sumber manusiawi.
+- [x] Catatan riset, screenshot lanjutan, dan instruksi uji diperbarui.
 - [ ] Uji kegunaan dengan rekan tim: **belum dilakukan** (target 10 detik/30 detik/≤2 interaksi
   belum diukur).
 
@@ -55,14 +57,14 @@ diklaim ulang di sini; angka di bawah adalah run Ical.
 | --- | --- |
 | Hero “Langkah tepat. Deal bergerak.” + tiga metrik | Dihapus. Potensi per deal tetap di daftar dan header deal; total pipeline tidak ditampilkan. |
 | Ranking pipeline · rules + Metode & keterbatasan | Baris status di atas daftar + “Bagaimana urutan ini dibuat?” + Jelajahi data › Cara prioritas dihitung |
-| Kartu deal lima kolom + pencarian deal | Daftar prioritas vertikal (nomor, nama, tahap, potensi, syarat utama). Pencarian dihapus: hanya lima deal. |
+| Kartu deal lima kolom + pencarian deal | Daftar prioritas vertikal (nomor, nama, tahap, potensi, badge persetujuan/discovery). Pencarian dihapus: hanya lima deal. |
 | Header ruang keputusan + “Analisis langkah berikutnya” | Header deal ringkas; “Jalankan analisis ulang” di bawah kartu tindakan |
 | Status request sesi / status konteks CRM | Baris asal saran; status CRM, endpoint dan status request di Jelajahi data › Rincian teknis |
 | Tab Ringkasan, PriorityPanel, langkah bernomor | Tab Saran tindakan (lapisan 1) + Alasan & bukti (lapisan 2) |
 | Faktor, keterbatasan, sumber prioritas | Jelajahi data › Cara prioritas dihitung |
 | Tab Peta relasi | Jelajahi data › Peta hubungan; tombol jalur dari kartu tindakan |
 | Tab Bukti (jumlah) | Jelajahi data › Semua bukti (jumlah) |
-| Inspector kanan permanen | Panel “Bukti & sumber” saat dipilih (samping ≥1200 px, sheet modal di bawahnya) |
+| Inspector kanan permanen | Panel “Bukti & sumber” saat dipilih (samping ≥1800 px, sheet modal di bawahnya) |
 | Diagnostic | Jelajahi data › Temuan dari data (+ “Muat ulang temuan deal ini”) |
 | Muat ulang konteks / dashboard | Rincian teknis › “Muat ulang data deal”; “Muat ulang daftar” di bawah daftar |
 | Tombol versi Rekomendasi ranking / Analisis sesi | Toggle “Saran dari urutan prioritas” / “Hasil analisis ulang · jam”, muncul hanya bila ada hasil |
@@ -71,8 +73,9 @@ diklaim ulang di sini; angka di bawah adalah run Ical.
 ## Branch dan commit
 Branch **boy/ical-uiux-redesign** dari origin/main **b766770** (Merge PR #28), di-fetch ulang
 sebelum push. Checkout sendiri `C:\Users\4nemy\Downloads\Coding\HACKATHON-2026\dealcompass`.
-Satu commit redesign; SHA tercantum di PR. Checkout, branch dan server demo anggota lain tidak
-disentuh.
+Commit awal Ical 3b683dd. Main melanjutkan di checkout review tersendiri, branch lokal
+`integrator/desktop-ux`, dan push ke head PR yang sama `boy/ical-uiux-redesign`.
+Server pratinjau lanjutan 5174; server anggota lain 5173/8000 tidak dihentikan.
 
 ## File dan fungsi
 - `frontend/src/main.tsx`: header ringkas (merek, konteks, tombol fixture khusus dev).
@@ -85,12 +88,14 @@ disentuh.
 - `frontend/src/components/DealTabs.tsx` (baru): WhyBlock, ActionTab, ReasonsTab.
 - `frontend/src/components/AnalysisReport.tsx`: ActionSummary satu kartu, OwnerLabel (nama hanya
   dari record employees.csv dengan employee_id sama), RecommendationSources, PrecedentList,
-  ExplanationGroups, UnknownList. Teks API utuh.
+  ExplanationGroups, UnknownList; ReadableAction mengganti ID terverifikasi dengan tautan
+  sumber nama/tanggal, seluruh kata/negasi/syarat utuh dan teks asli dapat dibuka.
 - `frontend/src/components/Phase3Panels.tsx`: PriorityRationale (terlipat), EvidencePaths
   (rantai bernama, arah relasi asli, “dugaan”), PriorityFactors, Methodology, DiagnosticPanel,
   Statistics, Sources, DetailData.
 - `frontend/src/components/EvidencePanel.tsx`: EvidenceInspector, EvidenceCard, EvidenceDrawer
-  (panel samping non-modal atau `dialog` modal).
+  (panel samping non-modal atau `dialog` modal); SourceContent menyajikan field berlabel,
+  data kosong tetap eksplisit, JSON mentah tetap tersedia.
 - `frontend/src/components/EvidenceBrowser.tsx`: seluruh bukti dengan judul manusiawi.
 - `frontend/src/components/ContextGraph.tsx`: `initialPaths` (gabungan jalur, sorot), label titik
   manusiawi, relasi bahasa biasa, kanvas sebelum kontrol eksplorasi; batas 24 titik, pencarian,
@@ -101,11 +106,13 @@ disentuh.
 - `frontend/src/style.css`: ditulis ulang dengan identitas lama (hijau gelap, latar terang,
   terakota untuk aksi utama), skala tipe 12–26 px, target 40–46 px, fokus terlihat, warna
   status selalu bersama teks, reduced motion, selection/scrollbar bertema.
-- `frontend/tests/present.test.mjs` (12) dan `redesign.test.cjs` (6) baru; `analysis.test.cjs`
+- `frontend/tests/present.test.mjs` (12) dan `redesign.test.cjs` (9) baru; `analysis.test.cjs`
   dan `phase3.test.cjs` memakai komponen baru tanpa menghapus assertion bisnis/provenance/
   lifecycle; `browser.mjs` diperbarui (belum dijalankan); `viewport.html` alat bantu dev;
   `screenshots/` sebelum/sesudah.
-- `frontend/TESTING.md`: prosedur 70 tes, langkah browser, harness MOCK, naskah demo.
+- `frontend/TESTING.md`: prosedur 73 tes, langkah browser, harness MOCK, naskah demo.
+
+- `frontend/UX_DESKTOP_RESEARCH.md`: lima referensi Mobbin, keputusan desain dan batas.
 
 ## Kontrak dan dependency
 API v1 dan snapshot 2026-10-01 tetap. Tidak menyentuh backend/decision, backend/graph, dataset,
@@ -129,7 +136,7 @@ Perintah tes lengkap: `frontend/TESTING.md`.
 ### Naskah demo 90 detik
 - **0:00–0:15** Beranda: “Prioritas tindak lanjut dari API; #1 Nirwana Hotel & Resto sudah
   terbuka. Ini urutan perhatian, bukan peluang closing.”
-- **0:15–0:40** Kutipan pelanggan, syarat utama, tindakan (cek pengalaman terbaru, kesediaan dan
+- **0:15–0:40** Tindakan (cek pengalaman terbaru, kesediaan dan
   izin kontak Saiyo Group sebelum perkenalan), Bagus Prakoso (E06), target; persetujuan kosong
   bukan berarti disetujui.
 - **0:40–0:55** “Lihat bukti I0335” → email asli 22 Sep, pengirim; Esc menutup.
@@ -140,6 +147,19 @@ Perintah tes lengkap: `frontend/TESTING.md`.
 - **1:25–1:30** #5: “Lengkapi informasi”, bukan gagal/kalah/bebas risiko. “Mode rules, bukan Jev live.”
 
 ## Pengujian aktual
+
+### Lanjutan Main/Codex (desktop)
+73/73 frontend lulus (31 + 42), build TypeScript/Vite lulus. Perintah lengkap di
+`frontend/TESTING.md`. Browser nyata P01–P05; screenshot 1280×720 dan 1440×900 tanpa overflow;
+source E06 readable; P02 I0348, preseden D-2024-02 dan Jalur 1 dapat diperiksa; keyboard Enter
+membuka jalur; P04 tiga jalur graph dan overlap inferred lewat daftar relasi, Escape/fokus
+kembali berhasil. Warn/error browser yang tersedia saat akhir kosong. SVG pointer via alat
+otomasi timeout; jalur alternatif daftar relasi lulus, tidak diklaim sebagai klik SVG lulus.
+Screenshot prefiks `main-` dan riset lima screen Mobbin tercatat di UX_DESKTOP_RESEARCH.md.
+Tidak menjalankan uji mobile baru, uji manusia, atau Jev live.
+
+### Run awal Ical
+
 Run Ical, 2026-10-09, Windows 11, Node 24.19, backend lokal rules tanpa TYPESAFE_API_KEY.
 **70/70 lulus, 0 gagal/skip; build TypeScript/Vite lulus.** Perintah persis di `frontend/TESTING.md`.
 
@@ -193,46 +213,31 @@ Tidak dijalankan: uji kegunaan rekan tim, `frontend/tests/browser.mjs` (Playwrig
 terpasang), Jev live, 144 tes backend milik Main (tidak diklaim).
 
 ## Fixture dan keterbatasan
-Mock/sintetis/STATIC di tes diberi label; harness MOCK dan fixture dev berbanner dan tidak
-masuk build produksi. Ekspektasi P01–P05 hanya di tes, tidak ditanam di komponen.
+Mock/sintetis/STATIC di tes diberi label; fixture dev tetap berbanner, kontrolnya terlipat
+sebagai Alat pengembang. Tidak masuk build produksi. Tidak ada ranking per-ID di komponen.
 
-Keterbatasan yang disengaja: teks tindakan tetap verbatim sehingga masih memuat “USULAN:” dan
-ID (E06, I0335); beberapa unknowns API memakai nama field (candidate_decisions) dan tidak
-ditulis ulang. Label titik peta bisa terpotong “…” (nama penuh di tooltip, aria-label dan
-panel). Pratinjau di Semua bukti dipotong dua baris; teks penuh di panel. Daftar prioritas
-bergulir sendiri bila tinggi layar kecil; pada 1280×720 item #5 baru terlihat sebagian. Total
-pipeline dan pencarian deal dihapus dari tampilan utama. Mobile hanya dukungan dasar.
-Prioritas heuristik belum tervalidasi terhadap closing historis; approval, identitas dan izin
-tetap memerlukan konfirmasi manusia.
+Tindakan mempertahankan semua kata bisnis, negasi, dan syarat; ID karyawan/interaksi yang
+terverifikasi menjadi nama/tanggal bertaut sumber, sedangkan teks API utuh dapat dibuka.
+ID tidak cocok/ambigu tetap literal. Beberapa unknowns API (candidate_decisions) tetap literal.
+Pratinjau bukti dapat dipotong, teks lengkap tetap di panel. Target fokus desktop;
+mobile hanya dukungan dasar, tidak diuji ulang oleh Main. Tidak ada uji kegunaan manusia,
+Jev live, klaim peningkatan closing, atau audit aksesibilitas penuh.
 
 ## Blocker
 Tidak ada blocker implementasi. Menunggu review Main; tidak merge sendiri.
 
 ## Tugas berikutnya
-Untuk Codex (lanjutan langsung dari branch ini):
+1. Reviewer/tim mencoba pratinjau PR #29, khususnya kemudahan menemukan prioritas dan tindakan.
+2. Uji satu anggota non-implementer: temukan deal pertama, jelaskan tindakan/owner/syarat,
+   lalu buka bukti; catat waktu dan kebingungan. Target 10/30 detik belum diukur.
+3. Setelah review dan CI lulus, integrasikan melalui alur Main; rehearsal 90 detik dan
+   submission tetap pekerjaan tim. Tidak ada pekerjaan mobile tambahan untuk tugas ini.
+4. Jev live masih memerlukan akses/key; bukan blocker redesign atau alasan melabeli rules live.
 
-1. **Sedang dikerjakan saat diserahkan:** penyederhanaan desktop “dumb-user friendly” sesuai
-   instruksi terakhir pengguna (bersih, profesional, minim info tidak penting). Sudah: daftar
-   tanpa label jenis berulang dan tanpa total pipeline, baris asal saran satu baris, approval
-   kosong satu baris, rasional skor terlipat, detail sumber/JSON terlipat, catatan dugaan hanya
-   bila relevan. Kandidat lanjutan: sembunyikan chip locator panjang (mis. `K116|Saiyo Group|…`)
-   di daftar bukti lapisan 2; pertimbangkan header deal lebih ringkas; cek ulang semua tab
-   P01–P05 di 1440×900 dan 1280×720 setelah tiap perubahan.
-2. **Belum dikerjakan:** uji kegunaan dengan 1–2 rekan tim (target 10 detik prioritas, 30 detik
-   tindakan, ≤2 interaksi ke bukti) — catat hasil nyata, jangan diklaim bila tidak dilakukan.
-3. **Belum dijalankan:** `frontend/tests/browser.mjs` (butuh Playwright); Jev live.
-4. **Di luar fokus (instruksi pengguna):** mobile. Dukungan dasar ada (list → detail, sheet
-   modal) tapi tidak diverifikasi ulang setelah penyederhanaan terakhir; screenshot mobile
-   dihapus dari `frontend/tests/screenshots/`.
-5. Setelah selesai: jalankan 70 tes + build (`frontend/TESTING.md`), `python scripts/check_handoff.py
-   --all` (Windows: `PYTHONUTF8=1`), perbarui bagian ini dan Update WIB, ubah status ke
-   READY_FOR_REVIEW. Jangan merge sendiri.
-
-Catatan teknis untuk pelanjut: fokus dipindah via `pendingFocus` + `useEffect` (bukan
-requestAnimationFrame) karena tab otomasi browser bisa berstatus hidden; jangan kembalikan ke
-rAF. POST analisis hanya dari `analyze()` di `DealWorkspace.tsx` (dijaga tes STATIC di
-`redesign.test.cjs`). Teks API selalu verbatim; jangan regex/potong/ringkas teks bisnis.
+Catatan pelanjut: pertahankan pendingFocus + useEffect, POST hanya melalui analyze(),
+provenance dan semua gate bisnis. Jangan mengganti saran dengan ringkasan yang membuang syarat.
 
 ## Update WIB
-2026-10-09 22:55 WIB — redesign UI/UX IN_PROGRESS, diserahkan ke Codex (pelaksana Ical atas
-penugasan pengguna/Main). BOY-04 tetap MERGED #22/VERIFIED milik Boy.
+2026-10-09 23:17 WIB — lanjutan desktop Main/Codex READY_FOR_REVIEW pada PR #29;
+73/73 frontend, build, browser desktop. Riwayat awal Ical dipertahankan;
+BOY-04 tetap MERGED #22/VERIFIED milik Boy. PR redesign ini belum merged.

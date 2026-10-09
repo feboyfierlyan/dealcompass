@@ -23,7 +23,7 @@ function App() {
     <header className="appbar">
       <span className="brand"><span className="brand-mark"><Icon name="compass" size={20}/></span><span className="brand-name">deal<span>compass</span></span></span>
       <span className="appbar-context">Ruang kerja sales KasirNusa</span>
-      {import.meta.env.DEV && <button className="appbar-dev" onClick={toggleFixture} disabled={fixtureLoading}>{fixtureApi ? 'Kembali ke API nyata' : fixtureLoading ? 'Memuat fixture…' : 'Pratinjau fixture (dev)'}</button>}
+      {import.meta.env.DEV && <details className="dev-tools"><summary>Alat pengembang</summary><button className="appbar-dev" onClick={toggleFixture} disabled={fixtureLoading}>{fixtureApi ? 'Kembali ke API nyata' : fixtureLoading ? 'Memuat fixture…' : 'Pratinjau fixture (dev)'}</button></details>}
     </header>
     {fixtureApi && <div className="fixture-banner" role="status"><strong>MODE PENGEMBANGAN · FIXTURE</strong><span>Contoh P02 bersumber dari dataset; graph dan rekomendasi adalah fixture UI. Bukan hasil analisis backend atau Jev.</span><button onClick={() => setFixtureApi(null)}>Kembali ke API nyata</button></div>}
     {fixtureError && <p role="alert" className="notice error">{fixtureError}</p>}

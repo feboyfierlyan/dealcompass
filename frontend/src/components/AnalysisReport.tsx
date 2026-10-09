@@ -19,13 +19,43 @@ export function OwnerLabel({ id, context, onEvidence }: { id: string | null; con
   return <span className="owner"><strong>{employee.name}</strong>{employee.title && <span className="muted"> · {employee.title}</span>} <span className="id-chip">{id}</span> <button className="link-button" aria-label={`Lihat data karyawan ${employee.name}`} onClick={() => onEvidence(employee.evidenceId)}>Lihat sumber</button></span>;
 }
 
+/** Only replace verified employee / interaction identifiers with readable source links.
+ * All action words, negations and conditions remain unchanged; original text is always available.
+ */
+export function ReadableAction({ text, context, onEvidence }: { text: string; context: DealContext | null; onEvidence: OpenEvidence }) {
+  let linked = false;
+  const parts = text.split(/(\b(?:E\d{2,}|I\d{4,})\b)/g).map((part, i) => {
+    const employee = employeeFromContext(context, part);
+    if (employee) {
+      linked = true;
+      return <button key={i} className="inline-source" aria-label={`Buka sumber ${employee.name} (${part})`} onClick={() => onEvidence(employee.evidenceId)}>{employee.name}</button>;
+    }
+    const matches = context?.evidence.filter(e => e.source_file.endsWith('/interactions.jsonl') && e.source_id === part) ?? [];
+    if (matches.length === 1 && /^I\d{4,}$/.test(part)) {
+      const record = matches[0];
+      // Identity must agree with the record, not just the source locator.
+      let identity: unknown;
+      try { identity = JSON.parse(record.excerpt).interaction_id; } catch { return part; }
+      if (identity !== part) return part;
+      linked = true;
+      const label = `${evidenceTitle(record).kind.toLowerCase()} ${record.date ? dateLabel(record.date) : part}`;
+      return <button key={i} className="inline-source" aria-label={`Buka sumber ${part}: ${label}`} onClick={() => onEvidence(record.id)}>{label}</button>;
+    }
+    return part;
+  });
+  return <div className="readable-action"><p className="action-text">{parts}</p>
+    {linked && <details className="original-action"><summary>Teks asli dengan ID sumber</summary><p>{text}</p></details>}
+  </div>;
+}
+
 /** Layer 1: what to do, who owns it, the next target, and conditions that must stay next to the action. */
 export function ActionSummary({ recommendation: r, context, fixture, onEvidence, actions }: { recommendation: Recommendation; context: DealContext | null; fixture: boolean; onEvidence: OpenEvidence; actions?: ReactNode }) {
   const titleId = useId();
   const { specific } = splitUnknowns(r, context);
   return <section className="action-card" aria-labelledby={titleId}>
     <div className="action-card-head"><h3 id={titleId}>Tindakan yang disarankan</h3><span className={`tag engine ${r.engine_mode}`}>{engineLabel[r.engine_mode]}{fixture ? ' · fixture' : ''}</span></div>
-    <p className="action-text">{r.action || 'Tindakan belum dicantumkan oleh analisis.'}</p>
+    {actions && <div className="action-buttons">{actions}</div>}
+    <ReadableAction text={r.action || 'Tindakan belum dicantumkan oleh analisis.'} context={context} onEvidence={onEvidence}/>
     <dl className="action-facts">
       <div><dt><Icon name="user" size={16}/>Penanggung jawab</dt><dd><OwnerLabel id={r.owner_id} context={context} onEvidence={onEvidence}/></dd></div>
       <div><dt><Icon name="target" size={16}/>Target langkah berikutnya</dt><dd>{r.milestone || 'Belum ditentukan oleh analisis.'}</dd></div>
@@ -35,7 +65,6 @@ export function ActionSummary({ recommendation: r, context, fixture, onEvidence,
       <TextList items={r.approvals_needed} empty=""/>
     </div> : <p className="approval-line"><Icon name="info" size={16}/><span><strong>Persetujuan yang diperlukan:</strong> tidak ada yang dicantumkan. Ini tidak berarti tindakan sudah disetujui.</span></p>}
     {!!specific.length && <div className="check-box"><h4><Icon name="info" size={17}/>Yang masih perlu dipastikan</h4><TextList items={specific} empty=""/></div>}
-    {actions && <div className="action-buttons">{actions}</div>}
   </section>;
 }
 
@@ -58,7 +87,7 @@ export function RecommendationSources({ ids, context, onEvidence }: { ids: strin
         <span className="evidence-item-head"><span className="tag">{kind}</span><span className="muted">{dateLabel(e.date)}</span></span>
         <strong>{title}</strong>
         {meta?.message && <span className="evidence-quote">“{meta.message}”</span>}
-        <span className="evidence-item-foot"><span className="id-chip">{e.source_id}</span><span className="link-text">Buka bukti <Icon name="arrow" size={14}/></span></span>
+        <span className="evidence-item-foot"><span className="muted small">Record asli</span><span className="link-text">Buka bukti <Icon name="arrow" size={14}/></span></span>
       </button></li>;
     })}</ul>
     {records.length > size && <div className="pagination"><button disabled={!page} onClick={() => setPage(p => p - 1)}>Bukti sebelumnya</button><span>{page * size + 1}–{Math.min((page + 1) * size, records.length)} dari {records.length}</span><button disabled={(page + 1) * size >= records.length} onClick={() => setPage(p => p + 1)}>Bukti berikutnya</button></div>}
@@ -69,13 +98,13 @@ function Precedent({ decision, context, onEvidence }: { decision: Record<string,
   const text = (value: unknown) => typeof value === 'string' || typeof value === 'number' ? String(value) : 'Tidak dicantumkan';
   const id = text(decision.decision_id);
   const records = context.evidence.filter(e => e.source_id === id);
-  return <article className="precedent">
-    <div className="precedent-head"><strong>{id}</strong><span className="tag">{text(decision.keputusan)}</span><span>{text(decision.nilai)}</span></div>
+  return <details className="precedent">
+    <summary className="precedent-head"><strong>{id}</strong><span className="tag">{text(decision.keputusan)}</span><span>{text(decision.nilai)}</span></summary>
     <p>{text(decision.alasan)}</p>
     <dl className="precedent-facts"><div><dt>Tanggal</dt><dd>{text(decision.tanggal)}</dd></div><div><dt>Akun / deal</dt><dd>{text(decision.account_id)} / {text(decision.deal_id)}</dd></div><div><dt>Pemutus waktu itu</dt><dd>{text(decision.diputuskan_oleh)}</dd></div></dl>
     <div className="inline-actions">{records.map(e => <button className="link-button" key={e.id} onClick={() => onEvidence(e.id)}>Buka record {e.source_id}</button>)}</div>
     <details className="raw-source"><summary>Seluruh field keputusan</summary><pre>{JSON.stringify(decision, null, 2)}</pre></details>
-  </article>;
+  </details>;
 }
 export function PrecedentList({ recommendation: r, context, onEvidence }: { recommendation: Recommendation; context: DealContext; onEvidence: OpenEvidence }) {
   const referenced = new Set(r.precedent_ids);
