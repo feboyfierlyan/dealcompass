@@ -25,14 +25,14 @@ async function request<T>(path: string, signal: AbortSignal, valid: (v: unknown)
     const response = await fetch(path, { method, signal: controller.signal, headers: { Accept: 'application/json' } });
     if (!response.ok) throw new ApiError(response.status, `Layanan mengembalikan HTTP ${response.status}.`);
     let data: unknown;
-    try { data = await response.json(); } catch { throw new ApiError(502, 'Respons layanan bukan JSON yang valid.'); }
-    if (!valid(data)) throw new ApiError(502, 'Respons layanan belum sesuai kontrak data v1.');
+    try { data = await response.json(); } catch { throw new ApiError(502, 'The service response is not valid JSON.'); }
+    if (!valid(data)) throw new ApiError(502, 'The service response does not match the v1 data contract.');
     return data;
   } catch (error) {
-    if (signal.aborted) throw new DOMException('Dibatalkan', 'AbortError');
-    if (timedOut) throw new ApiError(408, 'Layanan belum merespons dalam 20 detik. Coba lagi.');
+    if (signal.aborted) throw new DOMException('Cancelled', 'AbortError');
+    if (timedOut) throw new ApiError(408, 'The service did not respond within 20 seconds. Try again.');
     if (error instanceof ApiError) throw error;
-    throw new ApiError(0, 'Koneksi ke layanan terputus. Periksa koneksi lalu coba lagi.');
+    throw new ApiError(0, 'Connection lost. Check your connection and retry.');
   } finally {
     clearTimeout(timer);
     signal.removeEventListener('abort', abort);
@@ -43,18 +43,18 @@ export const liveApi: DealApi = {
   diagnostics: signal => request('/api/pipeline/initial-analysis', signal, isPipelineDiagnostic),
   diagnostic: async (id, signal) => {
     const data = await request(`/api/deals/${encodeURIComponent(id)}/initial-analysis`, signal, isDealDiagnostic);
-    if (data.deal_id !== id) throw new ApiError(502, 'Diagnostic yang diterima tidak sesuai deal yang dipilih.');
+    if (data.deal_id !== id) throw new ApiError(502, 'The findings do not match the selected deal.');
     return data;
   },
   list: signal => request('/api/deals', signal, isDealList),
   context: async (id, signal) => {
     const data = await request(`/api/deals/${encodeURIComponent(id)}`, signal, isContext);
-    if (data.deal.deal_id !== id) throw new ApiError(502, 'Detail yang diterima tidak sesuai deal yang dipilih.');
+    if (data.deal.deal_id !== id) throw new ApiError(502, 'The detail response does not match the selected deal.');
     return data;
   },
   analyze: async (id, signal) => {
     const data = await request(`/api/deals/${encodeURIComponent(id)}/analyze`, signal, isRecommendation, 'POST');
-    if (data.deal_id !== id) throw new ApiError(502, 'Analisis yang diterima tidak sesuai deal yang dipilih.');
+    if (data.deal_id !== id) throw new ApiError(502, 'The analysis does not match the selected deal.');
     return data;
   },
 };

@@ -2,6 +2,32 @@
 
 Pelaksana tugas redesign: Ical, atas penugasan pengguna/Main; area frontend sebelumnya dikerjakan Boy.
 
+## Current update — corporate English desktop, 2026-10-10 02:13 WIB
+
+**READY_FOR_REVIEW** — Main/Codex implementing the user's next design request in
+`boy/corporate-english-dashboard`, based on `origin/main` 805393f. PR #29 and #30 were
+already merged; the older sections below are historical records, not this branch's status.
+
+- Functions completed: English navigation/errors/planning; reviewed exact-string English
+  translations for the five priority recommendations; original payload disclosure and
+  original-language appendix in copied plans; corporate dark tokens, flat queue/detail,
+  evidence rows, graph, inspector and dialog; tab/hover/dialog motion with reduced-motion.
+- Removed duplicate sidebar methodology. It remains under Context graph → Priority methodology.
+- Mobbin MCP research: Linear dark list and Attio record detail, four screens; citations,
+  observations, scope and limits in `frontend/UX_CORPORATE_RESEARCH.md`.
+- Contract/dependencies: unchanged. No backend, dataset, ranking, approval or Jev changes.
+- Validation: 47 compiled component/API tests + 31 module tests + 2 translation-integrity
+  tests passed (80 total). Production build passed. Rules-only test backend on port 8001;
+  no paid Jev request. Desktop browser verification at 1440×900 and 1280×720, source I0335
+  → graph; P02 approval dialog; keyboard Tab/Shift+Tab wrap and Escape focus restoration.
+- 1280 viewport: document scrollWidth = clientWidth = 1280; primary action bottom 626 px.
+- Evidence screenshots: `frontend/tests/screenshots/corporate-*.png`.
+- Limits/blockers: no blocking issue found. Original quotes, methodology and unreviewed
+  service text retain their source language; unknown strings are not guessed. No human
+  usability study, full accessibility audit, mobile validation or live Jev test in this task.
+- Next task: review this new PR and rehearse the three-step sales flow with a teammate.
+  Do not mark recommendations approved merely because a plan was prepared/copied.
+
 ## Task dan status
 **Redesign UI/UX frontend untuk sales non-teknis: READY_FOR_REVIEW.**
 Fondasi Ical (GitHub IXALS)/Claude Code; WIP 3b683dd dilanjutkan Main/Codex atas instruksi

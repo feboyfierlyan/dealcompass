@@ -4,15 +4,15 @@
 import type { DealContext, Evidence, EvidenceType, GraphNode, Recommendation } from './contracts';
 import type { EvidencePath, PriorityItem } from './phase3';
 
-export const priorityKindLabel = { acceleration: 'Percepat tindak lanjut', discovery: 'Lengkapi informasi' } as const;
-export const engineLabel = { rules: 'Analisis berbasis aturan', jev: 'Analisis dengan Jev', replay: 'Rekaman analisis (replay)' } as const;
-export const evidenceKindLabel: Record<EvidenceType, string> = { direct: 'Langsung dari data', inferred: 'Dugaan dari hubungan data' };
+export const priorityKindLabel = { acceleration: 'Follow up', discovery: 'Needs discovery' } as const;
+export const engineLabel = { rules: 'Rules-based analysis', jev: 'Jev analysis', replay: 'Recorded analysis (replay)' } as const;
+export const evidenceKindLabel: Record<EvidenceType, string> = { direct: 'Direct from source', inferred: 'Inferred from relationships' };
 
 export function compactRupiah(value: number): string {
-  const format = (n: number) => n.toLocaleString('id-ID', { maximumFractionDigits: 1 });
-  if (value >= 1e9) return `Rp${format(value / 1e9)} M`;
-  if (value >= 1e6) return `Rp${format(value / 1e6)} jt`;
-  return `Rp${value.toLocaleString('id-ID')}`;
+  const format = (n: number) => n.toLocaleString('en-GB', { maximumFractionDigits: 1 });
+  if (value >= 1e9) return `Rp${format(value / 1e9)}B`;
+  if (value >= 1e6) return `Rp${format(value / 1e6)}M`;
+  return `Rp${value.toLocaleString('en-GB')}`;
 }
 
 /** Desktop shows the first API priority until the user picks; a valid user choice is never overridden. */
@@ -79,12 +79,12 @@ export function employeeFromContext(context: DealContext | null, id: string | nu
 }
 
 const FILE_LABEL: Record<string, string> = {
-  'interactions.jsonl': 'Interaksi', 'decision_log.csv': 'Keputusan', 'crm_deals.csv': 'Data deal', 'crm_accounts.csv': 'Data akun',
-  'crm_contacts.csv': 'Kontak', 'contact_employment_history.csv': 'Riwayat kerja', 'employees.csv': 'Karyawan', 'features.csv': 'Fitur',
-  'feature_usage_monthly.csv': 'Pemakaian fitur bulanan', 'product_usage_daily.csv': 'Ringkasan pemakaian harian', 'support_tickets.csv': 'Tiket dukungan',
-  'contracts_billing.csv': 'Kontrak', 'outlets.csv': 'Outlet', 'bugs.csv': 'Bug', 'releases.csv': 'Rilis',
+  'interactions.jsonl': 'Interaction', 'decision_log.csv': 'Decision', 'crm_deals.csv': 'Deal data', 'crm_accounts.csv': 'Account data',
+  'crm_contacts.csv': 'Contact', 'contact_employment_history.csv': 'Employment history', 'employees.csv': 'Employee', 'features.csv': 'Feature',
+  'feature_usage_monthly.csv': 'Monthly feature usage', 'product_usage_daily.csv': 'Daily usage summary', 'support_tickets.csv': 'Support ticket',
+  'contracts_billing.csv': 'Contract', 'outlets.csv': 'Outlet', 'bugs.csv': 'Bug', 'releases.csv': 'Release',
 };
-const INTERACTION_LABEL: Record<string, string> = { email: 'Email', email_internal: 'Email internal', catatan_meeting: 'Catatan meeting' };
+const INTERACTION_LABEL: Record<string, string> = { email: 'Email', email_internal: 'Internal email', catatan_meeting: 'Meeting note' };
 
 /** Human heading for a record, built only from fields already in the record. Falls back to IDs. */
 export function evidenceTitle(evidence: Evidence): { kind: string; title: string } {
@@ -103,7 +103,7 @@ export function evidenceTitle(evidence: Evidence): { kind: string; title: string
     case 'crm_deals.csv': return { kind, title: join(t('deal_id') ?? evidence.source_id, t('stage')) };
     case 'feature_usage_monthly.csv': {
       const users = data?.pengguna_aktif;
-      const count = typeof users === 'string' && users.trim() !== '' ? `${users} pengguna aktif` : typeof users === 'number' ? `${users} pengguna aktif` : 'pengguna aktif tidak tercatat';
+      const count = typeof users === 'string' && users.trim() !== '' ? `${users} active users` : typeof users === 'number' ? `${users} active users` : 'active users not recorded';
       return { kind, title: join(t('feature_id'), t('bulan'), t('account_id'), count) };
     }
     default: return { kind, title: evidence.source_id };
@@ -118,30 +118,30 @@ export function interactionMeta(evidence: Evidence) {
 }
 
 const RELATION: Record<string, string> = {
-  deal_for: 'deal untuk akun', interaction_for: 'interaksi dengan akun', owned_by: 'dipegang oleh', sent_to: 'dikirim ke',
-  sent_from: 'dikirim dari', current_email_identity: 'alamat email milik', possible_historical_email_identity: 'kemungkinan alamat email lama milik',
-  participant: 'diikuti oleh', replies_to: 'membalas', mentions: 'menyebut', possibly_mentions_feature: 'kemungkinan menyebut fitur',
-  decision_for: 'keputusan untuk akun', decision_on_deal: 'keputusan untuk deal', requested_by: 'diminta oleh', decided_by: 'diputuskan oleh',
-  supported_by: 'didukung interaksi', promises_feature: 'menjanjikan fitur', employed_at: 'bekerja di',
-  overlapping_employment: 'pernah bekerja di organisasi dan periode yang sama dengan', current_crm_account: 'tercatat di akun',
-  crm_champion: 'champion tercatat', contract_for: 'kontrak untuk akun', contract_decision: 'kontrak berdasarkan keputusan',
-  outlet_of: 'outlet milik', feature_usage_for: 'pemakaian fitur oleh akun', measures_feature: 'mengukur pemakaian fitur',
-  usage_for: 'ringkasan pemakaian akun', observed_version: 'memakai versi aplikasi', ticket_for: 'tiket dari akun',
-  reported_at: 'dilaporkan di outlet', reported_by: 'dilaporkan oleh', linked_bug: 'terkait bug', affects_feature: 'memengaruhi fitur',
-  affects_version: 'memengaruhi versi',
+  deal_for: 'deal for account', interaction_for: 'interaction with account', owned_by: 'owned by', sent_to: 'sent to',
+  sent_from: 'sent from', current_email_identity: 'email belongs to', possible_historical_email_identity: 'possible former email of',
+  participant: 'attended by', replies_to: 'replies to', mentions: 'mentions', possibly_mentions_feature: 'possibly mentions feature',
+  decision_for: 'decision for account', decision_on_deal: 'decision for deal', requested_by: 'requested by', decided_by: 'decided by',
+  supported_by: 'supported by interaction', promises_feature: 'promises feature', employed_at: 'employed at',
+  overlapping_employment: 'overlapping employment with', current_crm_account: 'listed under account',
+  crm_champion: 'recorded champion', contract_for: 'contract for account', contract_decision: 'contract based on decision',
+  outlet_of: 'outlet of', feature_usage_for: 'feature usage by account', measures_feature: 'measures feature usage',
+  usage_for: 'account usage summary', observed_version: 'uses version', ticket_for: 'ticket from account',
+  reported_at: 'reported at outlet', reported_by: 'reported by', linked_bug: 'linked bug', affects_feature: 'affects feature',
+  affects_version: 'affects version',
 };
 /** Plain-language name of a relation. The original relation code is always shown next to it. */
 export function relationPhrase(relation: string): string {
   if (RELATION[relation]) return RELATION[relation];
-  if (relation.startsWith('candidate_precedent_')) return 'keputusan terdahulu yang mungkin relevan';
-  if (relation.startsWith('related_account_')) return 'akun pelanggan yang mungkin relevan';
+  if (relation.startsWith('candidate_precedent_')) return 'potentially relevant past decision';
+  if (relation.startsWith('related_account_')) return 'potentially relevant customer account';
   return relation.replaceAll('_', ' ');
 }
 
 const NODE_TYPE: Record<string, string> = {
-  deal: 'Deal', account: 'Akun', contact: 'Kontak', employee: 'Karyawan', feature: 'Fitur', bug: 'Bug', outlet: 'Outlet',
-  interaction: 'Interaksi', decision: 'Keputusan', contract: 'Kontrak', ticket: 'Tiket', release: 'Rilis', organization: 'Organisasi',
-  email: 'Alamat email', feature_usage: 'Pemakaian fitur', usage_summary: 'Ringkasan pemakaian',
+  deal: 'Deal', account: 'Account', contact: 'Contact', employee: 'Employee', feature: 'Feature', bug: 'Bug', outlet: 'Outlet',
+  interaction: 'Interaction', decision: 'Decision', contract: 'Contract', ticket: 'Ticket', release: 'Release', organization: 'Organization',
+  email: 'Email address', feature_usage: 'Feature usage', usage_summary: 'Usage summary',
 };
 export const nodeTypeLabel = (type: string) => NODE_TYPE[type] ?? type;
 /** A deal node's label is its ID; name it after the account so the path reads naturally. */

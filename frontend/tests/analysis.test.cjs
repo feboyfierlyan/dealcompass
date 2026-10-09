@@ -5,6 +5,7 @@ const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const build = process.env.ANALYSIS_TEST_BUILD;
 assert.ok(build, 'Compile frontend components and set ANALYSIS_TEST_BUILD first');
+const { englishText } = require(`${build}/lib/english.js`);
 const { ActionTab, ReasonsTab } = require(path.join(build, 'components/DealTabs.js'));
 const { employeeFromContext, recommendationView, splitUnknowns } = require(path.join(build, 'lib/present.js'));
 const { explanationGroups, evidenceGraphLinks } = require(path.join(build, 'lib/analysisView.js'));
@@ -45,17 +46,17 @@ for (const [id, acceptance] of cases) test(`${id}: real rules response renders i
   // Guided overview precedes the full unmodified proposal; business gates remain accessible and are included in the plan.
   const order=(markup,headings)=>{for(let i=1;i<headings.length;i++) assert.ok(markup.indexOf(headings[i-1])>=0&&markup.indexOf(headings[i-1])<markup.indexOf(headings[i]),`${headings[i-1]} before ${headings[i]}`);};
   const specific=splitUnknowns(r,context).specific;
-  order(action,['Langkah berikutnya','Siapkan tindak lanjut','Rincian tindakan','Tindakan yang disarankan',escape(r.action),'Target langkah berikutnya','Lihat alasan &amp; bukti']);
-  for(const text of specific) assert.ok(action.includes(escape(text)),`Analysis-specific unknown stays next to the action: ${text.slice(0,60)}`);
-  for(const text of r.approvals_needed) assert.ok(action.includes(escape(text)),'Approvals stay in layer 1');
-  if(!r.approvals_needed.length) assert.ok(action.includes('Ini tidak berarti tindakan sudah disetujui.'));
+  order(action,['Next step','Prepare follow-up','Action details','Recommended action',escape(r.action),'Expected outcome','View evidence']);
+  for(const text of specific) assert.ok(action.includes(escape(englishText(text))),`Analysis-specific unknown stays next to the action: ${text.slice(0,60)}`);
+  for(const text of r.approvals_needed) assert.ok(action.includes(escape(englishText(text))),'Approvals stay in layer 1');
+  if(!r.approvals_needed.length) assert.ok(action.includes('This does not mean the action is approved.'));
   // The precedent section only appears when the data holds candidate decisions; an empty "none" block is not rendered.
-  order(reasons,['Bukti yang dirujuk saran ini',...(r.precedent_ids.length||context.candidate_decisions.length?['Keputusan terdahulu']:[]),'Penjelasan analisis','Informasi yang belum diketahui']);
-  assert.ok(action.includes('Analisis berbasis aturan')); assert.ok(!html.includes('Jev live'));
-  assert.ok(action.includes('Hasil analisis ulang yang Anda minta pukul 10.00.00 · urutan prioritas tidak dihitung ulang'));
+  order(reasons,['Cited sources',...(r.precedent_ids.length||context.candidate_decisions.length?['Historical decisions']:[]),'Analysis reasoning','Unknown information']);
+  assert.ok(action.includes('Rules-based analysis')); assert.ok(!html.includes('Jev live'));
+  assert.ok(action.includes('Requested re-analysis at 10.00.00 · priority order unchanged'));
   const owner=employeeFromContext(context,r.owner_id);
   if(owner) assert.ok(action.includes(escape(owner.name))&&action.includes(`>${r.owner_id}<`),'Owner name only from the employees.csv record, ID kept');
-  else if(r.owner_id) assert.ok(action.includes(`ID karyawan ${r.owner_id}`),'Owner without a verifiable name stays an ID');
+  else if(r.owner_id) assert.ok(action.includes(`Employee ID ${r.owner_id}`),'Owner without a verifiable name stays an ID');
   const index=indexGraph(context);
   for(const evidenceId of r.evidence_ids) {
     const record=context.evidence.find(e=>e.id===evidenceId); assert.ok(record);

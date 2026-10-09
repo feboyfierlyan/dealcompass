@@ -7,6 +7,7 @@ const React = require('react');
 const { renderToStaticMarkup: render } = require('react-dom/server');
 const build = process.env.REDESIGN_TEST_BUILD;
 assert.ok(build, 'Compile DealTabs, EvidencePanel and ContextGraph; set REDESIGN_TEST_BUILD');
+const { englishText } = require(`${build}/lib/english.js`);
 const { ActionTab } = require(path.join(build, 'components/DealTabs.js'));
 const { EvidenceDrawer, EvidenceInspector } = require(path.join(build, 'components/EvidencePanel.js'));
 const { ContextGraph } = require(path.join(build, 'components/ContextGraph.js'));
@@ -42,7 +43,7 @@ const acceptance = {
   'DL-002': [/Jangan menawarkan atau menjanjikan diskon 20%/, /VP Sales \(E01\): putuskan dan catat di decision_log permintaan diskon 20%/],
   'DL-003': [/memeriksa pengalaman terbaru/, /menanyakan kesediaan serta izin kontak/],
   'DL-004': [/memeriksa pengalaman terbaru/, /menanyakan kesediaan serta izin kontak/],
-  'DL-005': [/menjadwalkan discovery/, /bukan berarti tidak ada risiko/, /Ini bukan tanda deal gagal, kalah, atau bebas risiko\./],
+  'DL-005': [/menjadwalkan discovery/, /bukan berarti tidak ada risiko/, /Missing discovery does not mean the deal is lost or risk-free\./],
 };
 
 test('REAL HTTP guided layer: goal and gate precede preparation, full API action and evidence remain available', () => {
@@ -50,44 +51,44 @@ test('REAL HTTP guided layer: goal and gate precede preparation, full API action
     const context = joined(item.deal_id), r = item.recommendation;
     const { view, html } = action({ id: item.deal_id, priority: item, context });
     assert.equal(view.source, 'priority');
-    const steps = ['Langkah berikutnya', 'Target', 'class="move-boundary"', 'Siapkan tindak lanjut', 'Rincian tindakan', 'Tindakan yang disarankan', escape(r.action), 'Target langkah berikutnya', 'Lihat alasan &amp; bukti'];
+    const steps = ['Next step', 'Target', 'class="move-boundary"', 'Prepare follow-up', 'Action details', 'Recommended action', escape(r.action), 'Expected outcome', 'View evidence'];
     for (let i = 1; i < steps.length; i++) assert.ok(html.indexOf(steps[i - 1]) >= 0 && html.indexOf(steps[i - 1]) < html.indexOf(steps[i]), `${item.deal_id}: ${steps[i - 1]} before ${steps[i]}`);
     for (const pattern of acceptance[item.deal_id]) assert.match(html, pattern, `${item.deal_id} acceptance`);
     for (const label of ['Status request sesi', 'GET ', 'POST ', 'Tier acceleration', 'tier acceleration', 'Status konteks CRM']) assert.ok(!html.includes(label), `${item.deal_id}: no technical label ${label}`);
     const owner = employeeFromContext(context, r.owner_id);
     assert.ok(owner, `${item.deal_id}: owner record exists in employees.csv`);
     assert.ok(html.includes(escape(owner.name)) && html.includes(`>${r.owner_id}<`));
-    if (!r.approvals_needed.length) assert.ok(html.includes('Ini tidak berarti tindakan sudah disetujui.'), `${item.deal_id}: empty approvals are not approval`);
+    if (!r.approvals_needed.length) assert.ok(html.includes('This does not mean the action is approved.'), `${item.deal_id}: empty approvals are not approval`);
   }
 });
 
 test('MOCK states: loading and failed requests never present a recommendation as a success', () => {
   const item = ranking.items.find(i => i.deal_id === 'DL-002'), context = joined('DL-002');
   const loading = action({ id: 'DL-002', priority: null, context, rankingState: 'loading' }).html;
-  assert.ok(loading.includes('Menyiapkan saran dari urutan prioritas')); assert.ok(!loading.includes('Tindakan yang disarankan'));
+  assert.ok(loading.includes('Preparing the priority recommendation')); assert.ok(!loading.includes('Recommended action'));
   const failedSession = { status: 'failed', error: new ApiError(503, 'MOCK 503 untuk uji.'), receivedAt: null };
   const failed = action({ id: 'DL-002', priority: null, context, rankingState: 'error', snapshot: { status: 'failed', data: null }, session: failedSession, preferred: 'session' }).html;
-  assert.ok(failed.includes('Analisis belum dapat dimuat') && failed.includes('MOCK 503 untuk uji.') && failed.includes('Coba lagi'));
-  assert.ok(failed.includes('Urutan prioritas gagal dimuat'));
-  assert.ok(!failed.includes('Tindakan yang disarankan') && !failed.includes('Jalankan analisis untuk deal ini'), 'One recovery action, no result');
+  assert.ok(failed.includes('Analysis could not be loaded') && failed.includes('MOCK 503 untuk uji.') && failed.includes('Retry'));
+  assert.ok(failed.includes('Priorities could not be loaded'));
+  assert.ok(!failed.includes('Recommended action') && !failed.includes('Analyze this deal'), 'One recovery action, no result');
   const running = action({ id: 'DL-002', priority: item, context, snapshot: { status: 'running', data: null }, session: { status: 'running', error: null, receivedAt: null }, preferred: 'session' }).html;
-  assert.ok(running.includes(escape(item.recommendation.action)) && running.includes('Dari urutan prioritas'));
-  assert.ok(running.includes('Analisis ulang sedang berjalan. Saran yang tampil belum berubah.'));
+  assert.ok(running.includes(escape(item.recommendation.action)) && running.includes('From priority ranking'));
+  assert.ok(running.includes('Analysis is running. The displayed recommendation has not changed.'));
   const retryFailed = action({ id: 'DL-002', priority: item, context, snapshot: { status: 'failed', data: null }, session: failedSession, preferred: 'session' }).html;
-  assert.ok(retryFailed.includes('Analisis ulang belum dapat dimuat') && !retryFailed.includes('Hasil analisis ulang yang Anda minta'));
+  assert.ok(retryFailed.includes('Re-analysis could not be loaded') && !retryFailed.includes('Requested re-analysis'));
 });
 
 test('MOCK session result: an explicit re-analysis is labelled with its own mode and time; the ranking version stays one click away', () => {
   const item = ranking.items.find(i => i.deal_id === 'DL-004'), context = joined('DL-004');
-  const posted = { ...structuredClone(item.recommendation), action: 'MOCK hasil analisis ulang DL-004', engine_mode: 'replay' };
+  const posted = { ...structuredClone(item.recommendation), action: 'MOCK new analysis DL-004', engine_mode: 'replay' };
   const { view, html } = action({ id: 'DL-004', priority: item, context, snapshot: { status: 'received', data: posted }, session: { status: 'received', error: null, receivedAt: '10.00.00' }, preferred: 'session' });
   assert.equal(view.source, 'session');
-  assert.ok(html.includes('MOCK hasil analisis ulang DL-004') && !html.includes(escape(item.recommendation.action)));
-  assert.ok(html.includes('Rekaman analisis (replay)') && !html.includes('Analisis dengan Jev'));
-  assert.ok(html.includes('Hasil analisis ulang yang Anda minta pukul 10.00.00 · urutan prioritas tidak dihitung ulang'));
-  assert.ok(html.includes('Saran dari urutan prioritas') && html.includes('Hasil analisis ulang · 10.00.00'));
+  assert.ok(html.includes('MOCK new analysis DL-004') && !html.includes(escape(item.recommendation.action)));
+  assert.ok(html.includes('Recorded analysis (replay)') && !html.includes('Jev analysis'));
+  assert.ok(html.includes('Requested re-analysis at 10.00.00 · priority order unchanged'));
+  assert.ok(html.includes('Priority recommendation') && html.includes('New analysis · 10.00.00'));
   const back = action({ id: 'DL-004', priority: item, context, snapshot: { status: 'received', data: posted }, session: { status: 'received', error: null, receivedAt: '10.00.00' }, preferred: 'priority' }).html;
-  assert.ok(back.includes(escape(item.recommendation.action)) && back.includes('Hasil analisis ulang tersedia di Versi &amp; analisis ulang.'));
+  assert.ok(back.includes(escape(item.recommendation.action)) && back.includes('New analysis is available under Versions &amp; re-analysis.'));
 });
 
 test('REAL HTTP evidence drawer: I0348 opens its own record verbatim, closable, with a route to the graph and its original edge', () => {
@@ -96,27 +97,27 @@ test('REAL HTTP evidence drawer: I0348 opens its own record verbatim, closable, 
   assert.ok(record);
   const html = render(React.createElement(EvidenceDrawer, { mode: 'side', titleId: 'drawer-title', onClose: noop },
     React.createElement(EvidenceInspector, { context, selection: { kind: 'evidence', id: record.id }, titleId: 'drawer-title', onGraph: noop })));
-  assert.ok(html.includes('aria-labelledby="drawer-title"') && html.includes('id="drawer-title"') && html.includes('aria-label="Tutup panel bukti"'));
+  assert.ok(html.includes('aria-labelledby="drawer-title"') && html.includes('id="drawer-title"') && html.includes('aria-label="Close evidence panel"'));
   assert.ok(html.includes(escape(evidenceTitle(record).title)) && html.includes(escape(interactionMeta(record).message)));
-  assert.ok(html.includes('>I0348<') && html.includes(escape(record.id)) && html.includes('Tampilkan di peta hubungan: I0348'));
+  assert.ok(html.includes('>I0348<') && html.includes(escape(record.id)) && html.includes('Show in graph: I0348'));
   assert.ok(!html.includes(`<h4>${escape(evidenceTitle(record).title)}</h4>`), 'Single record: the card does not repeat the drawer title');
   const edge = context.graph.edges.find(e => e.source === 'I0348' && e.target === 'P02' && e.relation === 'interaction_for');
   assert.ok(edge);
   const edgeHtml = render(React.createElement(EvidenceInspector, { context, selection: { kind: 'edge', id: edge.id }, titleId: 't', onGraph: noop }));
-  assert.ok(edgeHtml.includes('interaksi dengan akun') && edgeHtml.includes('interaction_for') && edgeHtml.includes('I0348 → P02') && edgeHtml.includes('Langsung dari data'));
+  assert.ok(edgeHtml.includes('interaction with account') && edgeHtml.includes('interaction_for') && edgeHtml.includes('I0348 → P02') && edgeHtml.includes('Direct from source'));
 });
 
 test('REAL HTTP graph proof: priority paths open as a highlighted union within the 24-node cap, edges keep direction', () => {
   for (const id of ['DL-002', 'DL-004']) {
     const item = ranking.items.find(i => i.deal_id === id), context = joined(id);
     const html = render(React.createElement(ContextGraph, { context, selection: null, onSelect: noop, initialPaths: item.evidence_paths }));
-    assert.ok(html.includes(`Menampilkan ${item.evidence_paths.length} jalur data yang mendukung saran`));
+    assert.ok(html.includes(`Showing ${item.evidence_paths.length} supporting paths`));
     const nodes = (html.match(/class="focus-node/g) ?? []).length;
     assert.ok(nodes > 0 && nodes <= 24);
     const pathEdges = new Set(item.evidence_paths.flatMap(path => path.edge_ids));
     assert.equal((html.match(/class="graph-edge [^"]*on-path/g) ?? []).length, pathEdges.size, `${id}: every path edge is drawn and marked`);
     assert.ok(html.includes(`Deal ${escape(context.deal.account_name)}`));
-    for (const edgeId of pathEdges) { const edge = context.graph.edges.find(e => e.id === edgeId); assert.ok(html.includes(`${edge.source} ke ${edge.target}`), `${id}: ${edgeId} keeps source → target`); }
+    for (const edgeId of pathEdges) { const edge = context.graph.edges.find(e => e.id === edgeId); assert.ok(html.includes(`${edge.source} to ${edge.target}`), `${id}: ${edgeId} keeps source → target`); }
   }
 });
 
@@ -142,7 +143,7 @@ test('verified source links preserve original action and negation; unknown IDs s
   const visible = html.split('<details')[0];
   const owner = employeeFromContext(context, 'E07');
   assert.ok(owner && visible.includes(escape(owner.name)));
-  assert.ok(visible.includes('Buka sumber I0348:'));
+  assert.ok(visible.includes('Open source I0348:'));
   assert.ok(visible.includes('Jangan menjanjikan diskon sebelum persetujuan. E999 I9999 tetap belum diketahui.'));
   assert.ok(html.includes(escape(text)), 'Complete original action is still available');
 });
@@ -162,7 +163,7 @@ test('structured evidence reads as source fields; missing is not zero and raw so
   const record = context.evidence.find(e => e.source_file.endsWith('contact_employment_history.csv'));
   assert.ok(record);
   const fields = render(React.createElement(SourceContent, {evidence:record}));
-  assert.ok(fields.includes('<dl') && fields.includes('Organisasi') && fields.includes('Tidak dicantumkan'));
+  assert.ok(fields.includes('<dl') && fields.includes('Organization') && fields.includes('Not provided'));
   const card = render(React.createElement(EvidenceCard, {evidence:record,context,onGraph:noop}));
   assert.ok(card.includes(escape(record.excerpt)), 'Full raw record remains in source details');
   const message = joined('DL-002').evidence.find(e => e.source_id === 'I0348');
@@ -178,29 +179,29 @@ test('REAL HTTP plan export carries the complete action, approval gates, unknown
     const brief = buildFollowUpBrief(r, c, '2026-10-01');
     assert.ok(brief.includes(r.action)); assert.ok(brief.includes(r.milestone));
     assert.ok(brief.includes(c.deal.account_name)); assert.ok(brief.includes('2026-10-01'));
-    assert.ok(brief.includes('Belum dikirim, belum disimpan ke CRM, dan bukan persetujuan.'));
+    assert.ok(brief.includes('Not sent, not saved to CRM, and not approval.'));
     for (const line of [...r.approvals_needed, ...r.unknowns, ...c.unknowns]) assert.ok(brief.includes(line));
     for (const id of r.evidence_ids) { const e = c.evidence.find(x => x.id === id); assert.ok(brief.includes(id)); if (e) assert.ok(brief.includes(e.source_file) && brief.includes(e.source_id)); }
-    if (!r.approvals_needed.length) assert.ok(brief.includes('Ini tidak berarti tindakan sudah disetujui.'));
+    if (!r.approvals_needed.length) assert.ok(brief.includes('This does not mean the action is approved.'));
   }
 });
 test('MOCK presentation titles only translate exact gate values and never carry an old priority title into re-analysis', () => {
   const { taskHeading } = require(path.join(build, 'lib/planning.js'));
   const item = ranking.items.find(x => x.deal_id === 'DL-002');
-  assert.equal(taskHeading(item, 'priority').title, 'Minta keputusan atas diskon');
-  assert.equal(taskHeading(item, 'session').title, 'Siapkan langkah berikutnya');
+  assert.equal(taskHeading(item, 'priority').title, 'Request a discount decision');
+  assert.equal(taskHeading(item, 'session').title, 'Prepare the next step');
   const unknown = { ...item, factors: [{name:'gate_approval_izin',value:'MOCK syarat berbeda'}] };
-  assert.equal(taskHeading(unknown, 'priority').title, 'Siapkan langkah berikutnya');
+  assert.equal(taskHeading(unknown, 'priority').title, 'Prepare the next step');
   assert.equal(taskHeading(unknown, 'priority').note, 'MOCK syarat berbeda');
-  assert.equal(taskHeading(null, 'priority').title, 'Siapkan langkah berikutnya');
+  assert.equal(taskHeading(null, 'priority').title, 'Prepare the next step');
 });
 test('MOCK plan with missing owner, source and target never claims a completed task or available evidence', () => {
   const { buildFollowUpBrief } = require(path.join(build, 'lib/planning.js'));
   const r = { ...ranking.items[0].recommendation, owner_id: null, action: 'MOCK jangan bertindak sebelum konfirmasi.', milestone:'', approvals_needed:[], unknowns:[], evidence_ids:['missing-record'], precedent_ids:[] };
   const brief = buildFollowUpBrief(r, null, null);
-  assert.ok(brief.includes('Belum ditentukan'));
-  assert.ok(brief.includes('missing-record (sumber belum tersedia)'));
-  assert.ok(brief.includes('bukan konfirmasi bebas risiko'));
+  assert.ok(brief.includes('Not specified'));
+  assert.ok(brief.includes('missing-record (source unavailable)'));
+  assert.ok(brief.includes('not confirmation of no risk'));
   assert.ok(brief.includes(r.action));
 });
 
@@ -210,9 +211,9 @@ test('REAL HTTP plan dialog keeps approval and consent text visible while origin
     const c = joined(id), r = ranking.items.find(x => x.deal_id === id).recommendation;
     const html = render(React.createElement(FollowUpPlan, { recommendation:r, context:c, snapshot:'2026-10-01', onClose:noop }));
     assert.ok(html.includes('aria-labelledby=') && html.includes('aria-describedby='));
-    assert.ok(html.includes('Salin rencana') && html.includes('Belum dikirim atau disimpan ke CRM.'));
-    for (const gate of r.approvals_needed) assert.ok(html.indexOf(escape(gate)) < html.indexOf('Teks lengkap &amp; sumber'));
-    if (id === 'DL-004') assert.ok(html.indexOf('kandidat bukan izin') < html.indexOf('Teks lengkap &amp; sumber'));
+    assert.ok(html.includes('Copy plan') && html.includes('Not sent or saved to CRM.'));
+    for (const gate of r.approvals_needed) assert.ok(html.indexOf(escape(englishText(gate))) < html.indexOf('Full text &amp; sources'));
+    if (id === 'DL-004') assert.ok(html.indexOf('a candidate is not permission') < html.indexOf('Full text &amp; sources'));
     assert.ok(html.includes('readOnly=""') && html.includes(escape(r.action)));
   }
 });
@@ -226,7 +227,7 @@ test('compact gates remain visible and never borrow priority conditions for a se
     const gate = html.match(/<details class="move-boundary">([\s\S]*?)<\/details>/)[1];
     assert.ok(gate.includes(`<span>${escape(label)}</span>`));
     assert.ok(gate.indexOf(escape(label)) < gate.indexOf('</summary>'), 'Condition visible while details are closed');
-    assert.equal(gateLabel(item, 'session', []), 'Periksa syarat tindakan');
+    assert.equal(gateLabel(item, 'session', []), 'Review action conditions');
   }
-  assert.equal(gateLabel(null, 'session', ['approval pending']), 'Persetujuan diperlukan');
+  assert.equal(gateLabel(null, 'session', ['approval pending']), 'Approval required');
 });

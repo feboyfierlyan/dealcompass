@@ -6,6 +6,7 @@ const React = require('react');
 const { renderToStaticMarkup: render } = require('react-dom/server');
 const build = process.env.PHASE3_TEST_BUILD;
 assert.ok(build, 'Compile DealTabs, Phase3Panels, api and resource; set PHASE3_TEST_BUILD');
+const { englishText } = require(`${build}/lib/english.js`);
 const p = require(path.join(build, 'lib/phase3.js'));
 const { liveApi } = require(path.join(build, 'lib/api.js'));
 const { createResource } = require(path.join(build, 'lib/resource.js'));
@@ -57,9 +58,9 @@ for (const id of ['DL-001','DL-002','DL-003','DL-004','DL-005']) test(`${id} REA
     React.createElement(DiagnosticPanel,{data:d,onEvidence:noop})));
   const gate = gateSummary(item);
   if (gate) assert.ok(action.includes(escape(gate)),'Ranking gate stays in layer 1');
-  for (const text of [...item.recommendation.approvals_needed,...splitUnknowns(item.recommendation,joined).specific]) assert.ok(action.includes(escape(text)),`Layer 1 keeps approval/unknown: ${text.slice(0,60)}`);
-  assert.ok(action.indexOf('Langkah berikutnya') < action.indexOf('Penanggung jawab') && action.indexOf('Penanggung jawab') < action.indexOf('Siapkan tindak lanjut'));
-  assert.ok(action.includes('Dari urutan prioritas · data per 1 Okt 2026'));
+  for (const text of [...item.recommendation.approvals_needed,...splitUnknowns(item.recommendation,joined).specific]) assert.ok(action.includes(escape(englishText(text))),`Layer 1 keeps approval/unknown: ${text.slice(0,60)}`);
+  assert.ok(action.indexOf('Next step') < action.indexOf('Owner') && action.indexOf('Owner') < action.indexOf('Prepare follow-up'));
+  assert.ok(action.includes('From priority ranking · snapshot 1 Oct 2026'));
   for (const label of ['Status request sesi','GET ranking','POST analisis','Tier acceleration']) assert.ok(!action.includes(label),`No technical label in layer 1: ${label}`);
   for (const text of [...item.rationale,...item.limitations,item.recommendation.action,item.recommendation.milestone,...item.recommendation.approvals_needed,...item.recommendation.unknowns,...item.recommendation.precedent_comparison,...d.boundaries]) assert.ok(html.includes(escape(text)),text);
   for (const f of [...d.findings,...d.reference_candidates]) for (const text of [f.fact,f.interpretation,...f.missing_information,...f.follow_up_implication]) assert.ok(html.includes(escape(text)),text);
@@ -76,13 +77,13 @@ for (const id of ['DL-001','DL-002','DL-003','DL-004','DL-005']) test(`${id} REA
   if(id==='DL-002') { assert.match(item.recommendation.approvals_needed.join(' '),/VP Sales.*20%.*Belum ada keputusan sah/); assert.ok(html.includes('DL-002 → P02 ← I0348')); }
   if(id==='DL-003'||id==='DL-004') { assert.match(item.recommendation.action,/memeriksa pengalaman terbaru.*menanyakan kesediaan.*izin kontak.*sebelum perkenalan/); }
   if(id==='DL-004') assert.match(item.recommendation.precedent_comparison.join(' '),/overlap tidak membuktikan saling kenal/);
-  if(id==='DL-005') { assert.equal(item.priority_kind,'discovery'); assert.equal(item.analysis_status,'insufficient_evidence'); assert.equal(item.factors.find(f => f.name==='skor_prioritas').value,null); assert.ok(html.includes('Belum tersedia (null)')); assert.ok(action.includes('Ini bukan tanda deal gagal, kalah, atau bebas risiko.')); }
-  else assert.ok(!action.includes('Ini bukan tanda deal gagal'),'Discovery wording only for discovery items');
+  if(id==='DL-005') { assert.equal(item.priority_kind,'discovery'); assert.equal(item.analysis_status,'insufficient_evidence'); assert.equal(item.factors.find(f => f.name==='skor_prioritas').value,null); assert.ok(html.includes('Unavailable (null)')); assert.ok(action.includes('Missing discovery does not mean the deal is lost or risk-free.')); }
+  else assert.ok(!action.includes('This does not mean the deal has failed'),'Discovery wording only for discovery items');
 });
 test('REAL HTTP: not_assessed reason/nulls and graph identity are preserved', () => {
   const html=render(React.createElement(Statistics,{data:diagnostic,onEvidence:()=>{}}));
   assert.ok(html.includes(escape(diagnostic.statistical_assessment.reason)));
-  assert.ok(html.includes('not_assessed')); assert.ok(html.includes('Belum diketahui / tidak tersedia'));
+  assert.ok(html.includes('not_assessed')); assert.ok(html.includes('Unknown / unavailable'));
   for(const item of ranking.items) {
     const c=contexts.get(item.deal_id), merged=p.enrichContext(c,item);
     assert.equal(merged.graph,c.graph);
@@ -94,7 +95,7 @@ test('SYNTHETIC registry: source outside graph stays readable without inventing 
   item.evidence.push(extra);item.evidence_ids.push(extra.id);
   const joined=p.enrichContext(context,item);assert.deepEqual(joined.evidence.find(e=>e.id===extra.id),extra);
   assert.deepEqual(evidenceGraphLinks(joined,extra.id),{node:null,edges:[]});assert.equal(joined.graph,context.graph);
-  item.evidence.push({...context.evidence[0],excerpt:'conflicting'});assert.throws(()=>p.enrichContext(context,item),/Konflik/);
+  item.evidence.push({...context.evidence[0],excerpt:'conflicting'});assert.throws(()=>p.enrichContext(context,item),/Conflicting/);
 });
 test('CORRUPTED PAYLOAD: incomplete/duplicate ranks, unknown enum, nonfinite values and wrong recommendation rejected wholesale', () => {
   for(const mutate of [x=>x.items.pop(),x=>x.items[1].rank=x.items[0].rank,x=>x.items[0].rank=6,x=>x.items[0].rank=1.5,x=>x.items[1].deal_id=x.items[0].deal_id,x=>x.items[0].priority_kind='closing',x=>x.items[0].analysis_status='approved',x=>x.engine_mode='jev',x=>x.items[0].factors[0].value=Infinity,x=>delete x.methodology.ordered_rules,x=>x.items[0].recommendation.deal_id='wrong',x=>x.items[0].recommendation.evidence_ids.push('missing')]) {
@@ -114,7 +115,7 @@ test('CORRUPTED PAYLOAD: diagnostic required metrics, enums, registry and statis
 test('CORRUPTED SOURCES: equal IDs deduplicate independent of field order; conflicting content/provenance is rejected without mutation', () => {
   const e=ranking.items[0].evidence[0], reversed=Object.fromEntries(Object.entries(e).reverse());
   assert.deepEqual(p.mergeEvidence([e],[reversed]),[e]);
-  for(const patch of [{excerpt:'different'},{evidence_type:'inferred'},{source_file:'different'}]) assert.throws(()=>p.mergeEvidence([e],[{...e,...patch}]),/Konflik/);
+  for(const patch of [{excerpt:'different'},{evidence_type:'inferred'},{source_file:'different'}]) assert.throws(()=>p.mergeEvidence([e],[{...e,...patch}]),/Conflicting/);
   const invalid=clone(ranking);invalid.items[0].evidence.push({...e,excerpt:'different'});assert.equal(p.isPriorities(invalid),false);
 });
 test('CORRUPTED PATHS: reverse traversal preserves arrows; fake/shortcut/disconnected edges and missing provenance rejected', () => {

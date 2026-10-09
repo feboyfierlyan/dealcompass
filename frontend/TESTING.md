@@ -251,3 +251,19 @@ Bukti gambar: `tests/screenshots/mixpanel-overview-1440.png`, `mixpanel-overview
 `mixpanel-graph-1440.png`, `mixpanel-plan-p02-1280.png`. Animasi opacity diganti transform
 untuk menghindari konten transparan pada tab background. Clipboard OS tidak diuji ulang;
 uji kegunaan manusia, audit a11y penuh, mobile dan Jev live belum diklaim.
+
+## Corporate English desktop — 2026-10-10 02:13 WIB
+
+Current visual evidence and research: `UX_CORPORATE_RESEARCH.md`. UI copy expectations in
+the component tests now use English; source/API assertions retain original text. Run the
+existing 47 compiled component/API tests and 31 module tests described above, plus:
+
+```sh
+node --test frontend/tests/english.test.mjs
+npm --prefix frontend run build
+```
+
+80 tests and production build passed. Browser QA was performed through the desktop browser
+tool at 1440×900 and 1280×720 using `tests/viewport.html`. The legacy Playwright browser.mjs
+script was not run or updated in this task; it still contains pre-redesign selectors.
+No live paid analysis calls were made.

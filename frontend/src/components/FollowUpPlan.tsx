@@ -1,3 +1,4 @@
+import { englishText } from '../lib/english';
 import { useEffect, useId, useRef, useState } from 'react';
 import type { DealContext, Recommendation } from '../lib/contracts';
 import { employeeFromContext, splitUnknowns } from '../lib/present';
@@ -13,7 +14,7 @@ export function FollowUpPlan({ recommendation, context, snapshot, onClose }: {
   const [copy, setCopy] = useState<'idle' | 'pending' | 'copied' | 'failed'>('idle');
   const brief = buildFollowUpBrief(recommendation, context, snapshot);
   const owner = employeeFromContext(context, recommendation.owner_id);
-  const readable = recommendation.action.replace(/\bE\d{2,}\b/g, id => employeeFromContext(context, id)?.name ?? id);
+  const readable = englishText(recommendation.action).replace(/\bE\d{2,}\b/g, id => employeeFromContext(context, id)?.name ?? id);
   const unknowns = splitUnknowns(recommendation, context);
   const [showRaw, setShowRaw] = useState(false);
   useEffect(() => { if (copy === 'failed') { field.current?.focus(); field.current?.select(); } }, [copy]);
@@ -37,18 +38,18 @@ export function FollowUpPlan({ recommendation, context, snapshot, onClose }: {
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     }}
     onCancel={e => { e.preventDefault(); onClose(); }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-    <div className="plan-header"><div><h2 ref={title} id={titleId} tabIndex={-1}>Rencana tindak lanjut</h2></div><button className="icon-button" aria-label="Tutup rencana tindak lanjut" onClick={onClose}><Icon name="close"/></button></div>
-    <p id={noteId} className="plan-note">Draf · {context?.deal.account_name ?? recommendation.deal_id} · Belum dikirim atau disimpan ke CRM.</p>
+    <div className="plan-header"><div><h2 ref={title} id={titleId} tabIndex={-1}>Follow-up plan</h2></div><button className="icon-button" aria-label="Close follow-up plan" onClick={onClose}><Icon name="close"/></button></div>
+    <p id={noteId} className="plan-note">Draft · {context?.deal.account_name ?? recommendation.deal_id} · Not sent or saved to CRM.</p>
     <div className="plan-body">
-      <div className="plan-assignee"><Icon name="user" size={17}/><strong>{owner?.name ?? recommendation.owner_id ?? 'Penanggung jawab belum ditentukan'}</strong><span>· {snapshot ? `Data ${snapshot}` : 'Tanggal data belum tersedia'}</span></div>
-      <section><h3>Langkah yang diusulkan</h3><p className="plan-action">{readable}</p></section>
-      <section><h3>Target langkah berikutnya</h3><p>{recommendation.milestone || 'Belum ditentukan'}</p></section>
-      <section className="plan-conditions"><h3>Periksa sebelum bertindak</h3>{recommendation.approvals_needed.length ? <ul>{recommendation.approvals_needed.map((line,i) => <li key={i}>{line}</li>)}</ul> : <p>Persetujuan tidak dicantumkan. Ini tidak berarti tindakan sudah disetujui.</p>}
-        {!!unknowns.specific.length && <ul>{unknowns.specific.map((line,i) => <li key={i}>{line}</li>)}</ul>}
+      <div className="plan-assignee"><Icon name="user" size={17}/><strong>{owner?.name ?? recommendation.owner_id ?? 'Owner not assigned'}</strong><span>· {snapshot ? `Data ${snapshot}` : 'Snapshot date unavailable'}</span></div>
+      <section><h3>Proposed action</h3><p className="plan-action">{readable}</p></section>
+      <section><h3>Expected outcome</h3><p>{englishText(recommendation.milestone) || 'Not specified'}</p></section>
+      <section className="plan-conditions"><h3>Before you act</h3>{recommendation.approvals_needed.length ? <ul>{recommendation.approvals_needed.map((line,i) => <li key={i}>{englishText(line)}</li>)}</ul> : <p>No approval is listed. This does not mean the action is approved.</p>}
+        {!!unknowns.specific.length && <ul>{unknowns.specific.map((line,i) => <li key={i}>{englishText(line)}</li>)}</ul>}
       </section>
-      <details className="plan-export" open={showRaw} onToggle={event => setShowRaw(event.currentTarget.open)}><summary>Teks lengkap & sumber</summary><label className="plan-field">Rencana lengkap dan sumbernya<textarea ref={field} value={brief} readOnly spellCheck={false}/></label></details>
+      <details className="plan-export" open={showRaw} onToggle={event => setShowRaw(event.currentTarget.open)}><summary>Full text & sources</summary><label className="plan-field">Complete plan and sources<textarea ref={field} value={brief} readOnly spellCheck={false}/></label></details>
     </div>
-    <div className="plan-footer"><div role="status" aria-live="polite">{copy === 'copied' ? <span className="copy-success"><Icon name="check" size={18}/>Rencana disalin. Tindak lanjut belum dilakukan.</span> : copy === 'failed' ? 'Tidak dapat menyalin otomatis. Teks dipilih; gunakan Ctrl/Cmd+C.' : 'Salin sebagai catatan kerja.'}</div>
-      <button className="button primary" onClick={() => void copyBrief()} disabled={copy === 'pending'}><Icon name={copy === 'copied' ? 'check' : 'file'} size={17}/>{copy === 'pending' ? 'Menyalin…' : copy === 'copied' ? 'Salin lagi' : 'Salin rencana'}</button></div>
+    <div className="plan-footer"><div role="status" aria-live="polite">{copy === 'copied' ? <span className="copy-success"><Icon name="check" size={18}/>Plan copied. Follow-up has not been performed.</span> : copy === 'failed' ? 'Copy failed. Text selected; press Ctrl/Cmd+C.' : 'Copy as a working note.'}</div>
+      <button className="button primary" onClick={() => void copyBrief()} disabled={copy === 'pending'}><Icon name={copy === 'copied' ? 'check' : 'file'} size={17}/>{copy === 'pending' ? 'Copying…' : copy === 'copied' ? 'Copy again' : 'Copy plan'}</button></div>
   </dialog>;
 }

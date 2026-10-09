@@ -15,17 +15,17 @@ function App() {
     if (fixtureApi) { setFixtureApi(null); return; }
     setFixtureLoading(true); setFixtureError('');
     try { const module = await import('./dev/fixture'); setFixtureApi(module.fixtureApi); }
-    catch { setFixtureError('Fixture pengembangan gagal dimuat.'); }
+    catch { setFixtureError('Could not load development fixtures.'); }
     finally { setFixtureLoading(false); }
   }
   return <>
-    <a className="skip-link" href="#main-content">Lewati ke konten utama</a>
+    <a className="skip-link" href="#main-content">Skip to main content</a>
     <header className="appbar">
       <span className="brand"><span className="brand-mark"><Icon name="compass" size={20}/></span><span className="brand-name">deal<span>compass</span></span></span>
       <span className="appbar-context">Workspace / Deal acceleration</span>
-      {import.meta.env.DEV && <details className="dev-tools"><summary>Alat pengembang</summary><button className="appbar-dev" onClick={toggleFixture} disabled={fixtureLoading}>{fixtureApi ? 'Kembali ke API nyata' : fixtureLoading ? 'Memuat fixture…' : 'Pratinjau fixture (dev)'}</button></details>}
+      {import.meta.env.DEV && <details className="dev-tools"><summary>Developer tools</summary><button className="appbar-dev" onClick={toggleFixture} disabled={fixtureLoading}>{fixtureApi ? 'Return to live API' : fixtureLoading ? 'Loading fixtures…' : 'Preview fixtures (dev)'}</button></details>}
     </header>
-    {fixtureApi && <div className="fixture-banner" role="status"><strong>MODE PENGEMBANGAN · FIXTURE</strong><span>Contoh P02 bersumber dari dataset; graph dan rekomendasi adalah fixture UI. Bukan hasil analisis backend atau Jev.</span><button onClick={() => setFixtureApi(null)}>Kembali ke API nyata</button></div>}
+    {fixtureApi && <div className="fixture-banner" role="status"><strong>DEVELOPMENT · FIXTURE</strong><span>P02 example from the dataset; graph and recommendations are UI fixtures, not backend or Jev results.</span><button onClick={() => setFixtureApi(null)}>Return to live API</button></div>}
     {fixtureError && <p role="alert" className="notice error">{fixtureError}</p>}
     <Dashboard key={fixtureApi ? 'fixture' : 'live'} api={fixtureApi ?? liveApi} fixture={!!fixtureApi}/>
   </>;
