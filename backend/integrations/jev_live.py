@@ -14,7 +14,8 @@ from backend.integrations.usage import UsageLedger, UsageError
 from backend.integrations.jev import DEFAULT_BASE_URL, DEFAULT_MODEL, JevClient, JevError, choice, noul, score
 
 KEYS = {'TYPESAFE_API_KEY', 'TYPESAFE_MODEL', 'TYPESAFE_BASE_URL', 'TYPESAFE_TIMEOUT_S',
-        'DEALCOMPASS_ENGINE_MODE', 'DEALCOMPASS_ANALYSIS_BUDGET_S', 'TYPESAFE_USAGE_DB'}
+        'DEALCOMPASS_ENGINE_MODE', 'DEALCOMPASS_ANALYSIS_BUDGET_S', 'TYPESAFE_USAGE_DB',
+        'DEALCOMPASS_ANALYSIS_CACHE_DB', 'DEALCOMPASS_JEV_RETRY_AFTER_S'}
 
 
 def load_env_file(path):

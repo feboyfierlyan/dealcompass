@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from backend.contracts import DealContext, Recommendation
 from backend.ingestion.deals import list_deals
 from backend.graph.context import build_deal_context
-from backend.decision.analyze import analyze_deal
+from backend.decision.hybrid import analyze_deal_envelope
 from backend.api.phase3 import deal_initial_analysis, pipeline_initial_analysis, pipeline_priorities
 
 app = FastAPI(title='DealCompass', version='0.1.0')
@@ -29,9 +29,20 @@ def detail(deal_id: str):
 
 @app.post('/api/deals/{deal_id}/analyze', response_model=Recommendation)
 def analyze(deal_id: str):
+    """Recommendation v1 saja; memakai workflow, cache dan dedup yang sama dengan /analysis."""
     require_deal(deal_id)
     try:
-        return analyze_deal(build_deal_context(deal_id))
+        return analyze_deal_envelope(deal_id, context=build_deal_context(deal_id))['recommendation']
+    except NotImplementedError as e:
+        raise HTTPException(501, detail={'code': 'NOT_IMPLEMENTED', 'message': str(e)}) from e
+
+
+@app.post('/api/deals/{deal_id}/analysis')
+def analysis(deal_id: str, refresh: bool = False):
+    """Analisis aktif halaman deal: Recommendation + metadata asal/cache. refresh=true hanya dari tombol Refresh."""
+    require_deal(deal_id)
+    try:
+        return analyze_deal_envelope(deal_id, refresh=refresh, context=build_deal_context(deal_id))
     except NotImplementedError as e:
         raise HTTPException(501, detail={'code': 'NOT_IMPLEMENTED', 'message': str(e)}) from e
 

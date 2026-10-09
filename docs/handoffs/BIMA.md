@@ -1,5 +1,21 @@
 # Handoff BIMA
 
+## Current update — route analisis aktif (pelaksana Ical), 2026-10-10 03:55 WIB
+Status **READY_FOR_REVIEW**. Dikerjakan Ical atas penugasan pengguna di area route Bima; stacked di atas
+`ical/hybrid-deal-analysis` (engine). Merge setelah PR engine.
+
+- `backend/main.py`: `POST /api/deals/{deal_id}/analysis[?refresh=true]` → AnalysisEnvelope
+  (Recommendation v1 + metadata analisis, lihat docs/handoffs/ICAL.md). `POST /analyze` lama kini
+  mengembalikan `recommendation` dari workflow/cache yang sama (respons tetap Recommendation v1, kini
+  memakai diagnostic Bima → identik dengan rekomendasi ranking). Konteks tetap dari `build_deal_context`
+  di route (404/501 tidak berubah). GET tidak berubah dan tidak memanggil provider.
+- `tests/bima/test_api.py`: patch 501 kini menargetkan `analyze_deal_envelope`.
+- `tests/bima/test_analysis_route.py` (3, MockTransport): envelope rules + 404; mock Jev → cache hit
+  pada kedua route POST tanpa request tambahan, `refresh=true` menjalankan ulang; lima GET dengan
+  `JevClient.ask` dipaksa error tetap 200.
+- Tes: `env -u TYPESAFE_API_KEY DEALCOMPASS_ENGINE_MODE=rules python -m unittest discover -s tests` →
+  `Ran 220 tests, OK`. Live Jev tidak diuji (tidak ada key/ledger tim di laptop ini).
+
 ## Task dan status
 **BIMA-04: READY_FOR_REVIEW.** Panduan setup/pemulihan, CLI smoke GET-only, bukti proses baru/restart dan ringkasan fenomena P01–P05 selesai. Snapshot **2026-10-01**; Main yang menetapkan VERIFIED/MERGED dan kredit TEAM_PROGRESS.
 
@@ -92,4 +108,5 @@ Tidak ada blocker backend untuk BIMA-04. Acceptance browser/end-to-end UI rankin
 5. Jangan deploy/merge/membuat key/submission dari pekerjaan ini. Scope akhir P01–P05 dan attribution R8 Ical tetap.
 
 ## Update WIB
+2026-10-10 03:55 WIB — route `/analysis` READY_FOR_REVIEW (pelaksana Ical, branch bima/hybrid-analysis-route).
 2026-10-09 **20:25:41 WIB** (waktu aktual pembukaan PR/reviewer request; checks 20:23:04, restart selesai 20:14:56, UTC+07:00). Status BIMA-04 READY_FOR_REVIEW; tidak menetapkan VERIFIED/MERGED sendiri.
