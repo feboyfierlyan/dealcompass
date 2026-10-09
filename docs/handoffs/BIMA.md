@@ -1,141 +1,107 @@
 # Handoff BIMA
 
 ## Task dan status
-**BIMA-02: READY_FOR_REVIEW.** Analisis awal internal dan bersumber untuk P01–P05 pada snapshot **2026-10-01**. Bima tidak menetapkan VERIFIED/MERGED; keputusan itu milik Main.
+**BIMA-03: READY_FOR_REVIEW.** API diagnostic P01–P05 selesai dan adapter priorities siap sesuai `docs/coordination/PHASE3_CONTRACT.md` / `docs/prompts/BIMA-03.md`. Snapshot tetap **2026-10-01**. Main yang menetapkan VERIFIED/MERGED.
 
-BIMA-01 / Issue #2 / [PR #6](https://github.com/feboyfierlyan/dealcompass/pull/6) sudah merged oleh Main (`73fb045`), bukan PR yang dibuka ulang. Acuan BIMA-02: `docs/coordination/MAIN.md`, `API_CONTRACT.md`, dan `docs/reviews/2026-10-09-pr5-7.md`.
+- GET diagnostic deal dan pipeline menggunakan fungsi BIMA-02 nyata, tanpa data statis atau Jev.
+- Metrics, findings, reference_candidates, unknowns/missing_information, query scopes, boundaries, statistical_assessment dan seluruh field provenance dipertahankan. Null/zero tidak diubah.
+- GET priorities hanya memanggil fungsi ranking milik Ical. Bima tidak menghitung skor/bobot/ranking bisnis.
+- Lima input lengkap, rank, snapshot, sumber dan path graph divalidasi sebelum respons sukses. Output gagal/invalid/incomplete adalah 503, bukan ranking contoh.
+- **Ranking Ical belum tersedia pada main yang difetch (`712acf9`)**: respons nyata priorities 501. Success/error ranking dengan engine sintetis secara eksplisit berlabel SYNTHETIC/MOCK, bukan integrasi ranking nyata.
+- Endpoint lama tetap kompatibel; rank/analysis_status daftar lama tidak diubah. Tidak mengubah decision engine, shared contracts, frontend, dataset, dependency, CI atau koordinasi.
 
-- Umur deal/tahap, jumlah dan tanggal terakhir interaksi dihitung dari sumber.
-- Setiap temuan mempunyai fakta, evidence IDs, interpretasi inferred, informasi kurang, dan implikasi pemeriksaan tindak lanjut.
-- Identitas P01 serta kandidat referensi P03/P04 ditelusuri; kandidat bukan kelayakan atau izin.
-- Business anomaly, data gap, dan outlier statistik dibedakan. Tidak ada ranking, approval, confidence Jev, atau closing rekaan.
-- Kontrak API, engine Ical, frontend, dependency, koordinasi, dan dataset asli tidak diubah.
+Histori: BIMA-01 [PR #6](https://github.com/feboyfierlyan/dealcompass/pull/6) dan BIMA-02 [PR #10](https://github.com/feboyfierlyan/dealcompass/pull/10) sudah merged oleh Main. Inventaris/sumber serta temuan mentor BIMA-02 tetap tersedia pada histori #10 dan produsen internal; keduanya tidak dibuka ulang.
 
 ## Branch dan commit
-Branch `bima/data-graph`; checkout awal BIMA-02 bersih. `git fetch origin` dan fast-forward `origin/main` ke `ddf7a2a` berhasil; pekerjaan BIMA-01 dipertahankan.
+Branch baru **`bima/diagnostics-api`** dibuat dari `origin/main` `712acf9` setelah `git status --short --branch` menunjukkan checkout bersih dan `git fetch origin` berhasil. Branch lama `bima/data-graph` dipertahankan.
 
-Commit kode BIMA-02 beserta handoff: [`3b172621eee3a4f19738c4d57a668a2faad099bf`](https://github.com/feboyfierlyan/dealcompass/commit/3b172621eee3a4f19738c4d57a668a2faad099bf). `git push origin bima/data-graph` berhasil tanpa force. **[PR #10](https://github.com/feboyfierlyan/dealcompass/pull/10)** baru dibuka, base `main`, status open, review diminta ke Main (`feboyfierlyan`). Pembaruan receipt ini disertakan pada commit handoff terpisah, bukan klaim approval review.
-
-Histori BIMA-01: commit kode `642d97fec3c524f888d1d3d9430fc5cf863f2659`, catatan publikasi `c5e8820f3a76cd6d1669b665efd961233490fd5e`, kemudian PR #6 merged oleh Main.
+Refresh kedua `git fetch origin && git merge --ff-only origin/main` menghasilkan “Already up to date.” Tidak cherry-pick branch Ical. Commit/push/PR BIMA-03 belum dibuat pada pembaruan ini; receipt SHA dan URL ditambahkan setelah publikasi berhasil.
 
 ## File dan fungsi
-| File/fungsi baru | Input → output dan batas |
+| File/fungsi | Input → output / tanggung jawab |
 | --- | --- |
-| `backend/ingestion/metrics.py:summarize_deal(deal_id, snapshot_date='2026-10-01', dataset=...)` | Deal prospek terbuka → umur deal/tahap, bucket external/internal/unclassified, tanggal terakhir beserta seluruh tied IDs, query scope dan unknowns. Umur tidak valid/missing tetap null; nol valid tidak diubah menjadi missing. |
-| `metrics.py:evidence_id(record)` | SourceRecord → ID kanonis `filename:source_id`. |
-| `backend/graph/verification.py:verify_authority_paths(context, dataset=...)` | Konteks v1 → temuan kewenangan dari percakapan fokus + role + employment aktif. Kandidat ambigu/tidak cocok tetap unknown; bukan memilih jabatan tertinggi. |
-| `verification.py:reference_request_rows(context, dataset=...)` | Konteks v1 → record permintaan referensi pelanggan yang bertanggal, dalam jendela deal dan terhubung melalui edge kanonis. Parser yang sama digunakan analisis dan verifikasi. |
-| `verification.py:verify_reference_candidates(context, dataset=...)` | Konteks v1 → kandidat pelanggan melalui `related_account_*`, kontak/history/overlap dan usage bulan lengkap terbaru; suitability/willingness/consent tetap null. |
-| `backend/graph/analysis.py:analyze_deal_initial(context, dataset=...)` | DealContext → report internal berisi metrics, findings, reference_candidates, boundaries dan registry EvidenceRecord. Harga pelanggan dan usulan diskon internal dipisahkan; sumber akun lain tidak menjadi diagnosis fokus. |
-| `analysis.py:analyze_pipeline_initial(snapshot_date='2026-10-01', dataset=...)` | Dataset/konteks kanonis → laporan seluruh prospek terbuka dan statistical_assessment `not_assessed`. Tidak menghasilkan Recommendation Ical. |
-| `tests/bima/test_metrics.py` | 12 tes perhitungan, cutoff, ties, missing/zero, akun fokus, tanggal invalid dan gate snapshot. |
-| `tests/bima/test_verification.py` | 27 tes jalur identitas/referensi, vocabulary kanonis, ambiguity, temporal overlap, negatif/subject-only/outbound, latest usage zero/missing/future. |
-| `tests/bima/test_analysis.py` | 9 tes diagnosis/source IDs, isolasi akun, request bukan approval, P05 gap, dan tidak mengarang outlier. |
+| `backend/main.py` | Menambah tiga GET fase 3; diagnostic single memakai `require_deal` yang sama untuk 404. Route v1 lama tidak diubah. |
+| `backend/api/phase3.py:deal_initial_analysis(deal_id)` | Konteks kanonis + `analyze_deal_initial` → envelope `{schema_version:'v1', ...report}` tervalidasi; kegagalan diagnostic 503 DIAGNOSTICS_UNAVAILABLE. |
+| `phase3.py:pipeline_initial_analysis()` / `_pipeline_inputs()` | `list_deals`, `build_deal_context`, `analyze_pipeline_initial` → lima konteks/report lengkap dan statistik utuh. Tidak bergantung pada klik analyze. |
+| `phase3.py:load_rank_deals()` / `pipeline_priorities()` | Lazy import `backend.decision.ranking.rank_deals(contexts, diagnostics)` → hasil Ical tervalidasi. Exact missing module/function atau explicit engine NotImplementedError: 501 PRIORITIES_NOT_IMPLEMENTED. Nested dependency, engine failure atau invalid output: 503 PRIORITIES_UNAVAILABLE. |
+| `backend/api/diagnostics.py:validate_deal_diagnostic` / `validate_pipeline_diagnostic` | Report + konteks → dict asli, tanpa response-model truncation. Validasi required fields, canonical metrics/scope, kelengkapan lima deal, statistik dan registry sumber. Row direct di luar graph di-resolve hanya yang diminta melalui by_id, bukan scan 226300 usage harian setiap GET. |
+| `backend/api/provenance.py:validate_json`, `collect_evidence_ids`, `validate_evidence_registry` | JSON strict, seluruh nested evidence_ids, schema/core sumber kanonis, duplicate/missing/corrupt records; tambahan provenance dipertahankan. |
+| `backend/api/phase3_models.py:PrioritiesResponse` dan model nested | Schema ranking strict, rank integer bukan bool/float, factor finite number/string/null, readiness/kind/rules literals, required methodology/recommendation/path fields. Extra fields diizinkan dan tidak dibuang. |
+| `backend/api/priorities.py:validate_priorities` | Output Ical + konteks/diagnostic asli → dict utuh. Exact set deal/account, ordered contiguous rank 1..N, snapshot v1/rules, union sumber tanpa conflicting content, recommendation/precedent identity, seluruh ID item/envelope/metodologi, serta original directed graph paths. |
+| `tests/bima/test_diagnostics_api.py` | 12 tes diagnostic/source/null/scope/statistical/provenance dan korupsi sintetis. |
+| `tests/bima/test_priorities_api.py` | 8 tes kontrak ranking sintetis, pairing ID, rank/schema/source/path dan envelope provenance. Fixture `mock_priorities` diberi label SYNTHETIC/MOCK dan tidak masuk kode production. |
+| `tests/bima/test_phase3_routes.py` | 11 tes HTTP TestClient: 404, clock external/internal, complete pipeline/P05, 501 vs dependency503, valid mock, invalid mock, input mutation dan redaksi error/log. |
 
-Fondasi BIMA-01 tetap dipakai: `load_dataset/get_dataset`, `Dataset.query/inventory/by_id`, `ContextGraph.lookup_evidence/subgraph/deal_context`, dan `build_deal_context`. Inventaris sumber tetap 15 CSV/JSONL dan 229627 record, termasuk 226300 usage harian serta 30 keputusan CSV; XLSX bukan sumber tambahan. Rincian inventaris BIMA-01 tersedia pada histori PR #6.
-
-### Ringkasan untuk mentor
-Umur adalah selisih hari kalender pada snapshot. Interaksi dihitung hanya untuk akun fokus sejak deal dibuat sampai snapshot, inklusif. External mencakup email keluar dan meeting, **bukan jumlah balasan buyer**. Email internal tidak mengubah tanggal terakhir external. `null` berarti tidak ada tanggal tersedia dalam query, bukan tanggal buatan.
-
-| Deal/akun | Umur deal | Umur tahap | External | Internal | Total | Terakhir external | Terakhir internal | Terakhir semua |
-| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
-| DL-001/P01 | 61 | 20 | 4 | 0 | 4 | 2026-09-24 | null | 2026-09-24 |
-| DL-002/P02 | 68 | 45 | 3 | 1 | 4 | 2026-09-05 | 2026-09-28 | 2026-09-28 |
-| DL-003/P03 | 16 | 10 | 1 | 0 | 1 | 2026-09-21 | null | 2026-09-21 |
-| DL-004/P04 | 57 | 30 | 3 | 0 | 3 | 2026-09-22 | null | 2026-09-22 |
-| DL-005/P05 | 5 | 5 | 0 | 0 | 0 | null | null | null |
-
-Umur bersumber `crm_deals.csv:DL-001` sampai `DL-005`. Set interaksi external: P01 I0279/I0310/I0325/I0343; P02 I0269/I0296/I0322; P03 I0334; P04 I0284/I0314/I0335; P05 kosong. Internal P02 I0348; seluruh ID interaksi memakai prefix `interactions.jsonl:`. I0322 adalah follow-up sales, tidak dianggap respons pelanggan.
-
-**P01 — jalur kewenangan pengadaan**
-- Fakta: I0343/Fajar menyatakan proposal diteruskan ke GM Operations baru yang bergabung awal September, keputusan pengadaan pada orang tersebut, sedangkan dirinya teknis. CRM K017/Rina Hapsari berjabatan GM Operations P01 dengan employment mulai 2026-09-01.
-- Bukti: `interactions.jsonl:I0343`, `crm_contacts.csv:K052`, `crm_contacts.csv:K017`, `contact_employment_history.csv:K017|Grup Ritel Mandala|2026-09-01` dan deal DL-001.
-- Interpretasi: gabungan isi percakapan, role dan interval mengarah ke K017; **inferred**, bukan edge decision-maker eksplisit atau pilihan otomatis CEO K089.
-- Kurang: konfirmasi identitas pemegang kewenangan, mandat dan proses pengadaan terkini.
-- Implikasi: verifikasi kepada Fajar dan identifikasi jalur pengadaan sebelum memperlakukan kandidat sebagai pengambil keputusan yang terkonfirmasi.
-- Jalur identitas historis: employment K017 di C01 mulai 2021-03-01 sampai 2026-08-15 (`contact_employment_history.csv:K017|Kopi Lintas Nusantara|2021-03-01`) + kontak K017 + I0051/I0066/I0159/I0223/I0224/I0290 mendukung alias `rina.hapsari@kopilintas.co.id`. Setiap path mempunyai tiga record sumber dan interval; alias tetap inferred, bukan alamat baru atau konfirmasi langsung.
-
-**P02 — harga berbeda dari approval**
-- Fakta: I0296 menyebut harga tinggi dan KasirPro sekitar 20% lebih murah. I0348 adalah Citra mengusulkan diskon 20% kepada Andi/VP Sales. Pencarian 30 record `decision_log.csv` dengan account_id P02, deal_id DL-002 dan tanggal ≤ snapshot menemukan nol log fokus.
-- Bukti: `interactions.jsonl:I0296`, `interactions.jsonl:I0348`, `employees.csv:E01`, `crm_deals.csv:DL-002`; report menyimpan filter, file sumber dan inspected_record_count pencarian log.
-- Interpretasi: keberatan harga didukung percakapan; email sales adalah permintaan, bukan approval. Angka diskon tidak diduplikasi dari subjek. Log C01 tidak mengesahkan P02.
-- Kurang: batas anggaran, kesetaraan lingkup kompetitor, keputusan permintaan serta justifikasi komersial. Nol log dalam dataset tidak membuktikan keputusan tidak pernah ada di luar sumber.
-- Implikasi: klarifikasi harga/lingkup dan periksa keputusan + log sebelum menawarkan diskon; >10% memerlukan VP Sales dan pencatatan sesuai kontrak tim.
-- Preseden D-2025-02/D-2025-06 tetap tersedia di konteks BIMA-01: penolakan diskon 20% dan pilot tanpa diskon pada C23 adalah preseden historis, **bukan** approval P02. Pemilihan applicability tetap milik Ical.
-
-**P03 — permintaan referensi apotek**
-- Fakta: I0334/Ratna meminta referensi apotek. Kandidat C03/C09/C17/C27 ditelusuri dari akun fokus melalui industri/FEAT-05; usage September 2026 adalah bulan lengkap terbaru.
-- Bukti: `interactions.jsonl:I0334`, `crm_accounts.csv:C03/C09/C17/C27` (empat ID terpisah), `feature_usage_monthly.csv:2026-09|C03|FEAT-05` dan key setara C09/C17/C27; relasi dan source IDs lengkap ada dalam report.
-- Interpretasi: permintaan perlu dijawab, tetapi tidak otomatis membuktikan deal sudah tertunda. Usage hanya bukti pemakaian fitur, bukan kualitas implementasi atau kesediaan menjadi referensi.
-- Kurang: kriteria kemiripan yang diterima Ratna, pengalaman terkini, suitability serta izin kandidat/contact.
-- Implikasi: validasi kebutuhan referensi, periksa kandidat dengan account owner, lalu minta izin sebelum perkenalan. Tidak memilih pemenang atau membuat ranking.
-
-| Kandidat | Akun | Outlet CRM | Pengguna aktif FEAT-05 September |
-| --- | --- | ---: | ---: |
-| C03 | Apotek Sehat Sentosa | 18 | 14 |
-| C09 | Apotek Medika Farma | 15 | 11 |
-| C17 | Apotek Bunda Sehat | 10 | 22 |
-| C27 | Apotek Kimia Sejahtera | 22 | 48 |
-
-**P04 — referensi menjadi syarat, jalur network belum izin**
-- Fakta: I0335/Yuli menyatakan direktur meminta rekomendasi pengguna mirip sebelum tanda tangan dan menunda sampai ada referensi. K028/Hartono dan K116/Budi pernah bekerja di PT Sentosa Abadi Group, overlap 2015-02-01–2019-11-30. Budi kini CFO C06/Saiyo Group, history mulai 2020-01-02.
-- Bukti: `interactions.jsonl:I0335`, kontak K028/K116, akun P04/C06, dan `contact_employment_history.csv:K028|PT Sentosa Abadi Group|2015-01-01`, `...:K116|PT Sentosa Abadi Group|2015-02-01`, `...:K116|Saiyo Group|2020-01-02` (prefix file sama).
-- Interpretasi: percakapan mendukung hambatan referensi; overlap memberi jalur kandidat C06, **bukan** bukti saling kenal. P04 Hospitality dan C06 Resto Padang tidak otomatis memenuhi kriteria mirip.
-- Kurang: acquaintance, kesesuaian pengalaman/operasi, willingness dan consent.
-- Implikasi: pastikan kriteria dengan Yuli, verifikasi jalur melalui account owner dan minta izin; jangan menjanjikan endorsement direktur atau kandidat.
-
-**P05 — informasi belum cukup**
-- Fakta: tidak ada interaksi external/internal bertanggal untuk P05 dalam jendela deal-snapshot; last_date null. Bukti `crm_deals.csv:DL-005`, `crm_accounts.csv:P05`, plus query scope `interactions.jsonl`/P05/2026-09-26–2026-10-01 dalam report.
-- Interpretasi: **data_gap**, bukan bukti tidak berminat, kalah atau outlier.
-- Kurang: kebutuhan, kontak, hambatan, kewenangan dan proses pengadaan yang didukung percakapan.
-- Implikasi: lengkapi discovery dan pencatatan, bukan membuat diagnosis komersial dari kekosongan.
-
-**Klasifikasi:** business_anomaly berarti hambatan/ketidakselarasan yang didukung percakapan, bukan pelanggaran SLA. Data_gap adalah batas pengetahuan. Statistical outlier **not_assessed**: lima prospek berada pada lima tahap berbeda, tidak tersedia cohort pembanding per tahap/segmen atau SLA; method/threshold/outlier_deal_ids null. Umur maksimum hanya deskripsi, bukan dasar memberi label outlier.
+Engine menerima salinan input terisolasi; validasi memakai graph/konteks asli sehingga engine tidak dapat menyisipkan edge lalu mengesahkannya sendiri. Error/log hanya memuat kategori operasi dan kelas exception, bukan exception text/traceback/provider payload/secret.
 
 ## Kontrak dan dependency
-Tetap **v1**; `backend/contracts.py` dan `docs/coordination/` tidak diubah. Menggunakan `interaction_for`, `employed_at`, `overlapping_employment` dan `related_account_*` kanonis. EvidenceRecord memakai JSON row asli di excerpt; `isi` adalah pesan, subjek metadata. Semua source IDs report dapat diselesaikan ke record direct. Identitas/hubungan/interpretasi tetap diberi batas inferred.
+Kontrak v1 lama dan fase 3 milik Main diikuti tanpa mengedit `backend/contracts.py` atau `docs/coordination/`. Tidak ada database, persistent state atau dependency baru. Menggunakan FastAPI/Pydantic/NetworkX yang sudah ada dan stdlib.
 
-Tidak menambah dependency atau endpoint. Usulan kepada Main (belum disetujui/diimplementasikan): **GET `/api/deals/{deal_id}/initial-analysis`** untuk laporan diagnostik bersumber, terpisah dari Recommendation Ical. Field yang diperlukan: snapshot; umur deal/tahap beserta age_evidence_ids; jumlah/latest per tipe beserta query_scope dan unknowns; findings dengan fact/evidence_ids/interpretation/missing_information/follow_up_implication; kandidat dengan jalur/usage/latest period dan null suitability/willingness/consent; evidence registry. Main menentukan bentuk/versi kontrak, akses UI dan apakah endpoint ini diperlukan; Bima tidak melakukan cutover sepihak.
+| Endpoint baru | Respons |
+| --- | --- |
+| GET `/api/deals/{deal_id}/initial-analysis` | 200 `{schema_version:'v1', ...analyze_deal_initial(context)}`; unknown/account ID/closed historical deal 404 DEAL_NOT_FOUND. |
+| GET `/api/pipeline/initial-analysis` | 200 `{schema_version:'v1', ...analyze_pipeline_initial()}`; lima reports, statistik not_assessed dan method/threshold/outlier_deal_ids null. Nested reports tidak diberi field tambahan buatan route. |
+| GET `/api/pipeline/priorities` | 200 hanya hasil ranking Ical lengkap/valid; 501 PRIORITIES_NOT_IMPLEMENTED bila belum ada; 503 PRIORITIES_UNAVAILABLE bila gagal/invalid/incomplete. Saat ini hasil production yang diamati adalah 501. |
+
+Error `{detail:{code,message}}`. Diagnostic service/source corruption menggunakan 503 DIAGNOSTICS_UNAVAILABLE; sahnya data gap tetap 200. Bima menvalidasi schema/readiness literal, bukan menentukan readiness/ranking bisnis sendiri. Source registry output ranking harus mencakup item/factors/recommendation/paths dan tambahan provenance. Directed path wajib sesuai node/edge asli, edge sources tercakup; reverse/shortcut/injection ditolak.
+
+Input priorities dipasangkan per deal_id. Shared source ID dengan isi berbeda ditolak, tidak overwrite diam-diam. GET baru tidak memanggil Jev; ranking Ical harus rules sesuai kontrak. API keys tidak dicetak/disimpan. Tidak ada hasil ranking, confidence, approval atau probabilitas closing buatan Bima.
 
 ## Cara menjalankan
-Dari root repo, dengan dependency proyek terpasang:
+Dari root dengan dependency repo terpasang:
 
 ```bash
-python -m unittest discover -s tests -v
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8767
+curl http://127.0.0.1:8767/api/deals/DL-002/initial-analysis
+curl http://127.0.0.1:8767/api/pipeline/initial-analysis
+curl http://127.0.0.1:8767/api/pipeline/priorities
+python -m unittest discover -s tests
 python scripts/check_handoff.py --all
-python -c "import json; from backend.graph.analysis import analyze_pipeline_initial; print(json.dumps(analyze_pipeline_initial(), ensure_ascii=False, indent=2, allow_nan=False))"
 ```
 
-Single deal: panggil `analyze_deal_initial(build_deal_context('DL-002'))`; bukan Recommendation dan tidak dipanggil oleh route analyze yang ada. Lookup sumber: `get_dataset().by_id['interactions.jsonl']['I0348']` atau `get_context_graph().lookup_evidence('interactions.jsonl:I0348')`. Snapshot lain ditolak, bukan replay historis palsu. Dataset/cache tidak dimodifikasi; fixture memakai temporary directory.
+Proyeksi respons nyata DL-002: schema_version v1; deal/account DL-002/P02; age 68 hari, stage age 45; customer count 3/last_date 2026-09-05; internal count 1/last_date 2026-09-28. I0322 adalah follow-up outbound, bukan buyer reply. I0348 adalah satu permintaan diskon 20%, bukan approval; focus_log_evidence_ids kosong dengan filter/account/deal/snapshot dan inspected count tersimpan.
+
+Pipeline tetap membedakan P01 procurement inference K017, P02 harga/approval, P03 C03/C09/C17/C27 referensi FEAT-05 terbaru, P04 C06 overlap bukan acquaintance, P05 zero/null/data gap. Kandidat bukan suitability/willingness/consent. Snapshot/metrics/evidence sama dengan produsen BIMA-02; tidak menetapkan deal paling lama sebagai outlier.
 
 ## Pengujian aktual
-2026-10-09, WIB; berikut eksekusi BIMA-02, bukan klaim hasil integrator:
+Eksekusi 2026-10-09 WIB pada checkout BIMA-03:
 
-- Integration run awal: `python -m unittest discover -s tests -v` — **75 tes lulus, 12.824 s**.
-- Run final setelah pembersihan assertion incidental: perintah sama — **75 tes lulus, 10.683 s**. Total 65 tes Bima (48 baru BIMA-02), 10 bootstrap/handoff; tidak ada perubahan kode setelah run ini.
-- Smoke fungsi internal aktual pada **17:47:08 WIB**: canonical contexts → metrics/findings → serialisasi JSON strict dan round-trip consumer → EvidenceRecord validation → lookup sumber. Semua excerpt sama dengan row raw, source_file/source_id tepat, lima akun lengkap; setiap temuan memiliki komponen wajib dan evidence resolvable. Kandidat suitability/willingness/consent null; statistik not_assessed. Output `SMOKE PASS: canonical contexts -> metrics/findings -> JSON consumer -> original source rows`.
-- Smoke sebelumnya pada 17:43:22 WIB juga memeriksa jalur identity/overlap dan setiap sumber laporan. Tidak membuat file smoke permanen atau mengubah dataset.
-- `python scripts/check_handoff.py --all` — lulus: “Handoff valid. Main tetap memverifikasi kebenaran laporan dan integrasi.”
-- `python scripts/check_handoff.py --base origin/main --head HEAD --branch bima/data-graph` pada commit kode `3b17262` — lulus terhadap diff committed; hanya tujuh file Bima/handoff berubah.
+1. Integration run awal `python -m unittest discover -s tests -v`: **129 tes lulus, 23.804 s**.
+2. Review menemukan ID tambahan pada envelope/metodologi ranking belum diperiksa. Regression `test_envelope_and_methodology_sources_must_also_be_registered` sebelum fix: **1 tes gagal, 2 subcase** (`ValueError not raised`). Root cause: traversal hanya per item. Fix mencakup union registry dan traversal seluruh envelope.
+3. Suite final `python -m unittest discover -s tests`: **130 tes lulus, 23.596 s**; 96 Bima (31 baru BIMA-03), 24 Ical, 10 bootstrap/handoff. Tidak ada perubahan kode setelah run final ini.
+4. **HTTP nyata** server uvicorn port 8767, stdlib urllib (bukan TestClient), selesai 18:31:01 WIB: diagnostic DL-001–DL-005 dan pipeline 200, seluruh payload sama dengan produsen kanonis + top-level schema_version; setiap direct excerpt sama dengan row raw, source_file/source_id tepat. Unknown DL-999, account P02 dan closed DL-006 404. Priorities tanpa engine Ical nyata 501. Health/list 200, list tetap lima rank null; detail kelima deal 200/DealContext valid dan POST analyze kelima deal 200/Recommendation valid mode rules.
+5. **HTTP socket nyata dengan engine SYNTHETIC/MOCK**, server in-memory terpisah port 8768, selesai 18:32:20 WIB: mock lengkap 200, lima ranks/readiness/schema, seluruh records cocok union canon dan seluruh paths cocok directed edges asli. Incomplete/source fabricated/path reversed/nonfinite/engine exception/nested missing dependency →503 PRIORITIES_UNAVAILABLE. Diagnostic corruption →503 DIAGNOSTICS_UNAVAILABLE. Secret placeholder tidak muncul pada respons; unit test juga memeriksa log redaction.
+6. Smoke HTTP regression final pada **18:35:22 WIB**: unresolved source pada methodology →503; source terdaftar pada extra methodology provenance →200 dan field retained. Tetap SYNTHETIC/MOCK, bukan ranking bisnis nyata.
+7. `python scripts/check_handoff.py --all` lulus: “Handoff valid. Main tetap memverifikasi kebenaran laporan dan integrasi.” Validasi ownership diff committed dicatat setelah commit berhasil. Server production smoke port 8767 juga sudah dihentikan.
 
-BIMA-01 historis: 27 tes, HTTP detail seluruh DL-001–DL-005 200, unknown 404 dan analyzer unavailable 501 pernah diamati sebelum merge PR #6. **Bukan** smoke HTTP baru BIMA-02. Frontend/UI, Jev live, rekomendasi/ranking Ical dan end-to-end produk tidak diuji pada BIMA-02.
+### Latency aktual
+Client wall-clock mencakup HTTP/serialisasi. Cold adalah request pertama diagnostic pada server baru; warm median adalah tiga request berurutan. Ini pengukuran lokal, bukan SLA/benchmark produksi. Pipeline cold dan ranking bisnis nyata belum diukur.
+
+| Endpoint/mode | Cold ms | Warm ms | Sampel warm |
+| --- | ---: | ---: | ---: |
+| DL-002 initial-analysis nyata 200 | 2680.974 | 114.158 | 3, median |
+| Pipeline initial-analysis nyata 200 | tidak diukur | 537.737 | 3, median |
+| Priorities nyata tanpa engine 501 | tidak diukur | 1.746 | 3, median |
+| Priorities SYNTHETIC/MOCK 200 | tidak diukur | 612.859 | 1, bukan latency ranking bisnis |
+
+Script smoke/server mock tidak disimpan dalam repo; mock servers dihentikan setelah pemeriksaan. Tidak menjalankan frontend/browser, Jev live atau mengevaluasi kualitas metode ranking. HTTP production ranking 200 **belum diuji** karena fungsi Ical belum merged/tersedia.
 
 ## Fixture dan keterbatasan
-Sumber sintetis kanonis digunakan untuk smoke dan regression nyata. Small fixtures terisolasi menguji batas tanggal inklusif, akun lain, tanggal/type missing, zero, ties, title-only, negated/subject-only/outbound/internal claims, ID yang berubah, employment ambigu/berakhir, vocabulary nonkanonis, dan latest usage zero/missing/future tanpa fallback positif lama.
+Diagnostic dan legacy HTTP memakai dataset/konteks kanonis nyata (dataset sintetis proyek), bukan payload statis. Corruption cases dan seluruh ranking sukses di tes/smoke adalah **SYNTHETIC/MOCK**. Mock memakai sumber/graph nyata dan rekomendasi rules nyata, tetapi urutan reverse-input sengaja arbitrer, bukan peringkat sales atau penilaian kualitas ranking.
 
-Parser percakapan adalah aturan lexical untuk isi pesan kanonis; bukan NLP umum atau verifikasi mandat hukum. Kandidat unik dari role/history tetap inference. Overlap kerja tidak membuktikan acquaintance. Usage FEAT-05 tidak membuktikan eligibility/consent. External count bukan buyer-response count. Absence memiliki query scope, bukan bukti universal tidak ada aktivitas. Tidak memvalidasi/mengeluarkan approval, SLA, Jev confidence atau statistik outlier.
-
-CRM adalah snapshot 2026-10-01; tidak mendukung tanggal lain. Laporan internal tidak menambah schema API dan belum ditampilkan UI. Temuan diagnostic tidak menggantikan analisis/policy Ical. Masalah Ical/Boy yang dicatat review Main tetap di area mereka; Bima tidak mengubah implementasi itu atau mengklaim sudah memperbaikinya.
+Validation menolak finite/schema/source/path errors dan incomplete output, tidak menilai formula/bobot bisnis Ical. Field tambahan preserved tanpa response-model dump. Copy input menambah biaya adapter; hanya mock latency tersedia, belum profil/benchmark ranking Ical. Produsen diagnostic lexical/fixed snapshot; unknown business facts tetap membutuhkan manusia. Kelayakan/izin referensi dan procurement inference tidak otomatis berubah menjadi confirmed karena HTTP 200.
 
 ## Blocker
-Tidak ada blocker untuk analisis internal P01–P05 dan sumbernya. Integrasi field/endpoint/UI menunggu keputusan Main atas usulan kontrak; suitability/izin referensi dan konfirmasi procurement membutuhkan informasi bisnis di luar dataset, dinyatakan unknown bukan diisi rekaan. Jev/ranking/evaluasi tetap milik Ical.
+Tidak ada blocker untuk diagnostic API dan adapter validation. **Dependency integrasi nyata:** `backend.decision.ranking.rank_deals` milik ICAL-03 belum tersedia di origin/main `712acf9` pada refresh kedua. Respons honest 501 sudah dibuktikan. Kontrak mengizinkan PR Bima diajukan sebelum Ical; tidak menyalin/cherry-pick kode yang belum merged atau membuat ranking sendiri.
+
+Jev live/UI BOY-04/kualitas ranking bukan klaim verifikasi BIMA-03. Main perlu merge/review Ical dan melakukan integrasi ranking nyata; sesudah itu Bima sync main, restart dan smoke priorities/source/paths tanpa mock.
 
 ## Tugas berikutnya
-1. Bima: PR #10 sudah dibuka dan review Main diminta; tanggapi review pada branch yang sama dan sertakan handoff di setiap perubahan. PR #6 tetap selesai.
-2. Main: review metrik, source paths, klasifikasi, batas izin/approval dan usulan endpoint; hanya Main menetapkan VERIFIED/MERGED serta mengubah kontrak/koordinasi.
-3. Ical: konsumsi konteks kanonis; jangan memakai C01 sebagai sinyal fokus P02, menganggap I0348 approval, atau kandidat sebagai reference permission. Diagnostic internal bukan keputusan penawaran.
-4. Boy/Main: tentukan penyajian metrik dan bukti yang dapat dibaca mentor, beserta unknowns P05, setelah kontrak UI disepakati.
-5. Tim/manusia: konfirmasi kewenangan P01, keputusan harga P02, kriteria/izin kandidat P03/P04 dan discovery P05. Scope akhir tetap P01–P05.
+1. Bima: commit/push dan PR BIMA-03 baru, tambah receipt SHA/URL; tanggapi review Main.
+2. Main: review endpoints/validation/provenance/HTTP evidence dan dependency. Hanya Main menetapkan VERIFIED/MERGED; PR #10 tetap selesai.
+3. Setelah ICAL-03 merged: sync origin/main tanpa cherry-pick, restart server; smoke priorities 200 nyata P01–P05, rank/readiness/union sources/original paths dan latency. Jangan menyebut mock sebagai integrasi ini.
+4. Main/Boy: integrasikan diagnostic/priorities setelah review, join per deal_id; status daftar v1 tidak diubah oleh pekerjaan ini.
+5. Tim: konfirmasi authority/approval/reference criteria/consent/discovery yang masih unknown. Scope final tetap P01–P05, bukan hanya P02.
 
 ## Update WIB
-2026-10-09 17:52:08 WIB (waktu aktual PR #10 dibuat dan review Main diminta; UTC+07:00). Status penyerahan READY_FOR_REVIEW, belum verifikasi Main.
+2026-10-09 18:35:22 WIB (waktu aktual smoke regression BIMA-03, UTC+07:00). READY_FOR_REVIEW; bukan approval Main atau ranking bisnis nyata.
