@@ -60,7 +60,12 @@ PriorityItem wajib:
   ID sama dengan isi berbeda adalah kesalahan, bukan diam-diam overwrite.
 - evidence_paths: array {node_ids: string[], edge_ids: string[], evidence_ids: string[]}
   dari graph konteks deal. Setiap pasangan node berurutan harus dihubungkan edge
-  asli yang sesuai; arah asli edge tidak diubah. Gunakan jalur untuk alasan utama
+  asli yang sesuai; arah asli edge tidak diubah. Traversal node_ids boleh menelusuri
+  edge dalam salah satu arah: pasangan endpoint harus cocok, tetapi source/target,
+  relation dan provenance edge asli tetap. Contoh sah: DL-002 → P02 ← I0348,
+  direpresentasikan node_ids [DL-002, P02, I0348] dengan dua edge asli; ini bukan
+  klaim bahwa interaction_for berarah P02 → I0348. Klarifikasi Main R8, 9 Oktober.
+  Gunakan jalur untuk alasan utama
   ranking/tindakan; jangan membuat edge baru. Bila sumber tidak punya jalur, tampilkan
   record dan keterbatasan eksplisit, bukan hubungan rekaan.
 - limitations: string[] khusus deal, termasuk batas cakupan bukti dan faktor unknown.
