@@ -95,3 +95,7 @@ Struktur v1 tetap. Produsen konteks kanonis adalah implementasi Bima di main:
 - Fixture pengembangan harus mengikuti representasi produsen nyata. Fixture bukan kontrak semantik alternatif.
 
 Lihat docs/reviews/2026-10-09-pr5-7.md untuk reproduksi dan acceptance perbaikan.
+
+## Penugasan fase 3 (belum terimplementasi)
+
+Main menetapkan kontrak tambahan ranking/diagnostic di [PHASE3_CONTRACT.md](PHASE3_CONTRACT.md) untuk ICAL-03/BIMA-03. Endpoint lama di atas tetap berlaku. Dokumen penugasan bukan klaim endpoint baru sudah tersedia; Boy baru mengintegrasikan setelah Main review.
