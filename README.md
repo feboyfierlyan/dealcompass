@@ -15,7 +15,10 @@ Tim: **Boy (@feboyfierlyan), Bima (@bimadji), Ical (@IXALS)**.
 Analisis rules P01–P05, context graph, ranking, diagnostic dan UI sudah merged/verified.
 Review BIMA-04 #23:164/164 backend, setup bersih dan smoke15/15 cold/warm serta
 restart lulus. Review BOY-04 #22:52/52 frontend, build dan sampling browser lulus.
-Jev live, rehearsal tim dan submission belum terverifikasi.
+Paket ICAL-04 #26:174/174tes, decision34/35 (E15 diketahui),ranking15/15; baseline
+CRM tahap→nilai menghasilkan urutan sama. [Brief mentor](evaluation/MENTOR_BRIEF.md)
+dan [klaim demo](evaluation/DEMO_CLAIMS.md) tersedia. Jev live, rehearsal tim dan
+submission belum terverifikasi.
 [Runbook demo](backend/api/DEMO_RUNBOOK.md) · [Fenomena data](backend/graph/DATA_FINDINGS.md).
 
 Pantau [progres berbobot](docs/coordination/TEAM_PROGRESS.md) dan [checklist Main](docs/coordination/MAIN.md).

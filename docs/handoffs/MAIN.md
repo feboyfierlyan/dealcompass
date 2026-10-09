@@ -1,48 +1,46 @@
 # Handoff MAIN
 
 ## Task dan status
-BIMA-04 VERIFIED/MERGED #23. Kesiapan tim86/100, Boy100/Bima100 pada scope tugas,
-Ical85. Rehearsal/paket bukti final dan submission belum diverifikasi.
+ICAL-04 VERIFIED/MERGED #26. Tim92/100, Boy100/Bima100/Ical95; kredit rehearsal
+belum diberikan. Koreksi dokumentasi demo Main menyertai review.
 
 ## Branch dan commit
-integrator/review-bima04-notes dari main2585bb3. Bima awalebe9c78 disinkronkan
-ke head34022b6596472e40b3c8edda2cb0f8e379751389 tanpa perubahan kode miliknya.
-Merge2585bb34ee9bb161394014ded392e1ec1a00d17a. Catatan ini tidak mengubah produk.
+integrator/review-ical04-notes dari maina635ccc. Head Icalf95b34b setelah update
+branch, mergea635ccc7b24d8efd249df8fdbbae99087445f0a9. Evaluation tidak berubah
+pada update dari1fcbab7; Main hanya menambahkan koreksi prosa, bukan formula.
 
 ## File dan fungsi
-Review BIMA-04 mencatat suite164, setup bersih, lifecycle dan verifikasi temuan.
-MAIN/TEAM_PROGRESS memperbarui tugas/inventaris/kredit, README menautkan runbook
-dan fenomena data. Handoff ini diperbarui untuk audit Main.
+Review ICAL-04 mencatat174tes,34/35decision,15/15ranking dan baseline identik.
+MENTOR_BRIEF/DEMO_CLAIMS: arah edge P01, urutan baca dua sumber P02, harga pilot,
+field baseline dan status UI diperjelas. MAIN/TEAM_PROGRESS/README diperbarui.
 
 ## Kontrak dan dependency
-Tidak mengubah API/metode/CI/dependency/dataset. Scope P01–P05, snapshot2026-10-01.
-Revisi R8 milik Ical; tidak diatribusikan ulang kepada Bima.
+API/backend/metode/dataset/dependency tidak berubah. Snapshot2026-10-01,
+P01–P05; baseline sengaja terbatas dan bukan ukuran seluruh produk CRM.
 
 ## Cara menjalankan
-Ikuti backend/api/DEMO_RUNBOOK.md. Checker python -m backend.api.smoke_demo
---base-url http://127.0.0.1:8000 --timeout 30.
-Jalankan backend rules sendiri; stop/restart hanya proses sendiri.
+python -m evaluation.run_eval --no-write; python -m evaluation.baseline_crm
+--no-write. Gunakan runbook Bima untuk start backend rules dan UI Boy.
 
 ## Pengujian aktual
-Main164/164backend PASS48.822s; CI head34022b6 PASS. Setup requirements venv
-bersih dan pip check PASS; empat smoke15/15 pada PID50659→50776, saat mati exit1.
-Handoff --all/ownership/diff PASS. Row asli/producer cocok dengan DATA_FINDINGS.
-Catatan docs ini diuji handoff/ownership/diff dan CI required sebelum merge.
+Main174/174tests50.117s pada venv bersih. Run evaluasi/baseline dibandingkan
+JSON tersimpan: identik kecuali timestamp/durasi. E15 tetap gagal; inti34/34.
+CI PR26 PASS. Handoff/ownership/diff PASS. Panah diperiksa terhadap graph asli;
+harga skenario/preseden diperiksa producer/row asli. PR docs diuji checks danCI.
 
 ## Fixture dan keterbatasan
-20 tes baru transport/corruption sintetis terpisah dari socket/restart nyata.
-Suite lokal memakai venv review lama; konflik paket eksternal ditemukan saat
-pip check sehingga setup+restart diulang di venv bersih, lulus. CI juga lulus.
-Frontend52 tes/browser adalah review BOY-04 sebelumnya, tidak diulang kali ini.
-Tidak mengklaim Jev live, deployment, rehearsal tim atau submission.
+Decision dataset7/7,sintetis16/17,mock9/9,replay2/2; ranking asli5/5,mutasi10/10.
+Tidak ada Jev live/holdout/labelclosing/uplift. Unit suite174PASS tidak berarti
+benchmark35/35. Browser/lifecycle merujuk review Boy/Bima sebelumnya, tidak diulang.
 
 ## Blocker
-Tidak ada blocker BIMA-04. Paket ICAL-04 dan latihan/paket penyerahan masih perlu
-verifikasi; kesiapan86 adalah bobot internal, bukan peluang juara.
+Tidak ada blocker paket ICAL-04. Jev live BLOCKED khusus bonus menurut handoff
+Ical; tidak menghambat rules. Rehearsal dan penyerahan belum terverifikasi.
 
 ## Tugas berikutnya
-Boy demo3–5menit, Bima startup/recovery dan penjelasan sumber, Ical paket evaluasi/
-mentor ICAL-04. Main review paket Ical, periksa brief dan rehearsal lalu submission.
+Tim latihan3–5menit: Boy produk, Bima data/startup, Ical alasan/policy/batas.
+Main verifikasi latihan, cocokkan brief dan paket penyerahan. Jangan ubah ranking
+agar berbeda dari baseline atau mengklaim probabilitas closing.
 
 ## Update WIB
-2026-10-09 20:43 WIB — review BIMA-04 dan progres berbobot.
+2026-10-09 20:57 WIB — review ICAL-04 dan koreksi dokumen Main.
