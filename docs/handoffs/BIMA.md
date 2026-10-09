@@ -14,7 +14,9 @@ BIMA-01 / Issue #2 / [PR #6](https://github.com/feboyfierlyan/dealcompass/pull/6
 ## Branch dan commit
 Branch `bima/data-graph`; checkout awal BIMA-02 bersih. `git fetch origin` dan fast-forward `origin/main` ke `ddf7a2a` berhasil; pekerjaan BIMA-01 dipertahankan.
 
-Commit dan PR BIMA-02 belum dipublikasikan pada pembaruan ini; receipt publikasi akan ditambahkan setelah operasi Git/GitHub berhasil. Histori BIMA-01: commit kode `642d97fec3c524f888d1d3d9430fc5cf863f2659`, catatan publikasi `c5e8820f3a76cd6d1669b665efd961233490fd5e`, kemudian PR #6 merged oleh Main.
+Commit kode BIMA-02 beserta handoff: [`3b172621eee3a4f19738c4d57a668a2faad099bf`](https://github.com/feboyfierlyan/dealcompass/commit/3b172621eee3a4f19738c4d57a668a2faad099bf). `git push origin bima/data-graph` berhasil tanpa force. **[PR #10](https://github.com/feboyfierlyan/dealcompass/pull/10)** baru dibuka, base `main`, status open, review diminta ke Main (`feboyfierlyan`). Pembaruan receipt ini disertakan pada commit handoff terpisah, bukan klaim approval review.
+
+Histori BIMA-01: commit kode `642d97fec3c524f888d1d3d9430fc5cf863f2659`, catatan publikasi `c5e8820f3a76cd6d1669b665efd961233490fd5e`, kemudian PR #6 merged oleh Main.
 
 ## File dan fungsi
 | File/fungsi baru | Input → output dan batas |
@@ -113,7 +115,8 @@ Single deal: panggil `analyze_deal_initial(build_deal_context('DL-002'))`; bukan
 - Run final setelah pembersihan assertion incidental: perintah sama — **75 tes lulus, 10.683 s**. Total 65 tes Bima (48 baru BIMA-02), 10 bootstrap/handoff; tidak ada perubahan kode setelah run ini.
 - Smoke fungsi internal aktual pada **17:47:08 WIB**: canonical contexts → metrics/findings → serialisasi JSON strict dan round-trip consumer → EvidenceRecord validation → lookup sumber. Semua excerpt sama dengan row raw, source_file/source_id tepat, lima akun lengkap; setiap temuan memiliki komponen wajib dan evidence resolvable. Kandidat suitability/willingness/consent null; statistik not_assessed. Output `SMOKE PASS: canonical contexts -> metrics/findings -> JSON consumer -> original source rows`.
 - Smoke sebelumnya pada 17:43:22 WIB juga memeriksa jalur identity/overlap dan setiap sumber laporan. Tidak membuat file smoke permanen atau mengubah dataset.
-- `python scripts/check_handoff.py --all` — lulus: “Handoff valid. Main tetap memverifikasi kebenaran laporan dan integrasi.” Validasi diff committed dicatat setelah commit berhasil.
+- `python scripts/check_handoff.py --all` — lulus: “Handoff valid. Main tetap memverifikasi kebenaran laporan dan integrasi.”
+- `python scripts/check_handoff.py --base origin/main --head HEAD --branch bima/data-graph` pada commit kode `3b17262` — lulus terhadap diff committed; hanya tujuh file Bima/handoff berubah.
 
 BIMA-01 historis: 27 tes, HTTP detail seluruh DL-001–DL-005 200, unknown 404 dan analyzer unavailable 501 pernah diamati sebelum merge PR #6. **Bukan** smoke HTTP baru BIMA-02. Frontend/UI, Jev live, rekomendasi/ranking Ical dan end-to-end produk tidak diuji pada BIMA-02.
 
@@ -128,11 +131,11 @@ CRM adalah snapshot 2026-10-01; tidak mendukung tanggal lain. Laporan internal t
 Tidak ada blocker untuk analisis internal P01–P05 dan sumbernya. Integrasi field/endpoint/UI menunggu keputusan Main atas usulan kontrak; suitability/izin referensi dan konfirmasi procurement membutuhkan informasi bisnis di luar dataset, dinyatakan unknown bukan diisi rekaan. Jev/ranking/evaluasi tetap milik Ical.
 
 ## Tugas berikutnya
-1. Bima: commit/push dan buka PR BIMA-02 baru dengan handoff ini; tambah receipt setelah berhasil. PR #6 tetap selesai.
+1. Bima: PR #10 sudah dibuka dan review Main diminta; tanggapi review pada branch yang sama dan sertakan handoff di setiap perubahan. PR #6 tetap selesai.
 2. Main: review metrik, source paths, klasifikasi, batas izin/approval dan usulan endpoint; hanya Main menetapkan VERIFIED/MERGED serta mengubah kontrak/koordinasi.
 3. Ical: konsumsi konteks kanonis; jangan memakai C01 sebagai sinyal fokus P02, menganggap I0348 approval, atau kandidat sebagai reference permission. Diagnostic internal bukan keputusan penawaran.
 4. Boy/Main: tentukan penyajian metrik dan bukti yang dapat dibaca mentor, beserta unknowns P05, setelah kontrak UI disepakati.
 5. Tim/manusia: konfirmasi kewenangan P01, keputusan harga P02, kriteria/izin kandidat P03/P04 dan discovery P05. Scope akhir tetap P01–P05.
 
 ## Update WIB
-2026-10-09 17:47:08 WIB (waktu aktual smoke BIMA-02; UTC+07:00). Status penyerahan READY_FOR_REVIEW, belum verifikasi Main.
+2026-10-09 17:52:08 WIB (waktu aktual PR #10 dibuat dan review Main diminta; UTC+07:00). Status penyerahan READY_FOR_REVIEW, belum verifikasi Main.
