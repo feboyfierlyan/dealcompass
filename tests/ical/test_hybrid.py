@@ -183,6 +183,46 @@ class HybridAnalysisTests(unittest.TestCase):
                 self.run_deal(service, refresh=True)
                 self.assertEqual(service.workflows, 2, 'only a deliberate refresh retries')
 
+    def _race_after_fast_path_miss(self, counter):
+        """A misses the fast-path lookup and pauses; B runs the whole workflow; then A resumes (review P2)."""
+        service = self.service(counter, path=None)
+        ctx, diag = inputs('DL-002')
+        original, paused, resume = service._stored, threading.Event(), threading.Event()
+        a_thread = {}
+
+        def stored(key):
+            if threading.current_thread() is a_thread.get('t') and not paused.is_set():
+                paused.set()
+                resume.wait(10)
+                return None  # A's stale miss from before B finished
+            return original(key)
+        service._stored = stored
+        out = {}
+        a = threading.Thread(target=lambda: out.__setitem__('a', service.analyze('DL-002', context=ctx, diagnostic=diag)))
+        a_thread['t'] = a
+        a.start()
+        self.assertTrue(paused.wait(10))
+        out['b'] = service.analyze('DL-002', context=ctx, diagnostic=diag)
+        after_b = counter.requests
+        resume.set()
+        a.join(10)
+        return service, out, after_b
+
+    def test_workflow_completed_between_miss_and_leader_election_is_not_run_again(self):
+        counter = Counter()
+        service, out, after_b = self._race_after_fast_path_miss(counter)
+        self.assertEqual(service.workflows, 1)
+        self.assertEqual(counter.requests, after_b, 'A must not start a second paid workflow')
+        self.assertEqual((out['b']['analysis']['cache'], out['a']['analysis']['cache']), ('fresh', 'hit'))
+        self.assertEqual(out['a']['analysis']['analysis_id'], out['b']['analysis']['analysis_id'])
+
+    def test_failure_cache_cannot_be_bypassed_by_the_same_race(self):
+        counter = Counter('timeout')
+        service, out, after_b = self._race_after_fast_path_miss(counter)
+        self.assertEqual(service.workflows, 1)
+        self.assertEqual(counter.requests, after_b)
+        self.assertEqual((out['a']['analysis']['outcome'], out['a']['analysis']['cache']), ('jev_unavailable', 'hit'))
+
     def test_failure_retry_window_expires(self):
         clock = [1000.0]
         counter = Counter('timeout')

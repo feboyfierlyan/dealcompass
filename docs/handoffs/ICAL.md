@@ -3,6 +3,13 @@
 ## Current update — ICAL-05 Rules + Jev default deal analysis, 2026-10-10 03:50 WIB
 Status **READY_FOR_REVIEW** (pelaksana Ical atas penugasan pengguna). Main menetapkan VERIFIED/MERGED.
 
+### Revisi review Main (2026-10-10) — [P2] race cache vs pemilihan leader
+- `AnalysisService.analyze`: lookup cepat tanpa lock tetap, lalu **pengecekan ulang cache + negative cache dan
+  pemilihan leader dalam satu lock** (`_stored`). Workflow yang selesai di antara miss dan lock disajikan sebagai
+  `cache: hit`, tidak dijalankan lagi. Negative cache punya lock sendiri karena dibaca saat lock layanan dipegang.
+- Regresi (barrier): A miss lalu berhenti, B menyelesaikan workflow, A lanjut → 1 workflow, request provider
+  tidak bertambah, A `hit`; varian timeout → A mendapat fallback dari negative cache. `test_hybrid` 19/19.
+
 ### Audit sebelum perubahan (kondisi main 103cfe0)
 - Sudah hybrid: `analyze_deal_trace` (mode rules|jev|replay, Choice hambatan, Noul klaim approval,
   Score preseden, anggaran 15 dtk, fallback penuh ke rules), `JevClient` + `UsageLedger` (reservasi,
@@ -166,5 +173,6 @@ ICAL-05: Main review & merge engine → route → UI; live smoke terkontrol P02 
 4. Setelah lomba (opsional): holdout terpisah, masukan sales untuk bobot, perbaikan parafrase E15 — bukan sebelum demo (freeze).
 
 ## Update WIB
+2026-10-10 04:40 WIB — revisi review: race leader/cache diperbaiki (ICAL-05 tetap READY_FOR_REVIEW).
 2026-10-10 03:50 WIB (Ical via Claude) — ICAL-05 READY_FOR_REVIEW.
 2026-10-09 20:05 WIB (Ical via Claude).
