@@ -1,4 +1,5 @@
 import type { DealContext, GraphEdge, GraphNode } from './contracts';
+import type { GraphTarget } from './analysisView';
 
 export const INITIAL_NODE_LIMIT = 12;
 export const MAX_VISIBLE_NODES = 24;
@@ -40,6 +41,15 @@ export function pathToDeal(index: GraphIndex, id: string): string[] {
   let parent = index.parent.get(id);
   while (parent) { path.push(parent); parent = index.parent.get(parent); }
   return path.reverse();
+}
+export function focusTarget(index: GraphIndex, target: GraphTarget) {
+  const edge = target.kind === 'edge' ? index.edges.get(target.id) : null;
+  const ends = target.kind === 'node' ? [target.id] : edge ? [edge.source, edge.target] : [];
+  if (!ends.length || ends.some(id => !index.nodes.has(id))) return { ids: [], truncated: false };
+  const path = [...new Set(ends.flatMap(id => pathToDeal(index, id)))];
+  // Preserve the requested endpoints even when an unusually long path must be disclosed.
+  const ids = path.length <= MAX_VISIBLE_NODES ? path : [...path.filter(id => !ends.includes(id)).slice(0, MAX_VISIBLE_NODES - ends.length), ...ends];
+  return { ids, truncated: path.length > MAX_VISIBLE_NODES };
 }
 export function scopeNodes(context: DealContext, index: GraphIndex, scope: GraphScope): string[] {
   const ids = [context.deal.deal_id, context.deal.account_id].filter(id => index.nodes.has(id));

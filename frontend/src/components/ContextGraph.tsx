@@ -1,17 +1,18 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { DealContext, GraphEdge } from '../lib/contracts';
 import { kindLabel } from '../lib/format';
-import { expandNodes, indexGraph, INITIAL_NODE_LIMIT, layoutGraph, MAX_VISIBLE_NODES, neighbors, pathToDeal, scopeNodes, searchNodes, visibleGraph } from '../lib/graphView';
+import { expandNodes, focusTarget, indexGraph, INITIAL_NODE_LIMIT, layoutGraph, MAX_VISIBLE_NODES, neighbors, pathToDeal, scopeNodes, searchNodes, visibleGraph } from '../lib/graphView';
+import type { GraphTarget } from '../lib/analysisView';
 import type { GraphScope } from '../lib/graphView';
 import { Icon } from './Icon';
 
 export type Selection = { kind: 'node' | 'edge' | 'evidence'; id: string } | null;
 const number = (n: number) => n.toLocaleString('id-ID');
 
-export function ContextGraph({ context, selection, onSelect }: { context: DealContext; selection: Selection; onSelect: (value: Selection) => void }) {
+export function ContextGraph({ context, selection, onSelect, initialFocus }: { context: DealContext; selection: Selection; onSelect: (value: Selection) => void; initialFocus?: GraphTarget }) {
   const index = useMemo(() => indexGraph(context), [context]);
   const [scope, setScope] = useState<GraphScope>('focus');
-  const [ids, setIds] = useState(() => scopeNodes(context, index, 'focus').slice(0, INITIAL_NODE_LIMIT));
+  const [ids, setIds] = useState(() => initialFocus ? focusTarget(index, initialFocus).ids : scopeNodes(context, index, 'focus').slice(0, INITIAL_NODE_LIMIT));
   const [query, setQuery] = useState('');
   const [type, setType] = useState('all');
   const [searchPage, setSearchPage] = useState(0);
@@ -19,7 +20,7 @@ export function ContextGraph({ context, selection, onSelect }: { context: DealCo
   const [edgeKind, setEdgeKind] = useState<'all' | 'direct' | 'inferred'>('all');
   const [zoom, setZoom] = useState(1);
   const [width, setWidth] = useState(620);
-  const [notice, setNotice] = useState('');
+  const [notice, setNotice] = useState(() => initialFocus ? focusTarget(index, initialFocus).truncated ? 'Jalur panjang dibatasi 24 node; endpoint sumber tetap ditampilkan. Gunakan pencarian untuk bagian lain.' : 'Fokus dari sumber terpilih. Hanya node dan relasi yang tersedia pada payload; jalur bukan bukti izin atau rekomendasi.' : '');
   const canvas = useRef<HTMLDivElement>(null);
   const marker = `arrow-${useId().replace(/:/g, '')}`;
   useEffect(() => {
