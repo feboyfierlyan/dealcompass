@@ -9,13 +9,16 @@ import type { GraphPath, Selection } from './ContextGraph';
 import { EvidenceDrawer, EvidenceInspector } from './EvidencePanel';
 import { EvidenceBrowser } from './EvidenceBrowser';
 import { Icon } from './Icon';
-import { createAnalysisSession } from '../lib/analysisSession';
+import { activeAnalysis, graphOpenState } from '../lib/activeAnalysis';
+import type { GraphOpenRequest } from '../lib/activeAnalysis';
+import { contextRevision } from '../lib/analysis';
+import type { AnalysisStore } from '../lib/analysis';
 import type { GraphTarget } from '../lib/analysisView';
 import { createResource } from '../lib/resource';
 import type { ResourceState } from '../lib/resource';
 import { enrichContext, mergeEvidence } from '../lib/phase3';
 import type { EvidencePath, Priorities, PriorityItem, PipelineDiagnostic } from '../lib/phase3';
-import { engineLabel, nextTabIndex, priorityKindLabel, recommendationView } from '../lib/present';
+import { nextTabIndex, priorityKindLabel } from '../lib/present';
 import { DiagnosticPanel, Methodology, PriorityFactors, Statistics } from './Phase3Panels';
 import { ActionTab, ReasonsTab } from './DealTabs';
 import type { RankingState } from './DealTabs';
@@ -24,15 +27,16 @@ import { useMedia } from '../lib/useMedia';
 
 type Tab = 'action' | 'reasons' | 'explore';
 type ExploreView = 'graph' | 'evidence' | 'method' | 'diagnostic' | 'technical';
-type GraphRequest = { target?: GraphTarget; paths?: GraphPath[]; sequence: number };
+type GraphRequest = GraphOpenRequest & { target?: GraphTarget; paths?: GraphPath[] };
+const noSubscribe = () => () => {};
 const TABS: { id: Tab; label: string; icon: 'target' | 'file' | 'graph' }[] = [
   { id: 'action', label: 'Next step', icon: 'target' },
   { id: 'reasons', label: 'Evidence', icon: 'file' },
   { id: 'explore', label: 'Context graph', icon: 'graph' },
 ];
 
-export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, rankTotal = null, rankingState = 'unavailable', methodology = null, diagnosticState, retryDiagnostics, onBack }: {
-  deal: Deal; api: DealApi; fixture: boolean; snapshot?: string; priority?: PriorityItem | null; rankTotal?: number | null; rankingState?: RankingState;
+export function DealWorkspace({ deal, api, fixture, snapshot, store = null, priority = null, rankTotal = null, rankingState = 'unavailable', methodology = null, diagnosticState, retryDiagnostics, onBack }: {
+  deal: Deal; api: DealApi; fixture: boolean; snapshot?: string; store?: AnalysisStore | null; priority?: PriorityItem | null; rankTotal?: number | null; rankingState?: RankingState;
   methodology?: Priorities | null; diagnosticState?: ResourceState<PipelineDiagnostic>; retryDiagnostics?: () => void; onBack?: () => void;
 }) {
   const ids = { title: useId(), drawer: useId(), graph: useId(), panel: useId() };
@@ -42,7 +46,6 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
   const [contextError, setContextError] = useState<ApiError | null>(null);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
-  const [preferred, setPreferred] = useState<'priority' | 'session'>('priority');
   const diagnosticRequest = useMemo(() => createResource(async (signal: AbortSignal) => {
     if (!api.diagnostic) throw new ApiError(501, 'Findings are not available.');
     const result = await api.diagnostic(deal.deal_id, signal);
@@ -69,16 +72,14 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
   const localDiagnosticError = joined.diagnosticError ?? diagnosticRefresh.error ?? (diagnosticRefresh.status === 'idle' ? diagnosticState?.error : null);
   const loadingDiagnostic = diagnosticRefresh.status === 'loading' || (diagnosticRefresh.status === 'idle' && (diagnosticState?.status === 'loading' || diagnosticState?.status === 'idle'));
 
-  // The analysis request runs only from an explicit button. Its lifecycle never changes ranking or CRM status.
-  const session = useMemo(() => createAnalysisSession(signal => api.analyze(deal.deal_id, signal)), [api, deal.deal_id]);
-  const request = useSyncExternalStore(session.subscribe, session.getSnapshot);
-  const [receivedAt, setReceivedAt] = useState<string | null>(null);
-  useEffect(() => {
-    if (request.status === 'received') setReceivedAt(new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Jakarta' }).format(new Date()));
-    else if (request.status !== 'failed') setReceivedAt(null);
-  }, [request.status]);
-  const view = recommendationView({ dealId: deal.deal_id, priority: joined.validPriority, session: request, preferred });
-  const sessionError = request.status === 'failed' ? request.error instanceof ApiError ? request.error : new ApiError(0, 'Analysis could not be loaded.') : null;
+  // One automatic analysis workflow per deal + snapshot (store-deduplicated; the backend caches and deduplicates too).
+  // Rules from the priority ranking stay readable while it runs. Tabs, the evidence panel and the plan never start a request.
+  // Keyed by the loaded context revision: same-date source changes ask the backend again (ordinary cached lookup).
+  const revision = useMemo(() => baseContext ? contextRevision(baseContext) : null, [baseContext]);
+  const entry = useSyncExternalStore(store?.subscribe ?? noSubscribe, () => store && snapshot && revision ? store.get(deal.deal_id, snapshot, revision) : null);
+  useEffect(() => { if (store && snapshot && revision) store.ensure(deal.deal_id, snapshot, revision); }, [store, deal.deal_id, snapshot, revision]);
+  const view = activeAnalysis({ dealId: deal.deal_id, priority: joined.validPriority, entry, service: !!store && !!snapshot });
+  const refreshAnalysis = () => { if (store && snapshot && revision) store.refresh(deal.deal_id, snapshot, revision); };
 
   const wide = useMedia('(min-width: 1800px)');
   const [selection, setSelection] = useState<Selection>(null);
@@ -103,30 +104,29 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
     setSelection(null);
     pendingFocus.current = trigger.current; trigger.current = null;
   }
-  function showGraph(request: Omit<GraphRequest, 'sequence'>) {
-    setGraphRequest(current => ({ ...request, sequence: (current?.sequence ?? 0) + 1 }));
+  function showGraph(request: Omit<GraphRequest, 'sequence' | 'version'>) {
+    setGraphRequest(current => ({ ...request, version: view.versionKey, sequence: (current?.sequence ?? 0) + 1 }));
     setTab('explore'); setExplore('graph');
     // On narrow screens the sheet would cover the map: close it and focus the map instead.
     if (request.target && wide) setSelection(request.target); else setSelection(null);
     pendingFocus.current = ids.graph;
   }
-  const allPaths = (joined.validPriority?.evidence_paths ?? []) as EvidencePath[];
+  const allPaths = view.paths as EvidencePath[];
+  const graph = graphOpenState(graphRequest, view);
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true); setContext(null); setContextError(null); setSelection(null); setGraphRequest(null);
-    session.reset(); diagnosticRequest.reset();
+    diagnosticRequest.reset();
     api.context(deal.deal_id, controller.signal).then(data => { if (data.deal.account_id !== deal.account_id || (snapshot && data.snapshot_date !== snapshot)) throw new ApiError(502, 'The deal snapshot or account does not match.'); if (!controller.signal.aborted) setContext(data); })
       .catch(error => { if (!controller.signal.aborted) setContextError(error instanceof ApiError ? error : new ApiError(0, 'Deal data could not be loaded.')); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
-    return () => { controller.abort(); session.reset(); diagnosticRequest.reset(); };
-  }, [api, deal.deal_id, deal.account_id, snapshot, refresh, session, diagnosticRequest]);
-  function analyze() { setPreferred('session'); setTab('action'); void session.run(); }
+    return () => { controller.abort(); diagnosticRequest.reset(); };
+  }, [api, deal.deal_id, deal.account_id, snapshot, refresh, diagnosticRequest]);
   function changeTab(next: Tab, focus = false) {
     setTab(next);
     if (focus) pendingFocus.current = `${ids.panel}-${next}`;
   }
   const shownDeal = context?.deal ?? deal;
-  const requestLabel = { idle: 'Not requested', running: 'Running', received: 'Result received', failed: 'Failed' }[request.status];
   const drawerOpen = !!(selection && context);
   const exploreViews: { id: ExploreView; label: string }[] = [
     { id: 'graph', label: 'Relationships' }, { id: 'evidence', label: `All sources${context ? ` (${context.evidence.length.toLocaleString('en-GB')})` : ''}` },
@@ -157,14 +157,14 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
         {contextError && <ErrorNotice error={contextError} retry={() => setRefresh(v => v + 1)} subject="Deal data"/>}
         {joined.priorityError && <div className="notice error" role="alert"><Icon name="alert" size={18}/><div><strong>Priorities do not match the deal data</strong><p>{joined.priorityError.message}</p></div></div>}
         {tab === 'action' && !loading && !contextError && <ActionTab context={context} priority={joined.validPriority} rankingState={rankingState} view={view} fixture={fixture} snapshot={context?.snapshot_date ?? snapshot ?? null}
-          session={{ status: request.status, error: sessionError, receivedAt }} onEvidence={id => select({ kind: 'evidence', id })} onReasons={() => changeTab('reasons', true)}
-          onShowPaths={() => showGraph({ paths: allPaths })} onAnalyze={analyze} onShowVersion={setPreferred}/>}
+          canRefresh={!!store && !!snapshot} onEvidence={id => select({ kind: 'evidence', id })} onReasons={() => changeTab('reasons', true)}
+          onShowPaths={() => showGraph({ paths: allPaths })} onRefresh={refreshAnalysis}/>}
         {tab === 'reasons' && context && <ReasonsTab priority={joined.validPriority} view={view} context={context} onEvidence={id => select({ kind: 'evidence', id })}
           onEdge={id => showGraph({ target: { kind: 'edge', id } })} onShowPath={path => showGraph({ paths: [path] })}/>}
         {tab === 'explore' && <div className="tab-stack">
           <div className="subnav" role="group" aria-label="Data views">{exploreViews.map(item => <button key={item.id} aria-pressed={explore === item.id} onClick={() => setExplore(item.id)}>{item.label}</button>)}</div>
-          {explore === 'graph' && (context ? <section className="explore-panel" aria-labelledby={ids.graph}><div className="section-intro"><h3 id={ids.graph} tabIndex={-1}>Relationships</h3></div>
-            <ContextGraph key={graphRequest?.sequence ?? 0} initialFocus={graphRequest?.target} initialPaths={graphRequest ? graphRequest.paths : (allPaths.length ? allPaths : undefined)} context={context} selection={selection} onSelect={value => select(value, false)}/></section>
+          {explore === 'graph' && (context ? <section className="explore-panel" aria-labelledby={ids.graph}><div className="section-intro"><h3 id={ids.graph} tabIndex={-1}>Relationships</h3>{graph.rebased && <p className="note" role="status">The analysis was updated. Supporting paths now follow the analysis shown ({view.label}).</p>}</div>
+            <ContextGraph key={graph.key} initialFocus={graph.focus} initialPaths={graph.paths} context={context} selection={selection} onSelect={value => select(value, false)}/></section>
             : !loading && <p className="muted">Relationships will appear when deal data is available.</p>)}
           {explore === 'evidence' && <EvidenceBrowser records={context?.evidence ?? []} selection={selection} onSelect={value => select(value)}/>}
           {explore === 'method' && <section className="explore-panel">{joined.validPriority ? <PriorityFactors item={joined.validPriority} onEvidence={id => select({ kind: 'evidence', id })}/> : <p className="muted">Priority factors are not available for this deal.</p>}{methodology && <Methodology data={methodology}/>}</section>}
@@ -180,14 +180,14 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
             <dl className="tech-list">
               <div><dt>Deal / account ID</dt><dd className="mono">{deal.deal_id} / {deal.account_id}</dd></div>
               <div><dt>Deal owner ID</dt><dd className="mono">{shownDeal.owner_id}</dd></div>
-              <div><dt>CRM list status</dt><dd>{statusLabel[shownDeal.analysis_status]}. CRM does not store analysis results; recommendations come from priorities (GET /api/pipeline/priorities) or re-analysis (POST /api/deals/{deal.deal_id}/analyze).</dd></div>
+              <div><dt>CRM list status</dt><dd>{statusLabel[shownDeal.analysis_status]}. CRM does not store analysis results.</dd></div>
               <div><dt>Data snapshot</dt><dd>{context ? dateLabel(context.snapshot_date) : 'Not loaded'}</dd></div>
-              <div><dt>Displayed recommendation</dt><dd>{view.recommendation ? `${view.source === 'session' ? 'Re-analysis (POST)' : 'Priorities (GET)'} · mode ${view.recommendation.engine_mode} (${engineLabel[view.recommendation.engine_mode]})` : 'None yet'}</dd></div>
-              <div><dt>Analysis request</dt><dd>{requestLabel}</dd></div>
+              <div><dt>Displayed analysis</dt><dd>{view.recommendation ? `${view.label} · ${view.source === 'analysis' ? `POST /api/deals/${deal.deal_id}/analysis · ${view.meta?.analysis_id}` : 'GET /api/pipeline/priorities'} · engine_mode ${view.recommendation.engine_mode}` : 'None yet'}</dd></div>
+              <div><dt>Analysis status</dt><dd>{view.meta ? `${view.meta.outcome} · cache ${view.meta.cache} · ${view.meta.provider_requests} provider request(s)${view.meta.fallback_reason ? ` · ${view.meta.fallback_reason}` : ''}` : view.label}</dd></div>
             </dl>
-            <button className="button secondary small" disabled={loading} onClick={() => { session.reset(); setRefresh(v => v + 1); }}><Icon name="refresh" size={15}/>Refresh deal data</button>
+            <button className="button secondary small" disabled={loading} onClick={() => setRefresh(v => v + 1)}><Icon name="refresh" size={15}/>Refresh deal data</button>
             {joined.validPriority && <details className="raw-source"><summary>Priority JSON</summary><pre>{JSON.stringify(joined.validPriority, null, 2)}</pre></details>}
-            {view.recommendation && <details className="raw-source"><summary>Recommendation JSON</summary><pre>{JSON.stringify(view.recommendation, null, 2)}</pre></details>}
+            {view.recommendation && <details className="raw-source"><summary>Displayed analysis JSON</summary><pre>{JSON.stringify(view.meta ? { recommendation: view.recommendation, analysis: view.meta } : view.recommendation, null, 2)}</pre></details>}
           </section>}
         </div>}
       </div>

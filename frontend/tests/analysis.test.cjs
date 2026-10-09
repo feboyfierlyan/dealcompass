@@ -7,7 +7,10 @@ const build = process.env.ANALYSIS_TEST_BUILD;
 assert.ok(build, 'Compile frontend components and set ANALYSIS_TEST_BUILD first');
 const { englishText } = require(`${build}/lib/english.js`);
 const { ActionTab, ReasonsTab } = require(path.join(build, 'components/DealTabs.js'));
-const { employeeFromContext, recommendationView, splitUnknowns } = require(path.join(build, 'lib/present.js'));
+const { employeeFromContext, splitUnknowns } = require(path.join(build, 'lib/present.js'));
+const { activeAnalysis } = require(path.join(build, 'lib/activeAnalysis.js'));
+const { isAnalysisEnvelope } = require(path.join(build, 'lib/analysis.js'));
+const { validatePaths } = require(path.join(build, 'lib/phase3.js'));
 const { explanationGroups, evidenceGraphLinks } = require(path.join(build, 'lib/analysisView.js'));
 const { indexGraph, focusTarget, visibleGraph } = require(path.join(build, 'lib/graphView.js'));
 const { isContext, isRecommendation } = require(path.join(build, 'lib/contracts.js'));
@@ -21,10 +24,12 @@ const cases = [
 ];
 const escape = s => s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#x27;');
 for (const [id, acceptance] of cases) test(`${id}: real rules response renders intact, retains uncertainty, and evidence opens actual graph`, async () => {
-  const contextResponse=await fetch(`${base}/api/deals/${id}`), analysisResponse=await fetch(`${base}/api/deals/${id}/analyze`,{method:'POST'});
+  const contextResponse=await fetch(`${base}/api/deals/${id}`), analysisResponse=await fetch(`${base}/api/deals/${id}/analysis`,{method:'POST'});
   assert.equal(contextResponse.status,200); assert.equal(analysisResponse.status,200);
-  const context=await contextResponse.json(), r=await analysisResponse.json();
-  assert.ok(isContext(context)); assert.ok(isRecommendation(r));
+  const context=await contextResponse.json(), envelope=await analysisResponse.json(), r=envelope.recommendation;
+  assert.ok(isContext(context)); assert.ok(isAnalysisEnvelope(envelope)); assert.ok(isRecommendation(r));
+  assert.equal(envelope.analysis.outcome,'rules_only'); assert.equal(envelope.analysis.provider_requests,0);
+  validatePaths({evidence_paths:envelope.analysis.evidence_paths}, context);
   assert.equal(r.engine_mode,'rules'); assert.equal(context.deal.rank,null);
   assert.match(r.action,acceptance, `${id}: action retains its business gate (P03/P04: verify latest experience before introduction)`);
   if(id==='DL-003'||id==='DL-004') {
@@ -35,11 +40,11 @@ for (const [id, acceptance] of cases) test(`${id}: real rules response renders i
   if(id==='DL-002') assert.ok(r.approvals_needed.some(x=>/VP Sales.*20%.*Belum ada keputusan sah/.test(x)));
   if(id==='DL-004') assert.ok(r.precedent_comparison.some(x=>/overlap tidak membuktikan saling kenal/.test(x)));
   if(id==='DL-005') assert.ok(r.unknowns.some(x=>/tidak cukup.*bukan berarti tidak ada risiko/.test(x)));
-  // An explicit re-analysis (POST) result, rendered by the same components the app uses.
-  const view=recommendationView({dealId:id, priority:null, session:{status:'received', data:r}, preferred:'session'});
-  assert.equal(view.source,'session');
+  // The active analysis (POST /analysis), rendered by the same components the app uses.
+  const view=activeAnalysis({dealId:id, priority:null, entry:{status:'ready', envelope, refreshing:false, error:null}, service:true});
+  assert.equal(view.source,'analysis');
   const noop=()=>{};
-  const action=renderToStaticMarkup(React.createElement(ActionTab,{context, priority:null, rankingState:'unavailable', view, fixture:false, snapshot:context.snapshot_date, session:{status:'received', error:null, receivedAt:'10.00.00'}, onEvidence:noop, onReasons:noop, onShowPaths:noop, onAnalyze:noop, onShowVersion:noop}));
+  const action=renderToStaticMarkup(React.createElement(ActionTab,{context, priority:null, rankingState:'unavailable', view, fixture:false, snapshot:context.snapshot_date, canRefresh:true, onEvidence:noop, onReasons:noop, onShowPaths:noop, onRefresh:noop}));
   const reasons=renderToStaticMarkup(React.createElement(ReasonsTab,{priority:null, view, context, onEvidence:noop, onEdge:noop, onShowPath:noop}));
   const html=action+reasons;
   for(const text of [r.action,r.milestone,...r.approvals_needed,...r.precedent_comparison,...r.unknowns,...context.unknowns]) assert.ok(html.includes(escape(text)), `Full API text retained: ${text.slice(0,80)}`);
@@ -52,8 +57,8 @@ for (const [id, acceptance] of cases) test(`${id}: real rules response renders i
   if(!r.approvals_needed.length) assert.ok(action.includes('This does not mean the action is approved.'));
   // The precedent section only appears when the data holds candidate decisions; an empty "none" block is not rendered.
   order(reasons,['Cited sources',...(r.precedent_ids.length||context.candidate_decisions.length?['Historical decisions']:[]),'Analysis reasoning','Unknown information']);
-  assert.ok(action.includes('Rules-based analysis')); assert.ok(!html.includes('Jev live'));
-  assert.ok(action.includes('Requested re-analysis at 10.00.00 · priority order unchanged'));
+  assert.ok(action.includes(id==='DL-005' ? 'More information needed' : '>Rules-based<')); assert.ok(!html.includes('Rules + Jev'), 'rules mode never claims Jev'); assert.ok(!html.includes('Jev live'));
+  assert.ok(action.includes('Rules-based analysis. Jev is not enabled on this server.'));
   const owner=employeeFromContext(context,r.owner_id);
   if(owner) assert.ok(action.includes(escape(owner.name))&&action.includes(`>${r.owner_id}<`),'Owner name only from the employees.csv record, ID kept');
   else if(r.owner_id) assert.ok(action.includes(`Employee ID ${r.owner_id}`),'Owner without a verifiable name stays an ID');

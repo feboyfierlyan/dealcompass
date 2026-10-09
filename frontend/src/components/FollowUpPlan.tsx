@@ -3,16 +3,17 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { DealContext, Recommendation } from '../lib/contracts';
 import { employeeFromContext, splitUnknowns } from '../lib/present';
 import { buildFollowUpBrief } from '../lib/planning';
+import type { BriefAnalysis } from '../lib/planning';
 import { Icon } from './Icon';
 
 /** Native modal isolates a single preparation task. Copying never marks business work done. */
-export function FollowUpPlan({ recommendation, context, snapshot, onClose }: {
-  recommendation: Recommendation; context: DealContext | null; snapshot: string | null; onClose: () => void;
+export function FollowUpPlan({ recommendation, context, snapshot, analysis = null, onClose }: {
+  recommendation: Recommendation; context: DealContext | null; snapshot: string | null; analysis?: BriefAnalysis | null; onClose: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null), title = useRef<HTMLHeadingElement>(null), field = useRef<HTMLTextAreaElement>(null);
   const titleId = useId(), noteId = useId();
   const [copy, setCopy] = useState<'idle' | 'pending' | 'copied' | 'failed'>('idle');
-  const brief = buildFollowUpBrief(recommendation, context, snapshot);
+  const brief = buildFollowUpBrief(recommendation, context, snapshot, analysis);
   const owner = employeeFromContext(context, recommendation.owner_id);
   const readable = englishText(recommendation.action).replace(/\bE\d{2,}\b/g, id => employeeFromContext(context, id)?.name ?? id);
   const unknowns = splitUnknowns(recommendation, context);
@@ -39,7 +40,7 @@ export function FollowUpPlan({ recommendation, context, snapshot, onClose }: {
     }}
     onCancel={e => { e.preventDefault(); onClose(); }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
     <div className="plan-header"><div><h2 ref={title} id={titleId} tabIndex={-1}>Follow-up plan</h2></div><button className="icon-button" aria-label="Close follow-up plan" onClick={onClose}><Icon name="close"/></button></div>
-    <p id={noteId} className="plan-note">Draft · {context?.deal.account_name ?? recommendation.deal_id} · Not sent or saved to CRM.</p>
+    <p id={noteId} className="plan-note">Draft · {context?.deal.account_name ?? recommendation.deal_id} · Not sent or saved to CRM.{analysis ? ` · ${analysis.label}` : ''}</p>
     <div className="plan-body">
       <div className="plan-assignee"><Icon name="user" size={17}/><strong>{owner?.name ?? recommendation.owner_id ?? 'Owner not assigned'}</strong><span>· {snapshot ? `Data ${snapshot}` : 'Snapshot date unavailable'}</span></div>
       <section><h3>Proposed action</h3><p className="plan-action">{readable}</p></section>

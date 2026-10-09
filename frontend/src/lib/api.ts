@@ -2,6 +2,8 @@ import { isContext, isDealList, isRecommendation } from './contracts';
 import type { DealContext, DealList, Recommendation } from './contracts';
 import { isPriorities, isPipelineDiagnostic, isDealDiagnostic } from './phase3';
 import type { Priorities, PipelineDiagnostic, Diagnostic } from './phase3';
+import { isAnalysisEnvelope } from './analysis';
+import type { AnalysisEnvelope } from './analysis';
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); this.name = 'ApiError'; }
@@ -10,6 +12,8 @@ export interface DealApi {
   list(signal: AbortSignal): Promise<DealList>;
   context(id: string, signal: AbortSignal): Promise<DealContext>;
   analyze(id: string, signal: AbortSignal): Promise<Recommendation>;
+  /** Active analysis with provenance. refresh=true only from the explicit Refresh analysis button. */
+  analysis?(id: string, refresh: boolean, signal: AbortSignal): Promise<AnalysisEnvelope>;
   priorities?(signal: AbortSignal): Promise<Priorities>;
   diagnostics?(signal: AbortSignal): Promise<PipelineDiagnostic>;
   diagnostic?(id: string, signal: AbortSignal): Promise<Diagnostic>;
@@ -23,7 +27,7 @@ async function request<T>(path: string, signal: AbortSignal, valid: (v: unknown)
   const timer = setTimeout(() => { timedOut = true; controller.abort(); }, 20000);
   try {
     const response = await fetch(path, { method, signal: controller.signal, headers: { Accept: 'application/json' } });
-    if (!response.ok) throw new ApiError(response.status, `Layanan mengembalikan HTTP ${response.status}.`);
+    if (!response.ok) throw new ApiError(response.status, `The service returned HTTP ${response.status}.`);
     let data: unknown;
     try { data = await response.json(); } catch { throw new ApiError(502, 'The service response is not valid JSON.'); }
     if (!valid(data)) throw new ApiError(502, 'The service response does not match the v1 data contract.');
@@ -54,6 +58,11 @@ export const liveApi: DealApi = {
   },
   analyze: async (id, signal) => {
     const data = await request(`/api/deals/${encodeURIComponent(id)}/analyze`, signal, isRecommendation, 'POST');
+    if (data.deal_id !== id) throw new ApiError(502, 'The analysis does not match the selected deal.');
+    return data;
+  },
+  analysis: async (id, refresh, signal) => {
+    const data = await request(`/api/deals/${encodeURIComponent(id)}/analysis${refresh ? '?refresh=true' : ''}`, signal, isAnalysisEnvelope, 'POST');
     if (data.deal_id !== id) throw new ApiError(502, 'The analysis does not match the selected deal.');
     return data;
   },

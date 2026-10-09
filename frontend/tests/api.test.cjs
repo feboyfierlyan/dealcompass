@@ -56,3 +56,17 @@ test('recommendation for a different deal is rejected and uses POST', async t =>
   });
   await assert.rejects(liveApi.analyze('DL-001', new AbortController().signal), error => error.status === 502);
 });
+test('active analysis uses POST /analysis, refresh only when asked, and rejects a Jev label without provider answers', async t => {
+  const rec = { schema_version: 'v1', deal_id: 'DL-002', action: 'USULAN: x', owner_id: null, milestone: 'm', evidence_ids: [], precedent_ids: [], precedent_comparison: [], approvals_needed: [], unknowns: [], engine_mode: 'jev' };
+  const meta = { analysis_id: 'a', analysis_version: 'v', context_fingerprint: 'f', engine_mode: 'jev', outcome: 'jev_applied', analysis_status: 'ready', fallback_reason: null, cache: 'fresh', generated_at: '2026-10-10T03:00:00+00:00', provider_requests: 2, model: 'jev-x', gate: 'g', evidence_paths: [], path_limitations: [] };
+  const urls = [];
+  let body = { schema_version: 'v1', deal_id: 'DL-002', snapshot_date: '2026-10-01', recommendation: rec, analysis: meta };
+  t.mock.method(global, 'fetch', async (url, options) => { urls.push([url, options.method]); return response(body); });
+  assert.equal((await liveApi.analysis('DL-002', false, new AbortController().signal)).analysis.outcome, 'jev_applied');
+  await liveApi.analysis('DL-002', true, new AbortController().signal);
+  assert.deepEqual(urls, [['/api/deals/DL-002/analysis', 'POST'], ['/api/deals/DL-002/analysis?refresh=true', 'POST']]);
+  body = { ...body, analysis: { ...meta, provider_requests: 0 } };
+  await assert.rejects(liveApi.analysis('DL-002', false, new AbortController().signal), error => error.status === 502);
+  body = { ...body, deal_id: 'DL-001', recommendation: { ...rec, deal_id: 'DL-001' }, analysis: meta };
+  await assert.rejects(liveApi.analysis('DL-002', false, new AbortController().signal), error => error.status === 502);
+});

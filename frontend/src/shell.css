@@ -1,0 +1,54 @@
+/* App shell: quiet sidebar, one topbar, content first. Builds on the corporate dark tokens.
+   Sidebar classes are prefixed and scoped: `.workspace` belongs to the deal detail/evidence grid (style.css). */
+body { background: var(--bg); }
+.shell { display: grid; grid-template-columns: 216px minmax(0, 1fr); min-height: 100vh; }
+.sidebar { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 18px; padding: 16px 10px; background: #161816; border-right: 1px solid var(--line); }
+.sidebar .sidebar-workspace { display: flex; align-items: center; gap: 8px; padding: 4px 8px 6px; font-size: 14px; }
+.sidebar .sidebar-workspace-mark { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 750; }
+.sidebar .sidebar-workspace-sep { color: var(--muted); }
+.sidebar nav { display: flex; flex-direction: column; gap: 2px; }
+.nav-link { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 36px; padding: 6px 10px; border-radius: 7px; background: none; color: var(--ink-2); font-size: 14px; font-weight: 500; text-align: left; }
+.nav-link svg { color: var(--muted); }
+.nav-link:hover { background: #1f231f; color: var(--ink); }
+.nav-link[aria-current=page] { background: #262b26; color: var(--ink); }
+.nav-link[aria-current=page] svg { color: var(--accent); }
+.sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 4px; }
+.brand-line { display: flex; align-items: center; gap: 8px; padding: 6px 10px; font-size: 12px; color: var(--muted); }
+.nav-link.dev { font-size: 12px; color: var(--muted); min-height: 32px; }
+.shell-main { min-width: 0; display: flex; flex-direction: column; }
+.topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; min-height: 48px; padding: 0 28px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.crumb { font-size: 14px; font-weight: 600; }
+.crumb-note { font-size: 12px; color: var(--muted); }
+.shell-content { flex: 1; min-width: 0; }
+.page-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 22px; }
+.page-head h1 { font-size: 22px; font-weight: 650; letter-spacing: -.01em; }
+.page-head p { color: var(--muted); font-size: 14px; }
+
+/* Priorities view inside the shell: the deal list is the second column, not a second sidebar. */
+.shell .layout { min-height: calc(100vh - 48px); }
+.shell .queue { top: 48px; min-height: calc(100vh - 48px); max-height: calc(100vh - 48px); background: var(--bg); }
+.shell .queue-workspace, .shell .queue-section-label { display: none; }
+
+/* Deals table */
+.table-page { padding: 28px 32px; max-width: 1080px; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.data-table th, .data-table td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; font-weight: 400; }
+.data-table thead th { color: var(--muted); font-size: 12px; font-weight: 500; }
+.data-table tbody tr:hover { background: #171a17; }
+.data-table .num { font-variant-numeric: tabular-nums; font-weight: 600; }
+.row-link { background: none; padding: 0; color: var(--ink); font-weight: 600; text-align: left; }
+.row-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.status-pill { display: inline-flex; padding: 3px 8px; border-radius: 5px; background: var(--sunk); color: var(--ink-2); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.status-pill.warn { background: #3a2f17; color: #f0c674; }
+.status-pill.ok { background: var(--ok-bg); color: var(--ok-ink); }
+.status-pill.info { background: #1d2a3a; color: #9cc3f0; }
+.table-error { color: #f0a58a; }
+
+/* Analysis status: small, readable; detail stays in the disclosure. */
+.tag.analysis-status { font-weight: 600; }
+.tag.analysis-status.hybrid, .tag.analysis-status.replay { background: var(--accent-soft); color: var(--accent); }
+.tag.analysis-status.checking { background: var(--sunk); color: var(--ink-2); }
+.tag.analysis-status.fallback { background: #3a2f17; color: #f0c674; }
+.tag.analysis-status.more_info { background: #1d2a3a; color: #9cc3f0; }
+.tech-list.compact { margin-top: 10px; font-size: 12px; }

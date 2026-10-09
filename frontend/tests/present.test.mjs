@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   compactRupiah, effectiveSelection, employeeFromContext, engineLabel, evidenceTitle, gateSummary, interactionMeta, nextTabIndex,
-  obstacleEvidence, orderEvidence, pathArrows, pathSteps, priorityKindLabel, recommendationView, relationPhrase, splitUnknowns,
+  obstacleEvidence, orderEvidence, pathArrows, pathSteps, priorityKindLabel, relationPhrase, splitUnknowns,
 } from '../src/lib/present.ts';
 
 const deals = ['DL-001', 'DL-002', 'DL-003', 'DL-004', 'DL-005'];
@@ -22,28 +22,6 @@ test('selection: a deal the user picked is not replaced when the ranking arrives
   assert.equal(effectiveSelection({ items: deals, ranked: null, userChoice: 'DL-002' }), 'DL-002');
   assert.equal(effectiveSelection({ items: deals, ranked: ['DL-004', 'DL-001', 'DL-002'], userChoice: 'DL-002' }), 'DL-002');
   assert.equal(effectiveSelection({ items: deals.filter(id => id !== 'DL-002'), ranked: ['DL-004'], userChoice: 'DL-002' }), 'DL-004');
-});
-
-test('recommendation: the ranking version shows without any request; a re-analysis shows only when received for the same deal', () => {
-  const idle = recommendationView({ dealId: 'DL-002', priority: priority('DL-002'), session: { status: 'idle', data: null }, preferred: 'priority' });
-  assert.equal(idle.source, 'priority'); assert.equal(idle.recommendation.action, 'dari urutan prioritas'); assert.equal(idle.hasSession, false);
-  const received = { status: 'received', data: rec('DL-002', 'new analysis') };
-  const session = recommendationView({ dealId: 'DL-002', priority: priority('DL-002'), session: received, preferred: 'session' });
-  assert.equal(session.source, 'session'); assert.equal(session.recommendation.action, 'new analysis'); assert.equal(session.hasPriority, true);
-  const back = recommendationView({ dealId: 'DL-002', priority: priority('DL-002'), session: received, preferred: 'priority' });
-  assert.equal(back.source, 'priority'); assert.equal(back.hasSession, true);
-});
-
-test('recommendation: running or failed requests and responses for another deal are never shown as the current result', () => {
-  for (const status of ['running', 'failed']) {
-    const view = recommendationView({ dealId: 'DL-002', priority: priority('DL-002'), session: { status, data: rec('DL-002', 'lama') }, preferred: 'session' });
-    assert.equal(view.source, 'priority'); assert.notEqual(view.recommendation.action, 'lama'); assert.equal(view.sessionStatus, status);
-    assert.equal(recommendationView({ dealId: 'DL-002', priority: null, session: { status, data: rec('DL-002', 'lama') }, preferred: 'session' }).recommendation, null);
-  }
-  const foreign = recommendationView({ dealId: 'DL-002', priority: null, session: { status: 'received', data: rec('DL-001') }, preferred: 'session' });
-  assert.equal(foreign.recommendation, null); assert.equal(foreign.source, null);
-  const wrongPriority = recommendationView({ dealId: 'DL-002', priority: priority('DL-001'), session: { status: 'idle', data: null }, preferred: 'priority' });
-  assert.equal(wrongPriority.recommendation, null); assert.equal(wrongPriority.hasPriority, false);
 });
 
 test('tabs: arrow keys wrap, Home and End jump, other keys do nothing', () => {
@@ -119,5 +97,5 @@ test('cited records: conversations first, then decisions, newest first, nothing 
   assert.equal(records[0].id, 'a');
   assert.equal(compactRupiah(147000000), 'Rp147M'); assert.equal(compactRupiah(37800000), 'Rp37.8M'); assert.equal(compactRupiah(1200000000), 'Rp1.2B');
   assert.equal(priorityKindLabel.acceleration, 'Follow up'); assert.equal(priorityKindLabel.discovery, 'Needs discovery');
-  assert.equal(engineLabel.rules, 'Rules-based analysis'); assert.equal(engineLabel.jev, 'Jev analysis'); assert.equal(engineLabel.replay, 'Recorded analysis (replay)');
+  assert.equal(engineLabel.rules, 'Rules-based'); assert.equal(engineLabel.jev, 'Rules + Jev'); assert.equal(engineLabel.replay, 'Rules + Jev · recorded replay');
 });

@@ -20,6 +20,7 @@ const paths = {
   history: 'M3 12a9 9 0 1 0 3-6.7M3 4v4h4m5-1v5l3 2',
   plus: 'M12 5v14M5 12h14',
   minus: 'M5 12h14',
+  table: 'M4 5h16v14H4zM4 10h16M10 10v9',
 };
 export type IconName = keyof typeof paths;
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
