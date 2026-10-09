@@ -27,9 +27,9 @@ test('selection: a deal the user picked is not replaced when the ranking arrives
 test('recommendation: the ranking version shows without any request; a re-analysis shows only when received for the same deal', () => {
   const idle = recommendationView({ dealId: 'DL-002', priority: priority('DL-002'), session: { status: 'idle', data: null }, preferred: 'priority' });
   assert.equal(idle.source, 'priority'); assert.equal(idle.recommendation.action, 'dari urutan prioritas'); assert.equal(idle.hasSession, false);
-  const received = { status: 'received', data: rec('DL-002', 'hasil analisis ulang') };
+  const received = { status: 'received', data: rec('DL-002', 'new analysis') };
   const session = recommendationView({ dealId: 'DL-002', priority: priority('DL-002'), session: received, preferred: 'session' });
-  assert.equal(session.source, 'session'); assert.equal(session.recommendation.action, 'hasil analisis ulang'); assert.equal(session.hasPriority, true);
+  assert.equal(session.source, 'session'); assert.equal(session.recommendation.action, 'new analysis'); assert.equal(session.hasPriority, true);
   const back = recommendationView({ dealId: 'DL-002', priority: priority('DL-002'), session: received, preferred: 'priority' });
   assert.equal(back.source, 'priority'); assert.equal(back.hasSession, true);
 });
@@ -65,7 +65,7 @@ test('owner: a name only comes from the employees.csv row with the same employee
   assert.deepEqual(employeeFromContext({ evidence: [good] }, 'E06'), { id: 'E06', name: 'Bagus Prakoso', title: 'Sales Executive', evidenceId: 'employees.csv:E06' });
   assert.equal(employeeFromContext({ evidence: [good] }, 'E07'), null);
   assert.equal(employeeFromContext({ evidence: [ev('employees.csv:E06', 'employees.csv', 'E06', JSON.stringify({ employee_id: 'E99', nama: 'Orang Lain' }))] }, 'E06'), null);
-  assert.equal(employeeFromContext({ evidence: [ev('crm_contacts.csv:E06', 'crm_contacts.csv', 'E06', JSON.stringify({ employee_id: 'E06', nama: 'Bukan Karyawan' }))] }, 'E06'), null);
+  assert.equal(employeeFromContext({ evidence: [ev('crm_contacts.csv:E06', 'crm_contacts.csv', 'E06', JSON.stringify({ employee_id: 'E06', nama: 'Bukan Employee' }))] }, 'E06'), null);
   assert.equal(employeeFromContext({ evidence: [ev('employees.csv:E06', 'employees.csv', 'E06', JSON.stringify({ employee_id: 'E06', nama: ' ' }))] }, 'E06'), null);
   assert.equal(employeeFromContext({ evidence: [ev('employees.csv:E06', 'employees.csv', 'E06', 'bukan JSON')] }, 'E06'), null);
   assert.equal(employeeFromContext(null, 'E06'), null); assert.equal(employeeFromContext({ evidence: [good] }, null), null);
@@ -74,20 +74,20 @@ test('owner: a name only comes from the employees.csv row with the same employee
 test('evidence titles reuse record fields; empty values stay empty, not zero; unknown files fall back to the ID', () => {
   const message = 'Pak Andi, untuk menutup Teras Kafe saya usul diskon 20% agar menyamai KasirPro. Mohon keputusan.';
   const email = ev('interactions.jsonl:I0348', 'interactions.jsonl', 'I0348', JSON.stringify({ tipe: 'email_internal', subjek: 'Permintaan diskon 20% Teras Kafe', dari: 'citra@kasirnusa.id', ke: 'andi@kasirnusa.id', isi: message }), '2026-09-28');
-  assert.deepEqual(evidenceTitle(email), { kind: 'Email internal', title: 'Permintaan diskon 20% Teras Kafe' });
+  assert.deepEqual(evidenceTitle(email), { kind: 'Internal email', title: 'Permintaan diskon 20% Teras Kafe' });
   assert.deepEqual(interactionMeta(email), { from: 'citra@kasirnusa.id', to: 'andi@kasirnusa.id', message });
   const usage = value => ev('u', 'feature_usage_monthly.csv', 'F1|2026-09', JSON.stringify({ feature_id: 'F1', bulan: '2026-09', account_id: 'P01', pengguna_aktif: value }));
-  assert.match(evidenceTitle(usage('')).title, /pengguna aktif tidak tercatat$/);
-  assert.match(evidenceTitle(usage(null)).title, /pengguna aktif tidak tercatat$/);
-  assert.match(evidenceTitle(usage(0)).title, / 0 pengguna aktif$/);
+  assert.match(evidenceTitle(usage('')).title, /active users not recorded$/);
+  assert.match(evidenceTitle(usage(null)).title, /active users not recorded$/);
+  assert.match(evidenceTitle(usage(0)).title, / 0 active users$/);
   assert.deepEqual(evidenceTitle(ev('x', 'lain.csv', 'X1', 'bukan JSON')), { kind: 'lain.csv', title: 'X1' });
   assert.equal(interactionMeta(usage('3')), null);
 });
 
 test('relations: plain phrases for known codes; candidate precedents stay "mungkin relevan"; unknown codes are not invented', () => {
-  assert.equal(relationPhrase('interaction_for'), 'interaksi dengan akun');
-  assert.equal(relationPhrase('overlapping_employment'), 'pernah bekerja di organisasi dan periode yang sama dengan');
-  assert.equal(relationPhrase('candidate_precedent_discount_request'), 'keputusan terdahulu yang mungkin relevan');
+  assert.equal(relationPhrase('interaction_for'), 'interaction with account');
+  assert.equal(relationPhrase('overlapping_employment'), 'overlapping employment with');
+  assert.equal(relationPhrase('candidate_precedent_discount_request'), 'potentially relevant past decision');
   assert.equal(relationPhrase('relasi_baru_backend'), 'relasi baru backend');
 });
 
@@ -98,7 +98,7 @@ test('evidence path: reading against an edge keeps its original arrow and endpoi
     edges: [edge('e1', 'DL-002', 'P02', 'deal_for'), edge('e2', 'I0348', 'P02', 'interaction_for')] } };
   const path = { node_ids: ['DL-002', 'P02', 'I0348'], edge_ids: ['e1', 'e2'], evidence_ids: [] };
   assert.equal(pathArrows(path, context), 'DL-002 → P02 ← I0348');
-  assert.deepEqual(pathSteps(path, context).map(s => [s.name, s.type, s.forward]), [['Deal Teras Kafe Group', 'Deal', null], ['Teras Kafe Group', 'Akun', true], ['Permintaan diskon 20% Teras Kafe', 'Interaksi', false]]);
+  assert.deepEqual(pathSteps(path, context).map(s => [s.name, s.type, s.forward]), [['Deal Teras Kafe Group', 'Deal', null], ['Teras Kafe Group', 'Account', true], ['Permintaan diskon 20% Teras Kafe', 'Interaction', false]]);
   assert.deepEqual([context.graph.edges[1].source, context.graph.edges[1].target], ['I0348', 'P02']);
 });
 
@@ -117,7 +117,7 @@ test('cited records: conversations first, then decisions, newest first, nothing 
   const records = [ev('a', 'crm_deals.csv', 'DL', '{}', '2026-09-30'), ev('b', 'decision_log.csv', 'D1', '{}', '2025-01-01'), ev('c', 'interactions.jsonl', 'I1', '{}', '2026-08-01'), ev('d', 'interactions.jsonl', 'I2', '{}', '2026-09-01')];
   assert.deepEqual(orderEvidence(records).map(e => e.id), ['d', 'c', 'b', 'a']);
   assert.equal(records[0].id, 'a');
-  assert.equal(compactRupiah(147000000), 'Rp147 jt'); assert.equal(compactRupiah(37800000), 'Rp37,8 jt'); assert.equal(compactRupiah(1200000000), 'Rp1,2 M');
-  assert.equal(priorityKindLabel.acceleration, 'Percepat tindak lanjut'); assert.equal(priorityKindLabel.discovery, 'Lengkapi informasi');
-  assert.equal(engineLabel.rules, 'Analisis berbasis aturan'); assert.equal(engineLabel.jev, 'Analisis dengan Jev'); assert.equal(engineLabel.replay, 'Rekaman analisis (replay)');
+  assert.equal(compactRupiah(147000000), 'Rp147M'); assert.equal(compactRupiah(37800000), 'Rp37.8M'); assert.equal(compactRupiah(1200000000), 'Rp1.2B');
+  assert.equal(priorityKindLabel.acceleration, 'Follow up'); assert.equal(priorityKindLabel.discovery, 'Needs discovery');
+  assert.equal(engineLabel.rules, 'Rules-based analysis'); assert.equal(engineLabel.jev, 'Jev analysis'); assert.equal(engineLabel.replay, 'Recorded analysis (replay)');
 });

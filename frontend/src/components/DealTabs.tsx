@@ -18,19 +18,19 @@ type View = ReturnType<typeof recommendationView>;
 /** "Why this deal": the customer's own recorded words named by the ranking, plus its stated gate. */
 export function WhyBlock({ priority, context, rankingState, onEvidence }: { priority: PriorityItem | null; context: DealContext | null; rankingState: RankingState; onEvidence: OpenEvidence }) {
   const titleId = useId();
-  if (!priority) return <section className="why-block" aria-labelledby={titleId}><h3 id={titleId}>Mengapa perlu diperhatikan</h3>
-    <p className="muted">{rankingState === 'loading' ? 'Menunggu urutan prioritas…' : rankingState === 'error' ? 'Alasan prioritas belum tersedia karena urutan prioritas gagal dimuat.' : 'Alasan prioritas tidak tersedia pada mode ini.'}</p></section>;
+  if (!priority) return <section className="why-block" aria-labelledby={titleId}><h3 id={titleId}>Why this deal</h3>
+    <p className="muted">{rankingState === 'loading' ? 'Waiting for priorities…' : rankingState === 'error' ? 'Priority reasoning is unavailable because priorities could not be loaded.' : 'Priority reasoning is unavailable in this mode.'}</p></section>;
   const quotes = obstacleEvidence(priority, context);
   const gate = gateSummary(priority);
   return <section className="why-block" aria-labelledby={titleId}>
-    <h3 id={titleId}>Mengapa perlu diperhatikan</h3>
-    {priority.priority_kind === 'discovery' && <p className="lead">Informasi tentang deal ini belum cukup untuk menilai hambatannya, jadi langkah pertamanya melengkapi informasi. Ini bukan tanda deal gagal, kalah, atau bebas risiko.</p>}
+    <h3 id={titleId}>Why this deal</h3>
+    {priority.priority_kind === 'discovery' && <p className="lead">There is not enough information to assess blockers. Start with discovery. This does not mean the deal is lost or risk-free.</p>}
     {quotes.map(e => {
       const meta = interactionMeta(e), { kind, title } = evidenceTitle(e);
       return <figure className="quote" key={e.id}><blockquote>{meta?.message ? `“${meta.message}”` : title}</blockquote>
-        <figcaption><span>{kind} · {dateLabel(e.date)}{meta?.from ? ` · dari ${meta.from}` : ''}</span><button className="link-button" onClick={() => onEvidence(e.id)}>Lihat bukti {e.source_id}</button></figcaption></figure>;
+        <figcaption><span>{kind} · {dateLabel(e.date)}{meta?.from ? ` · from ${meta.from}` : ''}</span><button className="link-button" onClick={() => onEvidence(e.id)}>View source {e.source_id}</button></figcaption></figure>;
     })}
-    {gate && <p className="gate-line"><Icon name="flag" size={16}/><span>Syarat utama menurut analisis prioritas: <strong>{gate}</strong></span></p>}
+    {gate && <p className="gate-line"><Icon name="flag" size={16}/><span>Original priority condition: <strong>{gate}</strong></span></p>}
   </section>;
 }
 
@@ -43,29 +43,29 @@ export function ActionTab({ context, priority, rankingState, view, fixture, snap
   const rerunNote = useId();
   return <div className="tab-stack">
     {r ? <ActionOverview key={`${r.deal_id}-${view.source}-${JSON.stringify(r)}`} recommendation={r} context={context} priority={priority} source={view.source} snapshot={snapshot} fixture={fixture} onEvidence={onEvidence} onReasons={onReasons} onShowPaths={onShowPaths}/>
-      : rankingState === 'loading' && !running && session.status !== 'failed' ? <div className="action-card skeleton" role="status"><span className="visually-hidden">Menyiapkan saran dari urutan prioritas</span><i/><i/><i/></div>
-      : <section className="action-card empty"><h3>Saran untuk deal ini belum tersedia</h3>
-        <p>{rankingState === 'error' ? 'Urutan prioritas gagal dimuat, sehingga saran yang dipakai untuk prioritas belum bisa ditampilkan.' : 'Saran dari urutan prioritas tidak tersedia pada mode ini.'} Anda dapat meminta analisis khusus untuk deal ini.</p>
-        {!running && session.status !== 'failed' && <div className="action-buttons"><button className="button primary" onClick={onAnalyze}><Icon name="arrow" size={17}/>Jalankan analisis untuk deal ini</button></div>}
-        {running && <p className="status-line" role="status"><span className="spinner"/>Menjalankan analisis…</p>}
-        {session.status === 'failed' && session.error && <ErrorNotice error={session.error} retry={onAnalyze} subject="Analisis"/>}
+      : rankingState === 'loading' && !running && session.status !== 'failed' ? <div className="action-card skeleton" role="status"><span className="visually-hidden">Preparing the priority recommendation</span><i/><i/><i/></div>
+      : <section className="action-card empty"><h3>No recommendation available yet</h3>
+        <p>{rankingState === 'error' ? 'Priorities could not be loaded, so their recommendation is unavailable.' : 'Priority recommendations are unavailable in this mode.'} You can request an analysis for this deal.</p>
+        {!running && session.status !== 'failed' && <div className="action-buttons"><button className="button primary" onClick={onAnalyze}><Icon name="arrow" size={17}/>Analyze this deal</button></div>}
+        {running && <p className="status-line" role="status"><span className="spinner"/>Running analysis…</p>}
+        {session.status === 'failed' && session.error && <ErrorNotice error={session.error} retry={onAnalyze} subject="Analysis"/>}
       </section>}
 
-    {r && <section className="origin" aria-label="Asal saran">
-      <details className="analysis-options"><summary><Icon name="history" size={14}/>Versi & analisis ulang</summary><div className="origin-row">
+    {r && <section className="origin" aria-label="Analysis source">
+      <details className="analysis-options"><summary><Icon name="history" size={14}/>Versions & re-analysis</summary><div className="origin-row">
         <p><Icon name="history" size={16}/>{view.source === 'session'
-          ? `Hasil analisis ulang yang Anda minta${session.receivedAt ? ` pukul ${session.receivedAt}` : ''} · urutan prioritas tidak dihitung ulang`
-          : `Dari urutan prioritas${snapshot ? ` · data per ${dateLabel(snapshot)}` : ''}`}</p>
-        <button className="button tertiary" onClick={onAnalyze} disabled={running} aria-describedby={rerunNote}><Icon name="refresh" size={15}/>{running ? 'Menjalankan analisis ulang…' : 'Jalankan analisis ulang'}</button>
-        <span id={rerunNote} className="visually-hidden">Meminta hasil baru untuk deal ini saja. Urutan prioritas tidak berubah.</span>
+          ? `Requested re-analysis${session.receivedAt ? ` at ${session.receivedAt}` : ''} · priority order unchanged`
+          : `From priority ranking${snapshot ? ` · snapshot ${dateLabel(snapshot)}` : ''}`}</p>
+        <button className="button tertiary" onClick={onAnalyze} disabled={running} aria-describedby={rerunNote}><Icon name="refresh" size={15}/>{running ? 'Running analysis…' : 'Run analysis again'}</button>
+        <span id={rerunNote} className="visually-hidden">Request a new result for this deal only. Priority order stays unchanged.</span>
       </div>
-      {view.hasPriority && view.hasSession && <div className="segmented" role="group" aria-label="Versi saran yang ditampilkan">
-        <button aria-pressed={view.source === 'priority'} onClick={() => onShowVersion('priority')}>Saran dari urutan prioritas</button>
-        <button aria-pressed={view.source === 'session'} onClick={() => onShowVersion('session')}>Hasil analisis ulang{session.receivedAt ? ` · ${session.receivedAt}` : ''}</button>
+      {view.hasPriority && view.hasSession && <div className="segmented" role="group" aria-label="Displayed recommendation version">
+        <button aria-pressed={view.source === 'priority'} onClick={() => onShowVersion('priority')}>Priority recommendation</button>
+        <button aria-pressed={view.source === 'session'} onClick={() => onShowVersion('session')}>New analysis{session.receivedAt ? ` · ${session.receivedAt}` : ''}</button>
       </div>}
       </details>
-      <p className="status-line small" role="status">{running ? 'Analisis ulang sedang berjalan. Saran yang tampil belum berubah.' : session.status === 'received' && view.source === 'priority' ? 'Hasil analisis ulang tersedia di Versi & analisis ulang.' : ''}</p>
-      {session.status === 'failed' && session.error && <ErrorNotice error={session.error} retry={onAnalyze} subject="Analisis ulang"/>}
+      <p className="status-line small" role="status">{running ? 'Analysis is running. The displayed recommendation has not changed.' : session.status === 'received' && view.source === 'priority' ? 'New analysis is available under Versions & re-analysis.' : ''}</p>
+      {session.status === 'failed' && session.error && <ErrorNotice error={session.error} retry={onAnalyze} subject="Re-analysis"/>}
     </section>}
   </div>;
 }
@@ -75,13 +75,13 @@ export function ReasonsTab({ priority, view, context, onEvidence, onEdge, onShow
   return <div className="tab-stack">
 
     <WhyBlock priority={priority} context={context} rankingState={priority ? 'ready' : 'unavailable'} onEvidence={onEvidence}/>
-    {r && view.hasPriority && view.hasSession && <p className="version-note">Bukti dan penjelasan di bawah mengikuti <strong>{view.source === 'session' ? 'hasil analisis ulang' : 'saran dari urutan prioritas'}</strong>.</p>}
+    {r && view.hasPriority && view.hasSession && <p className="version-note">Evidence below follows the <strong>{view.source === 'session' ? 'new analysis' : 'priority recommendation'}</strong>.</p>}
     {r && <RecommendationSources ids={r.evidence_ids} context={context} onEvidence={onEvidence}/>}
     {r && <PrecedentList recommendation={r} context={context} onEvidence={onEvidence}/>}
     {priority && <EvidencePaths item={priority} context={context} onEvidence={onEvidence} onEdge={onEdge} onShowPath={onShowPath}/>}
-    {priority ? <PriorityRationale item={priority}/> : <p className="muted">Alasan urutan prioritas belum tersedia.</p>}
+    {priority ? <PriorityRationale item={priority}/> : <p className="muted">Priority reasoning is not available.</p>}
     {r && <ExplanationGroups recommendation={r}/>}
     {r && <UnknownList recommendation={r} context={context}/>}
-    {!r && <p className="muted">Bukti dan penjelasan saran akan tampil setelah saran tersedia.</p>}
+    {!r && <p className="muted">Evidence and reasoning will appear when a recommendation is available.</p>}
   </div>;
 }

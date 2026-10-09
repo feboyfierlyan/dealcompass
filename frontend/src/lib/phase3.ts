@@ -53,7 +53,7 @@ export function mergeEvidence(...registries: Evidence[][]): Evidence[] {
   const result = new Map<string, Evidence>();
   for (const registry of registries) for (const record of registry) {
     const existing = result.get(record.id);
-    if (existing && canonical(existing) !== canonical(record)) throw new Error(`Konflik isi bukti: ${record.id}. Sumber tidak digabungkan.`);
+    if (existing && canonical(existing) !== canonical(record)) throw new Error(`Conflicting evidence: ${record.id}. Sources were not merged.`);
     result.set(record.id, record);
   }
   return [...result.values()];
@@ -63,8 +63,8 @@ export function evidenceIds(value: unknown): string[] {
   function walk(v: unknown) {
     if (Array.isArray(v)) v.forEach(walk);
     else if (obj(v)) for (const [key, child] of Object.entries(v)) {
-      if (key.endsWith('evidence_ids')) { if (!strings(child)) throw new Error('Daftar ID bukti tidak valid.'); child.forEach(id => ids.add(id)); }
-      else if (key.endsWith('evidence_id')) { if (child !== null) { if (!str(child)) throw new Error('ID bukti tidak valid.'); ids.add(child); } }
+      if (key.endsWith('evidence_ids')) { if (!strings(child)) throw new Error('Invalid evidence ID list.'); child.forEach(id => ids.add(id)); }
+      else if (key.endsWith('evidence_id')) { if (child !== null) { if (!str(child)) throw new Error('Invalid evidence ID.'); ids.add(child); } }
       else if (key !== 'evidence') walk(child);
     }
   }
@@ -121,7 +121,7 @@ export function isPipelineDiagnostic(v: unknown): v is PipelineDiagnostic {
 export function matchPipeline(list: DealList, payload: Priorities | PipelineDiagnostic) {
   const items = 'items' in payload ? payload.items : payload.deals;
   if (list.snapshot_date !== payload.snapshot_date || list.items.length !== 5 || items.length !== 5
-    || items.some(i => !list.items.some(d => d.deal_id === i.deal_id && d.account_id === i.account_id))) throw new Error('Snapshot atau pasangan deal/akun pipeline tidak cocok. Hasil ditolak seluruhnya.');
+    || items.some(i => !list.items.some(d => d.deal_id === i.deal_id && d.account_id === i.account_id))) throw new Error('Pipeline snapshot or deal/account mismatch. Results were rejected.');
   return payload;
 }
 export function rankedDeals(list: DealList, p: Priorities) {
@@ -132,18 +132,18 @@ export function rankedDeals(list: DealList, p: Priorities) {
 export function validatePaths(item: PriorityItem, context: DealContext) {
   const nodes = new Set(context.graph.nodes.map(n => n.id)), edges = new Map(context.graph.edges.map(e => [e.id,e]));
   for (const p of item.evidence_paths) {
-    if (!p.node_ids.every(id => nodes.has(id))) throw new Error('Node jalur prioritas tidak ditemukan pada graph konteks.');
+    if (!p.node_ids.every(id => nodes.has(id))) throw new Error('Priority path node not found in the context graph.');
     const sources = new Set<string>();
     p.edge_ids.forEach((id,i) => {
       const edge = edges.get(id), a = p.node_ids[i], b = p.node_ids[i+1];
-      if (!edge || !((edge.source === a && edge.target === b) || (edge.source === b && edge.target === a))) throw new Error('Jalur prioritas tidak cocok dengan endpoint relasi asli.');
+      if (!edge || !((edge.source === a && edge.target === b) || (edge.source === b && edge.target === a))) throw new Error('Priority path does not match the original relationship endpoints.');
       edge.evidence_ids.forEach(id => sources.add(id));
     });
-    if (p.edge_ids.length && (p.evidence_ids.some(id => !sources.has(id)) || [...sources].some(id => !p.evidence_ids.includes(id)))) throw new Error('Provenance jalur tidak cocok dengan relasi asli.');
+    if (p.edge_ids.length && (p.evidence_ids.some(id => !sources.has(id)) || [...sources].some(id => !p.evidence_ids.includes(id)))) throw new Error('Path provenance does not match the original relationships.');
   }
 }
 export function enrichContext(context: DealContext, report: PriorityItem | Diagnostic) {
-  if (context.deal.deal_id !== report.deal_id || context.deal.account_id !== report.account_id || ('snapshot_date' in report && context.snapshot_date !== report.snapshot_date)) throw new Error('Konteks dan hasil tidak cocok untuk deal/akun/snapshot ini.');
+  if (context.deal.deal_id !== report.deal_id || context.deal.account_id !== report.account_id || ('snapshot_date' in report && context.snapshot_date !== report.snapshot_date)) throw new Error('Context and results do not match this deal, account or snapshot.');
   if ('evidence_paths' in report) validatePaths(report as PriorityItem, context);
   return { ...context, evidence: mergeEvidence(context.evidence, report.evidence) };
 }
