@@ -14,6 +14,13 @@ UI ranking/diagnostic belum diimplementasikan: tugas BOY-04 tersedia.
 [Review R8](../reviews/2026-10-09-ical-r8.md). Jev live belum diuji.
 Tidak ada komunikasi otomatis antar-chat AI.
 
+## Progres kesiapan tim
+
+Baseline mentor 9 Oktober19:36WIB: **tim75/100; Boy70/100, Bima90/100, Ical85/100**.
+Bukan rubric panitia atau peluang menang. Bobot, bukti, batas dan target berikutnya
+ada di [TEAM_PROGRESS.md](TEAM_PROGRESS.md). Angka anggota bukan rata-rata total.
+BOY-04, BIMA-04 dan ICAL-04 bisa berjalan paralel; semua baru TODO saat penugasan.
+
 ## Checklist tugas
 
 | ID | Pemilik | Status | Hasil / acceptance |
@@ -29,7 +36,9 @@ Tidak ada komunikasi otomatis antar-chat AI.
 | ICAL-03 | Ical | MERGED #15 | Ranking rules, sumber/path dan referensi terbaru; evaluasi 15/15 |
 | BIMA-03 / R8 | Bima; revisi oleh Ical | MERGED #16; R8 VERIFIED | Priorities/diagnostic asli200; 144 backend dan 34 frontend lulus |
 | BOY-04 | Boy | TODO; prompt siap | UI ranking, diagnostic/anomali dan jalur bukti dari API fase3 |
-| MAIN-02 | Main | TODO | Pertanyaan baru, cross-track, fallback, restart, demo dan submission |
+| BIMA-04 | Bima | TODO; prompt siap | Runbook/smoke/restart demo dan ringkasan fenomena data |
+| ICAL-04 | Ical | TODO; prompt siap | Baseline/pembuktian metode/bahan mentor; Jev live conditional terpisah |
+| MAIN-02 | Main | TODO | Integrasi UI final, rehearsal, kecocokan brief dan submission |
 
 Status: TODO / IN_PROGRESS / BLOCKED / READY_FOR_REVIEW / VERIFIED / MERGED.
 Centang selesai hanya setelah verifikasi. Jangan otomatis mengubah status
@@ -67,10 +76,12 @@ ketika anggota hanya mengatakan selesai.
 
 - Boy: jalankan [BOY-04](../prompts/BOY-04.md) dari main terbaru di branch baru
   boy/priorities-diagnostics dan PR baru. API fase3 sudah siap; jangan buka ulang #14.
-- Ical: R8 selesai/merged, takeover berakhir. Siapkan penjelasan metode/sensitivitas
-  dari evaluation/ranking.md untuk mentor; tugas kode berikutnya belum ditetapkan.
-- Bima: BIMA-03 selesai/merged; tidak perlu mengerjakan ulang R8. Pemilik modul tetap
-  Bima. Kontrak API tidak berubah sepihak selama Boy mengintegrasikan.
+- Ical: jalankan [ICAL-04](../prompts/ICAL-04.md) sekarang di branch baru
+  ical/evidence-demo-pack: baseline, bukti, jawaban mentor; Jev conditional/timebox.
+- Bima: jalankan [BIMA-04](../prompts/BIMA-04.md) sekarang di branch baru
+  bima/demo-readiness: runbook, smoke/restart dan fenomena data. Jangan ulang R8.
+- Ketiganya paralel; kontrak API/metode dibekukan selama UI diintegrasikan. Uji
+  browser end-to-end dan rehearsal final baru menunggu BOY-04 siap.
 - Main: review BOY-04 setelah PR tersedia; selanjutnya demo akhir dan submission.
   Status request sesi, status analisis, approval dan ranking harus tetap berbeda.
 - Semua: WAJIB handoff .md pada PR sendiri; status maksimal READY_FOR_REVIEW.
@@ -117,3 +128,5 @@ prompt ke chat Claude Ical; penugasan tertulis bukan bukti chat itu sudah bekerj
 2026-10-09 19:22 WIB: #14 merged b059bad, R9 VERIFIED. Main mengulang 34/34 frontend dan build pada c6c368e; CI lulus. Komponen UI tidak berubah pada delta R9; smoke browser Boy dilaporkan terpisah. R8 tetap ditangani Ical.
 
 2026-10-09 19:30 WIB: #16 merged 8581de8, R8 VERIFIED. Main mengulang144 backend/34 frontend dan smoke socket API asli200. BOY-04 kini ditugaskan; endpoint siap bukan berarti UI sudah selesai.
+
+2026-10-09 19:36 WIB: baseline kesiapan75/100 ditetapkan beserta bobot terbuka. BIMA-04 dan ICAL-04 ditugaskan paralel dengan BOY-04; penugasan bukan klaim pekerjaan telah dimulai.
