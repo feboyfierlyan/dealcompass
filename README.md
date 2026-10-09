@@ -10,13 +10,17 @@ Tim: **Boy (@feboyfierlyan), Bima (@bimadji), Ical (@IXALS)**.
 3. Buka prompt peran: [Boy](docs/prompts/BOY.md), [Bima](docs/prompts/BIMA.md), [Ical](docs/prompts/ICAL.md).
 4. Ikuti [cara kontribusi](CONTRIBUTING.md); setiap PR wajib catatan `.md`.
 
-## Status awal
+## Status saat ini
 
-Fondasi tersedia: dataset, daftar lima deal dari CSV, endpoint health,
-frontend React, kontrak, tugas, catatan handoff, serta pemeriksaan CI.
-Graph detail dan analisis **belum diimplementasikan**: endpoint-nya memberi 501.
-Tidak ada Jev live, ranking, atau rekomendasi yang diklaim sudah berjalan.
-P02 adalah uji integrasi pertama; produk final wajib **P01-P05**.
+Analisis rules P01–P05, context graph, sumber yang dapat ditelusuri, ranking dan
+API diagnostic sudah merged/verified. Review gabungan terakhir:144tes backend,
+34tes frontend, build lulus; priorities/diagnostic asli200. UI analisis dan graph
+tersedia; UI ranking/diagnostic sedang ditugaskan melalui BOY-04. Jev live belum diuji.
+
+Pantau [progres berbobot](docs/coordination/TEAM_PROGRESS.md) dan [checklist Main](docs/coordination/MAIN.md).
+Tugas paralel: [Boy04](docs/prompts/BOY-04.md), [Bima04](docs/prompts/BIMA-04.md),
+[Ical04](docs/prompts/ICAL-04.md). Penugasan tidak berarti pekerjaan sudah diverifikasi.
+P02 adalah contoh integrasi, produk tetap mencakup P01–P05.
 
 ## Jalankan
 
@@ -41,7 +45,8 @@ npm run dev
 
 Buka http://localhost:5173. Dokumentasi API: http://127.0.0.1:8000/docs.
 Frontend memakai proxy `/api` Vite. `.env.example` berisi nama konfigurasi;
-adapter Jev berikutnya wajib membaca secret dari lingkungan backend.
+adapter Jev membaca secret dari lingkungan backend; gunakan DEALCOMPASS_ENGINE_MODE=rules
+untuk demo rules tanpa key. Jangan memasukkan secret ke frontend atau repo.
 
 ## Verifikasi
 
