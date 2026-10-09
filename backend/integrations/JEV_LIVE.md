@@ -50,6 +50,22 @@ beserta ledger yang sama, jangan menggandakan counter. Key cukup di backend.
 Batas provider-side/account yang benar-benar global perlu pengaturan di provider;
 dokumentasi API yang diperiksa tidak memberi parameter hard cap token per request.
 
+## Analisis default halaman deal (ICAL-05)
+
+Halaman deal kini memanggil `POST /api/deals/{id}/analysis` **otomatis sekali** untuk deal yang dibuka
+(bukan kelima deal). Rekomendasi rules ranking tampil dulu ("Checking context…"). Backend
+(`backend/decision/hybrid.py`) menjalankan rules, lalu Jev untuk deal yang eligible, memeriksa hasil
+dengan rules dan menyimpan hasil tervalidasi di `DEALCOMPASS_ANALYSIS_CACHE_DB` (default
+`analysis-cache.sqlite3` di folder ledger, **file terpisah dari ledger**; boleh dihapus untuk memaksa
+analisis ulang — ini bukan ledger). Kunjungan ulang, tab, modal dan permintaan bersamaan tidak memanggil
+provider lagi. Gagal → label "Jev unavailable · rules shown"; tidak di-retry selama
+`DEALCOMPASS_JEV_RETRY_AFTER_S` (default 300 dtk) kecuali tombol **Refresh analysis**. P05 nol request.
+Semua request tetap lewat `UsageLedger` yang sama; jangan reset/salin ledger.
+
+Uji live terkontrol (Main, host ledger tim): `jev_live usage` → buka P02 sekali → tunggu label
+"Rules + Jev" → buka P04 lalu kembali ke P02 (harus "Saved analysis…", tanpa request baru) →
+`jev_live usage` lagi. Catat selisih request/token di handoff Main.
+
 ## Fungsi Jev dalam produk
 
 Context Graph menyediakan pesan dan preseden beserta sumbernya. Jev membantu
@@ -59,8 +75,8 @@ kemudian menyusun usulan tindakan dan bukti. Approval diskon tetap ditentukan
 log keputusan dan kewenangan VP Sales, bukan jawaban model. Ranking pipeline
 masih memakai aturan transparan yang telah diuji. Skor Jev bukan peluang closing.
 
-GET daftar/ranking/diagnostic tidak memanggil provider. Tombol **Analisis** mengirim
-POST ke backend; jika konfigurasi Jev aktif, backend mencoba Jev. Bila provider
+GET daftar/ranking/diagnostic tidak memanggil provider. Membuka deal mengirim satu
+POST `/analysis` (lihat bagian di atas); jika konfigurasi Jev aktif, backend mencoba Jev. Bila provider
 gagal atau anggaran waktu habis, seluruh hasil kembali ke rules dan alasannya
 muncul di unknowns. P05 dengan bukti kurang tetap rules; nol panggilan tidak boleh
 mendapat label Jev. Scope produk tetap P01–P05; P02 dipakai untuk uji awal karena

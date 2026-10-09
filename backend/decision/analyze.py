@@ -60,6 +60,7 @@ class DecisionTrace:
     evidence_ids: list[str] = field(default_factory=list)
     validation_issues: list[str] = field(default_factory=list)
     jev_calls: list[dict] = field(default_factory=list)
+    fallback_reason: str | None = None  # kode kegagalan Jev; None bila Jev dipakai atau mode rules
     elapsed_ms: int = 0
 
     def to_dict(self) -> dict:
@@ -139,6 +140,7 @@ def analyze_deal_trace(context: DealContext, mode: str | None = None, client=Non
             rec, trace = _analyze(context, idx, 'rules', None, None, extra_unknowns=[
                 reason + ' Seluruh analisis memakai rules deterministik; '
                 'tidak ada label Jev yang dipakai.'], diagnostic=diagnostic)
+            trace.fallback_reason = failure
         trace.jev_calls = calls
     trace.elapsed_ms = round((time.monotonic() - started) * 1000)
     return rec, trace
