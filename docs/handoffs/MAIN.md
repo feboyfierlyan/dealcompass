@@ -4,10 +4,10 @@
 MAIN-00: VERIFIED. Repo private, akses kolaborator, tiga branch, tiga issue, kontrak, handoff, CI dan proteksi main tersedia.
 
 ## Branch dan commit
-Fondasi: 76eda95 pada main. Pelaporan hasil: branch main/finalize-bootstrap melalui PR; hash PR dapat dilihat di GitHub.
+Fondasi: 76eda95 pada main. Pelaporan hasil: branch integrator/finalize-bootstrap melalui PR; hash PR dapat dilihat di GitHub.
 
 ## File dan fungsi
-Fondasi FastAPI, list_deals, frontend React, kontrak, checker handoff, aturan AI, workflow dan catatan.
+Fondasi FastAPI, list_deals, frontend React, kontrak, checker handoff, aturan AI, workflow dan catatan. Koreksi branch Main menjadi integrator/* karena Git tidak dapat membuat main/* saat main sudah ada; checker memetakannya ke handoff MAIN.md.
 
 ## Kontrak dan dependency
 API v1 ditetapkan pada API_CONTRACT.md dan backend/contracts.py. Node/npm serta Python dependencies dicatat dalam manifest.
@@ -16,7 +16,7 @@ API v1 ditetapkan pada API_CONTRACT.md dan backend/contracts.py. Node/npm serta 
 Lihat README.md. python3 -m unittest discover -s tests -v; python3 scripts/check_handoff.py --all; npm --prefix frontend run build.
 
 ## Pengujian aktual
-9 tes unittest lulus; validasi empat handoff lulus; TypeScript dan Vite production build lulus. GitHub Actions fondasi 37907339161 juga sukses. Pemeriksaan diff handoff akan berjalan pada PR pelaporan ini.
+10 tes unittest lulus setelah penambahan uji pemetaan branch integrator; validasi empat handoff lulus; TypeScript dan Vite production build lulus. GitHub Actions fondasi 37907339161 juga sukses. Pemeriksaan diff handoff akan berjalan pada PR pelaporan ini.
 
 ## Fixture dan keterbatasan
 Daftar CRM nyata tersedia; detail/analyze 501, rank null. Belum ada graph, rekomendasi, Jev live, atau uji UI browser.

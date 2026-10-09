@@ -22,5 +22,8 @@ class HandoffTests(unittest.TestCase):
         self.assertEqual(len(errors), 2)
 
     def test_original_dataset_is_protected_even_for_main(self):
-        self.assertTrue(validate_changes(['dataset_kasirnusa/crm_deals.csv', 'docs/handoffs/MAIN.md'], 'main/review', lambda _: NOTE))
+        self.assertTrue(validate_changes(['dataset_kasirnusa/crm_deals.csv', 'docs/handoffs/MAIN.md'], 'integrator/review', lambda _: NOTE))
 
+
+    def test_integrator_branch_uses_main_handoff(self):
+        self.assertEqual(validate_changes(['docs/coordination/MAIN.md', 'docs/handoffs/MAIN.md'], 'integrator/review', lambda _: NOTE), [])

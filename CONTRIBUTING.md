@@ -5,7 +5,7 @@
 - Boy: `boy/frontend`, area `frontend/`.
 - Bima: `bima/data-graph`, area `backend/api/`, `backend/graph/`, `backend/ingestion/`, `backend/main.py`, `tests/bima/`.
 - Ical: `ical/decision-jev`, area `backend/decision/`, `backend/integrations/`, `evaluation/`, `tests/ical/`.
-- Main: branch `main/<tugas>`, kontrak bersama, dependency, CI, checklist dan integrasi.
+- Main: branch `integrator/<tugas>`, kontrak bersama, dependency, CI, checklist dan integrasi.
 
 Branch pertama disiapkan dari fondasi yang sama. Setiap anggota clone sendiri.
 Pada mesin bersama gunakan checkout/worktree berbeda, bukan git switch bersamaan.
