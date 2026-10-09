@@ -1,5 +1,5 @@
 {
-  "generated_wib": "2026-10-09 17:47 WIB",
+  "generated_wib": "2026-10-09 18:37 WIB",
   "context_source": "build_deal_context nyata (graph Bima, dataset asli); mutasi kasus sintetis berlabel",
   "jev": "Tidak ada panggilan live. Kasus Jev memakai transport mock.",
   "summary": {
@@ -47,7 +47,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 1943
+      "latency_ms": 1951
     },
     {
       "id": "E02",
@@ -97,7 +97,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 69
+      "latency_ms": 71
     },
     {
       "id": "E04",
@@ -123,7 +123,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 151
+      "latency_ms": 71
     },
     {
       "id": "E05",
@@ -147,7 +147,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 73
+      "latency_ms": 141
     },
     {
       "id": "E06",
@@ -172,7 +172,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 74
+      "latency_ms": 69
     },
     {
       "id": "E31",
@@ -199,7 +199,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 73
+      "latency_ms": 147
     },
     {
       "id": "E32",
@@ -226,7 +226,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 154
+      "latency_ms": 71
     },
     {
       "id": "E33",
@@ -253,7 +253,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 73
+      "latency_ms": 70
     },
     {
       "id": "E34",
@@ -280,7 +280,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 73
+      "latency_ms": 150
     },
     {
       "id": "E35",
@@ -307,7 +307,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 154
+      "latency_ms": 71
     },
     {
       "id": "E07",
@@ -328,7 +328,7 @@
         "D-2025-02",
         "D-2025-07"
       ],
-      "latency_ms": 74
+      "latency_ms": 69
     },
     {
       "id": "E08",
@@ -351,7 +351,7 @@
         "D-2025-06",
         "D-2025-12"
       ],
-      "latency_ms": 159
+      "latency_ms": 149
     },
     {
       "id": "E09",
@@ -377,7 +377,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 72
+      "latency_ms": 84
     },
     {
       "id": "E10",
@@ -403,7 +403,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 70
+      "latency_ms": 75
     },
     {
       "id": "E11",
@@ -428,7 +428,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 151
+      "latency_ms": 162
     },
     {
       "id": "E12",
@@ -447,7 +447,7 @@
       "main_obstacle": "bukti_kurang",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 26
+      "latency_ms": 27
     },
     {
       "id": "E13",
@@ -472,7 +472,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 72
+      "latency_ms": 73
     },
     {
       "id": "E14",
@@ -496,7 +496,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 70
+      "latency_ms": 147
     },
     {
       "id": "E15",
@@ -520,7 +520,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 73
+      "latency_ms": 75
     },
     {
       "id": "E16",
@@ -548,7 +548,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 150
+      "latency_ms": 152
     },
     {
       "id": "E17",
@@ -576,7 +576,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 72
+      "latency_ms": 77
     },
     {
       "id": "E18",
@@ -603,7 +603,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 153
+      "latency_ms": 73
     },
     {
       "id": "E19",
@@ -630,7 +630,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 74
+      "latency_ms": 152
     },
     {
       "id": "E20",
@@ -657,7 +657,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 76
+      "latency_ms": 74
     },
     {
       "id": "E21",
@@ -684,7 +684,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 155
+      "latency_ms": 73
     },
     {
       "id": "E22",
@@ -711,7 +711,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 74
+      "latency_ms": 148
     },
     {
       "id": "E23",
@@ -736,7 +736,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 76
+      "latency_ms": 75
     },
     {
       "id": "E24",
@@ -764,7 +764,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 558
+      "latency_ms": 551
     },
     {
       "id": "E25",
@@ -789,7 +789,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 155
+      "latency_ms": 159
     },
     {
       "id": "E26",
@@ -816,7 +816,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 249
+      "latency_ms": 242
     },
     {
       "id": "E27",
@@ -839,7 +839,7 @@
         "D-2025-11",
         "D-2026-08"
       ],
-      "latency_ms": 55
+      "latency_ms": 52
     },
     {
       "id": "E28",
@@ -856,7 +856,7 @@
       "main_obstacle": "pengambil_keputusan",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 54
+      "latency_ms": 50
     },
     {
       "id": "E29",
@@ -866,8 +866,10 @@
       "passed": true,
       "checks": {
         "hambatan referensi": true,
-        "C09 & C17 diusulkan": true,
-        "C03 & C27 dijelaskan": true,
+        "C09 & C17 dicek pertama": true,
+        "C03 dicek belakangan dengan alasan tiket": true,
+        "C27 tidak ditolak karena health saja": true,
+        "izin/kesediaan unknown": true,
         "tidak bilang kandidat tidak tersedia": true
       },
       "error": null,
@@ -875,7 +877,7 @@
       "main_obstacle": "referensi",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 50
+      "latency_ms": 47
     },
     {
       "id": "E30",
@@ -885,7 +887,8 @@
       "passed": true,
       "checks": {
         "hambatan referensi": true,
-        "C06 diusulkan": true,
+        "C06 dicek dengan izin": true,
+        "industri berbeda dicatat": true,
         "overlap bukan bukti": true
       },
       "error": null,
@@ -893,7 +896,7 @@
       "main_obstacle": "referensi",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 32
+      "latency_ms": 29
     }
   ],
   "deals": [
@@ -1071,28 +1074,47 @@
       "recommendation": {
         "schema_version": "v1",
         "deal_id": "DL-003",
-        "action": "USULAN: E08 meminta izin pemilik akun untuk menghubungi Apotek Bunda Sehat (C17), Apotek Medika Farma (C09) sebagai calon referensi bagi Klinik Pratama Medika; verifikasi kepuasan dan kesediaan sebelum mengenalkan.",
+        "action": "USULAN: E08 mengonfirmasi kriteria \"pengguna serupa\" atas permintaan I0334, lalu meminta account manager memeriksa pengalaman terbaru dan menanyakan kesediaan serta izin kontak Apotek Bunda Sehat (C17, AM E05), Apotek Medika Farma (C09, AM E03), Apotek Kimia Sejahtera (C27, AM E04) sebelum perkenalan ke Klinik Pratama Medika. Kandidat lain dicek belakangan karena catatan: C03 (6 tiket terbuka (3 bug, 1 prioritas Tinggi/Kritis; T0521, T0523, T0526, T0566, T0608, T0616; judul: Laporan tidak sesuai/Selisih transaksi/Sinkronisasi)).",
         "owner_id": "E08",
-        "milestone": "Panggilan referensi terjadwal dengan pelanggan serupa yang menyatakan bersedia.",
+        "milestone": "Kriteria referensi tervalidasi dan minimal satu kandidat menyatakan bersedia serta mengizinkan kontak.",
         "evidence_ids": [
           "crm_deals.csv:DL-003",
           "interactions.jsonl:I0334",
           "crm_accounts.csv:C17",
           "crm_accounts.csv:P03",
           "feature_usage_monthly.csv:2025-10|C17|FEAT-05",
+          "feature_usage_monthly.csv:2026-09|C17|FEAT-05",
           "features.csv:FEAT-05",
           "crm_accounts.csv:C09",
-          "feature_usage_monthly.csv:2025-10|C09|FEAT-05"
+          "feature_usage_monthly.csv:2025-10|C09|FEAT-05",
+          "feature_usage_monthly.csv:2026-09|C09|FEAT-05",
+          "crm_accounts.csv:C27",
+          "decision_log.csv:D-2025-08",
+          "feature_usage_monthly.csv:2025-10|C27|FEAT-05",
+          "feature_usage_monthly.csv:2026-09|C27|FEAT-05",
+          "crm_accounts.csv:C03",
+          "feature_usage_monthly.csv:2025-10|C03|FEAT-05",
+          "feature_usage_monthly.csv:2026-09|C03|FEAT-05",
+          "support_tickets.csv:T0521",
+          "support_tickets.csv:T0523",
+          "support_tickets.csv:T0526",
+          "support_tickets.csv:T0566",
+          "support_tickets.csv:T0608",
+          "support_tickets.csv:T0616"
         ],
         "precedent_ids": [],
         "precedent_comparison": [
           "FAKTA | DL-003 Klinik Pratama Medika: stage Discovery sejak 2026-09-21 (10 hari per 2026-10-01); nilai potensi tahunan Rp37.800.000 (bukan pendapatan).",
           "FAKTA | I0334 (2026-09-21, P03): \"Butuh modul apotek untuk 9 klinik. Bu Ratna minta referensi pelanggan apotek yang sudah memakai KasirNusa.\"",
-          "FAKTA | Kandidat C17 Apotek Bunda Sehat: alasan feature_usage, shared_industry; health Hijau, NPS 10.",
-          "FAKTA | Kandidat C09 Apotek Medika Farma: alasan feature_usage, shared_industry; health Hijau, NPS 9.",
-          "INTERPRETASI | Kandidat C03 Apotek Sehat Sentosa (feature_usage, shared_industry) tidak diusulkan: health dashboard Kuning.",
-          "INTERPRETASI | Kandidat C27 Apotek Kimia Sejahtera (feature_usage, shared_industry) tidak diusulkan: health dashboard Kuning; D-2025-08 eskalasi: Prioritas perbaikan (Disetujui).",
-          "INTERPRETASI | related_account_* adalah kandidat pencarian bersumber; kelayakan dan kesediaan menjadi referensi belum dikonfirmasi.",
+          "FAKTA | Kandidat C17 Apotek Bunda Sehat (urutan cek 1, cek_pertama): relasi feature_usage, shared_industry; Apotek, 10 outlet; health dashboard Hijau, NPS 10; usage FEAT-05 2026-09: 22 pengguna aktif.",
+          "FAKTA | Kandidat C09 Apotek Medika Farma (urutan cek 2, cek_pertama): relasi feature_usage, shared_industry; Apotek, 15 outlet; health dashboard Hijau, NPS 9; usage FEAT-05 2026-09: 11 pengguna aktif.",
+          "FAKTA | Kandidat C27 Apotek Kimia Sejahtera (urutan cek 3, cek_pertama): relasi feature_usage, shared_industry; Apotek, 22 outlet; health dashboard Kuning, NPS 8; usage FEAT-05 2026-09: 48 pengguna aktif.",
+          "FAKTA | Kandidat C03 Apotek Sehat Sentosa (urutan cek 4, cek_dengan_catatan): relasi feature_usage, shared_industry; Apotek, 18 outlet; health dashboard Kuning, NPS 8; usage FEAT-05 2026-09: 14 pengguna aktif.",
+          "INTERPRETASI | C27 catatan: health dashboard Kuning (indikator CRM, bisa tidak mutakhir).",
+          "INTERPRETASI | C27: riwayat eskalasi D-2025-08: Bug struk ganda (BUG-398) (Disetujui).",
+          "INTERPRETASI | C03 dicek belakangan: 6 tiket terbuka (3 bug, 1 prioritas Tinggi/Kritis; T0521, T0523, T0526, T0566, T0608, T0616; judul: Laporan tidak sesuai/Selisih transaksi/Sinkronisasi).",
+          "INTERPRETASI | C03 catatan: health dashboard Kuning (indikator CRM, bisa tidak mutakhir).",
+          "INTERPRETASI | Kandidat related_account_* adalah hasil pencarian bersumber; urutan cek bukan penilaian kelayakan. Kesesuaian, kesediaan menjadi referensi dan izin kontak belum diketahui (null).",
           "INTERPRETASI | Diperiksa tetapi tidak cocok untuk hambatan ini: D-2024-05, D-2025-08, D-2026-06."
         ],
         "approvals_needed": [],
@@ -1105,6 +1127,7 @@
           "Overlap masa kerja hanya menunjukkan organisasi/periode yang sama; tidak membuktikan saling kenal atau bersedia memberi referensi.",
           "P03 belum memiliki usage pelanggan sendiri; agregat akun lain hanya konteks referensi. Transaksi server/gejala tidak membuktikan penyebab bug.",
           "Tidak ada keputusan/approval tercatat untuk DL-003; permintaan bukan approval.",
+          "Kesesuaian, kesediaan dan izin kontak kandidat referensi C17, C09, C27, C03 belum diketahui; kandidat bukan izin.",
           "Tidak ada preseden relevan di candidate_decisions; perbandingan historis terbatas."
         ],
         "engine_mode": "rules"
@@ -1124,23 +1147,27 @@
       "recommendation": {
         "schema_version": "v1",
         "deal_id": "DL-004",
-        "action": "USULAN: E06 meminta izin pemilik akun untuk menghubungi Saiyo Group (C06) sebagai calon referensi bagi Nirwana Hotel & Resto; verifikasi kepuasan dan kesediaan sebelum mengenalkan.",
+        "action": "USULAN: E06 mengonfirmasi kriteria \"pengguna serupa\" atas permintaan I0335, lalu meminta account manager memeriksa pengalaman terbaru dan menanyakan kesediaan serta izin kontak Saiyo Group (C06, AM E04) sebelum perkenalan ke Nirwana Hotel & Resto.",
         "owner_id": "E06",
-        "milestone": "Panggilan referensi terjadwal dengan pelanggan serupa yang menyatakan bersedia.",
+        "milestone": "Kriteria referensi tervalidasi dan minimal satu kandidat menyatakan bersedia serta mengizinkan kontak.",
         "evidence_ids": [
           "crm_deals.csv:DL-004",
           "interactions.jsonl:I0335",
           "contact_employment_history.csv:K028|PT Sentosa Abadi Group|2015-01-01",
           "contact_employment_history.csv:K116|PT Sentosa Abadi Group|2015-02-01",
-          "contact_employment_history.csv:K116|Saiyo Group|2020-01-02"
+          "contact_employment_history.csv:K116|Saiyo Group|2020-01-02",
+          "crm_accounts.csv:C06",
+          "support_tickets.csv:T0637"
         ],
         "precedent_ids": [],
         "precedent_comparison": [
           "FAKTA | DL-004 Nirwana Hotel & Resto: stage Negosiasi sejak 2026-09-01 (30 hari per 2026-10-01); nilai potensi tahunan Rp147.000.000 (bukan pendapatan).",
           "FAKTA | I0335 (2026-09-22, P04): \"Pak Bagus, Direktur Utama kami minta rekomendasi dari pengguna yang mirip dengan kami sebelum tanda tangan. Kami tunda dulu sampai ada referensi.\"",
-          "FAKTA | Kandidat C06 Saiyo Group: alasan work_overlap; health Hijau, NPS 9.",
-          "INTERPRETASI | C06: overlap masa kerja K028 Hartono Gunawan (Direktur Utama), K116 Budi Santoso (CFO); overlap tidak membuktikan saling kenal.",
-          "INTERPRETASI | related_account_* adalah kandidat pencarian bersumber; kelayakan dan kesediaan menjadi referensi belum dikonfirmasi."
+          "FAKTA | Kandidat C06 Saiyo Group (urutan cek 1, cek_pertama): relasi work_overlap; Resto Padang, 30 outlet; health dashboard Hijau, NPS 9.",
+          "INTERPRETASI | C06 catatan: industri Resto Padang berbeda dari Hospitality; kemiripan perlu dicek.",
+          "INTERPRETASI | C06 catatan: 1 tiket terbuka (0 bug, 0 prioritas Tinggi/Kritis; T0637; judul: Laci kasir tidak terbuka).",
+          "INTERPRETASI | C06: overlap masa kerja K028 Hartono Gunawan (Direktur Utama) dan K116 Budi Santoso (CFO); overlap tidak membuktikan saling kenal (acquaintance belum dikonfirmasi).",
+          "INTERPRETASI | Kandidat related_account_* adalah hasil pencarian bersumber; urutan cek bukan penilaian kelayakan. Kesesuaian, kesediaan menjadi referensi dan izin kontak belum diketahui (null)."
         ],
         "approvals_needed": [],
         "unknowns": [
@@ -1150,6 +1177,7 @@
           "P04 belum memiliki usage pelanggan sendiri; agregat akun lain hanya konteks referensi. Transaksi server/gejala tidak membuktikan penyebab bug.",
           "Tidak ada candidate decision melalui penghubung yang tersedia; bukan bukti tidak ada risiko.",
           "Tidak ada keputusan/approval tercatat untuk DL-004; permintaan bukan approval.",
+          "Kesesuaian, kesediaan dan izin kontak kandidat referensi C06 belum diketahui; kandidat bukan izin.",
           "Tidak ada preseden relevan di candidate_decisions; perbandingan historis terbatas."
         ],
         "engine_mode": "rules"

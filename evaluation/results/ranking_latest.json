@@ -1,0 +1,634 @@
+{
+  "generated_wib": "2026-10-09 18:37 WIB",
+  "source": "build_deal_context + analyze_deal_initial nyata (Bima, dataset asli); kasus mutasi sintetis berlabel",
+  "jev": "Ranking tidak memakai Jev (rules). Tidak ada mock/replay/live pada ranking.",
+  "methodology": {
+    "id": "deal-priority-heuristic-v1",
+    "label": "Prioritas tindakan deal (heuristik rules v1)",
+    "description": "Rules deterministik pilihan desain, bukan model terlatih. Tier acceleration (status ready) diurutkan sebelum tier discovery (insufficient_evidence). Skor acceleration = tahap_deal (0-4) + nilai_potensi_tahunan (0-3) + hambatan_dinyatakan_pelanggan (0-2) + preseden_relevan (0-1), maksimum 10; bobot dan aturan bin ada di field weights. Approval/izin adalah gate dari analisis rules dan tidak memengaruhi skor. Rank = urutan perhatian/tindakan sales pada snapshot, bukan probabilitas closing.",
+    "ordered_rules": [
+      "Validasi input: pasangkan context dan diagnostic per deal_id; tolak duplikasi, set deal berbeda, akun berbeda, snapshot campuran dan evidence ID sama dengan isi berbeda.",
+      "Analisis bisnis per deal: analyze_deal_trace(context, mode='rules', diagnostic) menghasilkan Recommendation v1, status bukti, hambatan, approval/izin dan preseden. Jev tidak dipakai.",
+      "Tier: ready -> acceleration; insufficient_evidence -> discovery. Semua acceleration sebelum discovery.",
+      "Skor acceleration = jumlah poin empat faktor terhitung (lihat weights); urut skor menurun.",
+      "Faktor unknown = 0 poin dan dicatat; limitations menyebut rank yang dapat berubah bila unknown terisi.",
+      "Konteks tidak dihitung: umur tahap, interaksi eksternal terakhir, gate approval/izin.",
+      "Discovery diurutkan nilai potensi menurun lalu tahap, sebagai urutan jadwal discovery tanpa skor."
+    ],
+    "tie_breakers": [
+      "Poin hambatan dinyatakan pelanggan lebih tinggi (deal yang ditahan pelanggan dengan syarat jelas ditangani dulu).",
+      "Tahap lebih lanjut.",
+      "Nilai potensi tahunan lebih besar.",
+      "deal_id leksikografis; hanya agar hasil deterministik, bukan prioritas bisnis."
+    ],
+    "limitations": [
+      "Bobot dan bin adalah pilihan desain yang dapat diperdebatkan; belum divalidasi terhadap hasil closing historis.",
+      "Hambatan dinyatakan pelanggan dideteksi dengan aturan leksikal pada isi pesan; parafrase dapat terlewat.",
+      "Nilai deal adalah potensi CRM (outlet x harga acuan), bukan pendapatan."
+    ],
+    "weights": {
+      "tahap_deal": {
+        "max_points": 4,
+        "rule": "Lead 0, Discovery 1, Demo 2, Proposal 3, Negosiasi 4 (crm_deals.stage)",
+        "reason": "Tahap lebih lanjut berarti tindakan berikutnya lebih dekat ke keputusan pembelian."
+      },
+      "nilai_potensi_tahunan": {
+        "max_points": 3,
+        "rule": ">= Rp200.000.000: 3; >= Rp100.000.000: 2; >= Rp50.000.000: 1; lainnya 0",
+        "reason": "Potensi yang dipertaruhkan; dibin agar nominal tidak mendominasi."
+      },
+      "hambatan_dinyatakan_pelanggan": {
+        "max_points": 2,
+        "rule": "pesan pelanggan menyatakan penundaan/syarat: 2; pesan pelanggan menyatakan hambatan: 1; hambatan hanya dari pesan internal: 0",
+        "reason": "Hambatan yang dinyatakan pelanggan memberi tindakan pembuka yang jelas."
+      },
+      "preseden_relevan": {
+        "max_points": 1,
+        "rule": ">= 1 preseden decision_log dengan fit cocok/sebagian: 1; lainnya 0",
+        "reason": "Tindakan punya pembanding historis yang dapat dijelaskan."
+      }
+    }
+  },
+  "global_limitations": [
+    "Ranking heuristik rules; belum tervalidasi terhadap hasil closing historis dan bukan probabilitas closing.",
+    "Rank adalah urutan perhatian/tindakan sales, bukan prediksi urutan closing atau penilaian kualitas pelanggan.",
+    "Deal discovery ditempatkan setelah acceleration karena bukti belum cukup untuk dibandingkan; bukan peluang buruk.",
+    "Approval/izin adalah gate dari analisis rules; nilai besar atau preseden sukses tidak menghapus gate.",
+    "Umur tahap tidak dibandingkan lintas tahap; outlier statistik tidak dinilai.",
+    "Jev tidak dipakai untuk ranking (engine_mode rules).",
+    "Sensitivitas tanpa faktor tahap_deal: urutan acceleration DL-001 > DL-004 > DL-002 > DL-003 (berubah dari DL-004 > DL-001 > DL-002 > DL-003).",
+    "Sensitivitas tanpa faktor nilai_potensi_tahunan: urutan acceleration DL-004 > DL-001 > DL-002 > DL-003 (sama).",
+    "Sensitivitas tanpa faktor hambatan_dinyatakan_pelanggan: urutan acceleration DL-001 > DL-004 > DL-002 > DL-003 (berubah dari DL-004 > DL-001 > DL-002 > DL-003).",
+    "Sensitivitas tanpa faktor preseden_relevan: urutan acceleration DL-004 > DL-001 > DL-002 > DL-003 (sama).",
+    "Sensitivitas bobot nilai x2: urutan acceleration DL-001 > DL-004 > DL-002 > DL-003 (berubah dari DL-004 > DL-001 > DL-002 > DL-003)."
+  ],
+  "rank_deals_ms_warm": 78,
+  "items": [
+    {
+      "rank": 1,
+      "deal_id": "DL-004",
+      "account_id": "P04",
+      "priority_kind": "acceleration",
+      "analysis_status": "ready",
+      "score": 8,
+      "factor_values": {
+        "tahap_deal": "Negosiasi",
+        "nilai_potensi_tahunan": 147000000,
+        "hambatan_dinyatakan_pelanggan": "pelanggan menyatakan penundaan/syarat",
+        "preseden_relevan": 0
+      },
+      "action": "USULAN: E06 mengonfirmasi kriteria \"pengguna serupa\" atas permintaan I0335, lalu meminta account manager memeriksa pengalaman terbaru dan menanyakan kesediaan serta izin kontak Saiyo Group (C06, AM E04) sebelum perkenalan ke Nirwana Hotel & Resto.",
+      "owner_id": "E06",
+      "approvals_needed": [],
+      "gates": "kesediaan/izin kandidat referensi belum ada",
+      "evidence_count": 10,
+      "path_count": 3,
+      "rationale": [
+        "Tier acceleration (status ready): hambatan \"referensi\" bersumber dari percakapan akun fokus. Skor 8/10 = tahap 4/4 + nilai 2/3 + hambatan pelanggan 2/2 + preseden 0/1.",
+        "Di atas DL-001 (skor 8): skor sama; diputus tie-break 1 hambatan dinyatakan pelanggan (2 vs 1).",
+        "Tindakan berikutnya (owner E06): E06 mengonfirmasi kriteria \"pengguna serupa\" atas permintaan I0335, lalu meminta account manager memeriksa pengalaman terbaru dan menanyakan kesediaan serta izin kontak Saiyo Group (C06, AM E04) sebelum perkenalan ke Nirwana Hotel & Resto."
+      ]
+    },
+    {
+      "rank": 2,
+      "deal_id": "DL-001",
+      "account_id": "P01",
+      "priority_kind": "acceleration",
+      "analysis_status": "ready",
+      "score": 8,
+      "factor_values": {
+        "tahap_deal": "Proposal",
+        "nilai_potensi_tahunan": 252000000,
+        "hambatan_dinyatakan_pelanggan": "pelanggan menyatakan hambatan",
+        "preseden_relevan": 2
+      },
+      "action": "USULAN: E06 meminta kontak teknis memperkenalkan dan menjadwalkan pertemuan langsung dengan Rina Hapsari (GM Operations, identitas inferensi yang perlu dikonfirmasi); sesuaikan proposal dengan prioritas operasional. Jawab jujur status fitur yang belum rilis dan jangan menjanjikan tanggal fitur tanpa keputusan tercatat.",
+      "owner_id": "E06",
+      "approvals_needed": [],
+      "gates": "identitas pengambil keputusan masih inferred",
+      "evidence_count": 9,
+      "path_count": 6,
+      "rationale": [
+        "Tier acceleration (status ready): hambatan \"pengambil_keputusan\" bersumber dari percakapan akun fokus. Skor 8/10 = tahap 3/4 + nilai 3/3 + hambatan pelanggan 1/2 + preseden 1/1.",
+        "Di bawah DL-004 (skor 8): skor sama; diputus tie-break 1 hambatan dinyatakan pelanggan (2 vs 1).",
+        "Di atas DL-002 (skor 5): selisih 3 poin (tahap 3 vs 2, nilai 3 vs 1).",
+        "Tindakan berikutnya (owner E06): E06 meminta kontak teknis memperkenalkan dan menjadwalkan pertemuan langsung dengan Rina Hapsari (GM Operations, identitas inferensi yang perlu dikonfirmasi); sesuaikan proposal dengan prioritas operasional."
+      ]
+    },
+    {
+      "rank": 3,
+      "deal_id": "DL-002",
+      "account_id": "P02",
+      "priority_kind": "acceleration",
+      "analysis_status": "ready",
+      "score": 5,
+      "factor_values": {
+        "tahap_deal": "Demo",
+        "nilai_potensi_tahunan": 63000000,
+        "hambatan_dinyatakan_pelanggan": "pelanggan menyatakan hambatan",
+        "preseden_relevan": 5
+      },
+      "action": "USULAN: Jangan menawarkan atau menjanjikan diskon 20% ke Teras Kafe Group sebelum VP Sales memutuskan dan mencatatnya. E07 membawa permintaan tersebut ke VP Sales bersama pembanding preseden. Siapkan opsi tanpa diskon: 15 outlet paket Growth harga normal Rp63.000.000/tahun; pilot sebagian outlet hanya sebagai skenario usulan yang butuh persetujuan. Tanggapi keberatan harga dengan nilai produk berdasar kebutuhan yang tercatat, bukan menyamai harga kompetitor.",
+      "owner_id": "E07",
+      "approvals_needed": [
+        "VP Sales (E01): putuskan dan catat di decision_log permintaan diskon 20% (I0348, 2026-09-28); >10% wajib approval. Belum ada keputusan sah yang tercatat untuk DL-002."
+      ],
+      "gates": "approval VP Sales tertunda",
+      "evidence_count": 15,
+      "path_count": 6,
+      "rationale": [
+        "Tier acceleration (status ready): hambatan \"harga\" bersumber dari percakapan akun fokus. Skor 5/10 = tahap 2/4 + nilai 1/3 + hambatan pelanggan 1/2 + preseden 1/1.",
+        "Di bawah DL-001 (skor 8): selisih 3 poin (tahap 3 vs 2, nilai 3 vs 1).",
+        "Di atas DL-003 (skor 2): selisih 3 poin (tahap 2 vs 1, nilai 1 vs 0, preseden 1 vs 0).",
+        "Tindakan berikutnya (owner E07): Jangan menawarkan atau menjanjikan diskon 20% ke Teras Kafe Group sebelum VP Sales memutuskan dan mencatatnya.",
+        "Gate tetap berlaku terlepas dari rank: VP Sales (E01): putuskan dan catat di decision_log permintaan diskon 20% (I0348, 2026-09-28); >10% wajib approval. Belum ada keputusan sah yang tercatat untuk DL-002."
+      ]
+    },
+    {
+      "rank": 4,
+      "deal_id": "DL-003",
+      "account_id": "P03",
+      "priority_kind": "acceleration",
+      "analysis_status": "ready",
+      "score": 2,
+      "factor_values": {
+        "tahap_deal": "Discovery",
+        "nilai_potensi_tahunan": 37800000,
+        "hambatan_dinyatakan_pelanggan": "pelanggan menyatakan hambatan",
+        "preseden_relevan": 0
+      },
+      "action": "USULAN: E08 mengonfirmasi kriteria \"pengguna serupa\" atas permintaan I0334, lalu meminta account manager memeriksa pengalaman terbaru dan menanyakan kesediaan serta izin kontak Apotek Bunda Sehat (C17, AM E05), Apotek Medika Farma (C09, AM E03), Apotek Kimia Sejahtera (C27, AM E04) sebelum perkenalan ke Klinik Pratama Medika. Kandidat lain dicek belakangan karena catatan: C03 (6 tiket terbuka (3 bug, 1 prioritas Tinggi/Kritis; T0521, T0523, T0526, T0566, T0608, T0616; judul: Laporan tidak sesuai/Selisih transaksi/Sinkronisasi)).",
+      "owner_id": "E08",
+      "approvals_needed": [],
+      "gates": "kesediaan/izin kandidat referensi belum ada",
+      "evidence_count": 23,
+      "path_count": 7,
+      "rationale": [
+        "Tier acceleration (status ready): hambatan \"referensi\" bersumber dari percakapan akun fokus. Skor 2/10 = tahap 1/4 + nilai 0/3 + hambatan pelanggan 1/2 + preseden 0/1.",
+        "Di bawah DL-002 (skor 5): selisih 3 poin (tahap 2 vs 1, nilai 1 vs 0, preseden 1 vs 0).",
+        "Di atas deal discovery DL-005 karena hambatan deal ini sudah bersumber; bukan karena deal discovery dinilai buruk.",
+        "Tindakan berikutnya (owner E08): E08 mengonfirmasi kriteria \"pengguna serupa\" atas permintaan I0334, lalu meminta account manager memeriksa pengalaman terbaru dan menanyakan kesediaan serta izin kontak Apotek Bunda Sehat (C17, AM E05), Apotek Medika Farma (C09, AM E03), Apotek Kimia Sejahtera (C27, AM E04) sebelum perkenalan ke Klinik Pratama Medika."
+      ]
+    },
+    {
+      "rank": 5,
+      "deal_id": "DL-005",
+      "account_id": "P05",
+      "priority_kind": "discovery",
+      "analysis_status": "insufficient_evidence",
+      "score": null,
+      "factor_values": {
+        "tahap_deal": "Lead",
+        "nilai_potensi_tahunan": 168000000,
+        "hambatan_dinyatakan_pelanggan": null,
+        "preseden_relevan": 0
+      },
+      "action": "USULAN: E07 menjadwalkan discovery dengan PT Distribusi Sumber Rejeki untuk mengidentifikasi pengambil keputusan, kebutuhan, jumlah outlet dan anggaran sebelum menawarkan harga atau paket.",
+      "owner_id": "E07",
+      "approvals_needed": [],
+      "gates": "discovery belum dilakukan",
+      "evidence_count": 2,
+      "path_count": 1,
+      "rationale": [
+        "Tier discovery (status insufficient_evidence): percakapan akun fokus belum cukup untuk menilai hambatan, sehingga ditempatkan setelah 4 deal acceleration tanpa skor. Ini bukan bukti peluang buruk, kalah, atau risiko rendah.",
+        "Nilai CRM Rp168.000.000 belum divalidasi percakapan; dipakai hanya untuk urutan jadwal discovery antar-deal discovery.",
+        "Tindakan berikutnya (owner E07): E07 menjadwalkan discovery dengan PT Distribusi Sumber Rejeki untuk mengidentifikasi pengambil keputusan, kebutuhan, jumlah outlet dan anggaran sebelum menawarkan harga atau paket."
+      ]
+    }
+  ],
+  "sensitivity": [
+    {
+      "variant": "dasar (semua bobot 1)",
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "scores": {
+        "DL-004": 8,
+        "DL-001": 8,
+        "DL-002": 5,
+        "DL-003": 2,
+        "DL-005": null
+      }
+    },
+    {
+      "variant": "tanpa tahap_deal",
+      "order": [
+        "DL-001",
+        "DL-004",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "scores": {
+        "DL-001": 5,
+        "DL-004": 4,
+        "DL-002": 3,
+        "DL-003": 1,
+        "DL-005": null
+      }
+    },
+    {
+      "variant": "tanpa nilai_potensi_tahunan",
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "scores": {
+        "DL-004": 6,
+        "DL-001": 5,
+        "DL-002": 4,
+        "DL-003": 2,
+        "DL-005": null
+      }
+    },
+    {
+      "variant": "tanpa hambatan_dinyatakan_pelanggan",
+      "order": [
+        "DL-001",
+        "DL-004",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "scores": {
+        "DL-001": 7,
+        "DL-004": 6,
+        "DL-002": 4,
+        "DL-003": 1,
+        "DL-005": null
+      }
+    },
+    {
+      "variant": "tanpa preseden_relevan",
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "scores": {
+        "DL-004": 8,
+        "DL-001": 7,
+        "DL-002": 4,
+        "DL-003": 2,
+        "DL-005": null
+      }
+    },
+    {
+      "variant": "nilai x2",
+      "order": [
+        "DL-001",
+        "DL-004",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "scores": {
+        "DL-001": 11,
+        "DL-004": 10,
+        "DL-002": 6,
+        "DL-003": 2,
+        "DL-005": null
+      }
+    },
+    {
+      "variant": "tahap x2",
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "scores": {
+        "DL-004": 12,
+        "DL-001": 11,
+        "DL-002": 7,
+        "DL-003": 3,
+        "DL-005": null
+      }
+    },
+    {
+      "variant": "hambatan pelanggan x2",
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "scores": {
+        "DL-004": 10,
+        "DL-001": 9,
+        "DL-002": 6,
+        "DL-003": 3,
+        "DL-005": null
+      }
+    }
+  ],
+  "summary": {
+    "cases": 15,
+    "passed": 15
+  },
+  "cases": [
+    {
+      "id": "K01",
+      "category": "lima deal nyata",
+      "description": "Kontrak fase 3 pada lima deal nyata: rank 1..5, faktor, Recommendation v1, bukti dan path.",
+      "passed": true,
+      "checks": {
+        "kontrak & path valid": true,
+        "P05 discovery insufficient": true,
+        "P05 tetap punya tindakan discovery": true,
+        "P05 bukan peluang buruk": true,
+        "P02 approval gate tetap": true,
+        "bukan probabilitas closing": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 377
+    },
+    {
+      "id": "K02",
+      "category": "input diacak",
+      "description": "Lima kali urutan contexts dan diagnostics diacak independen: hasil identik.",
+      "passed": true,
+      "checks": {
+        "output identik": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 1145
+    },
+    {
+      "id": "K03",
+      "category": "ID diganti",
+      "description": "Tukar ID DL-001<->DL-004 dan P01<->P04 di seluruh input: prioritas mengikuti data, bukan ID.",
+      "passed": true,
+      "checks": {
+        "rank 1 tetap Nirwana (data P04)": true,
+        "rank 2 tetap Mandala (data P01)": true,
+        "kontrak valid": true
+      },
+      "error": null,
+      "order": [
+        "DL-001",
+        "DL-004",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 450
+    },
+    {
+      "id": "K04",
+      "category": "tie",
+      "description": "Salinan DL-003 dengan ID DL-903: faktor identik, diputus deal_id dan dijelaskan.",
+      "passed": true,
+      "checks": {
+        "DL-003 tepat di atas DL-903": true,
+        "tie-break dijelaskan": true,
+        "rank 1..6": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-903",
+        "DL-005"
+      ],
+      "latency_ms": 267
+    },
+    {
+      "id": "K05",
+      "category": "nilai besar bukti kurang",
+      "description": "Sintetis: nilai P05 Rp10 miliar tanpa interaksi tetap discovery terakhir.",
+      "passed": true,
+      "checks": {
+        "P05 tetap rank 5 discovery": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 247
+    },
+    {
+      "id": "K06",
+      "category": "faktor berubah",
+      "description": "Sintetis: tahap P03 menjadi Negosiasi -> skor 5 setara P02, menang tie-break tahap.",
+      "passed": true,
+      "checks": {
+        "P03 naik di atas P02": true,
+        "tie-break tahap dijelaskan": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-003",
+        "DL-002",
+        "DL-005"
+      ],
+      "latency_ms": 203
+    },
+    {
+      "id": "K07",
+      "category": "faktor berubah",
+      "description": "Sintetis: I0335 tanpa pernyataan tunda -> hambatan pelanggan 1, P01 menjadi rank 1.",
+      "passed": true,
+      "checks": {
+        "P01 rank 1, P04 rank 2": true
+      },
+      "error": null,
+      "order": [
+        "DL-001",
+        "DL-004",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 212
+    },
+    {
+      "id": "K08",
+      "category": "approval gate",
+      "description": "Sintetis: nilai P02 Rp10 miliar tidak menghapus approval VP Sales.",
+      "passed": true,
+      "checks": {
+        "gate tetap": true,
+        "skor naik ke 7, tetap di bawah 8": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 224
+    },
+    {
+      "id": "K09",
+      "category": "approval gate R6",
+      "description": "Sintetis: approval 20% untuk deal lain (DL-OLD) tidak menghapus gate P02 di ranking.",
+      "passed": true,
+      "checks": {
+        "gate tetap": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 212
+    },
+    {
+      "id": "K10",
+      "category": "approval gate R7",
+      "description": "Sintetis: approval DL-002 dengan nilai kosong tidak menghapus gate P02 di ranking.",
+      "passed": true,
+      "checks": {
+        "gate tetap": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 238
+    },
+    {
+      "id": "K11",
+      "category": "approval gate kontrol",
+      "description": "Sintetis: approval sah 20% E01 untuk DL-002 menghapus gate tanpa mengubah rank.",
+      "passed": true,
+      "checks": {
+        "gate hilang": true,
+        "rank sama (3)": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 261
+    },
+    {
+      "id": "K12",
+      "category": "missing data",
+      "description": "Sintetis: tahap P03 tidak dikenal dan metrics diagnostic P02 hilang -> unknown eksplisit.",
+      "passed": true,
+      "checks": {
+        "tahap P03 null": true,
+        "interaksi terakhir P02 null": true,
+        "unknown dicatat": true,
+        "kemungkinan naik dicatat": true,
+        "P03 tetap acceleration": true,
+        "kontrak valid": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 213
+    },
+    {
+      "id": "K13",
+      "category": "tanpa Jev",
+      "description": "Env meminta Jev dengan key dummy; ranking tetap rules dan tanpa HTTP.",
+      "passed": true,
+      "checks": {
+        "engine rules": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 109
+    },
+    {
+      "id": "K14",
+      "category": "referensi",
+      "description": "P03/P04 memakai verifikasi Bima: usage bulan lengkap terakhir, izin null, overlap bukan saling kenal.",
+      "passed": true,
+      "checks": {
+        "usage C17 2026-09 dari Bima": true,
+        "C03 dicek belakangan": true,
+        "izin null dinyatakan": true,
+        "path overlap K028-K116": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 201
+    },
+    {
+      "id": "K15",
+      "category": "sensitivitas",
+      "description": "Sensitivitas tiap faktor dilaporkan; urutan P01/P04 bergantung pada faktor tahap/hambatan/nilai.",
+      "passed": true,
+      "checks": {
+        "semua faktor dilaporkan": true
+      },
+      "error": null,
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "latency_ms": 204
+    }
+  ]
+}
