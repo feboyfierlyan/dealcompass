@@ -3,6 +3,17 @@
 Pemilik: Boy + AI pada chat koordinasi. Tanggal: 9 Oktober 2026, WIB.
 Deadline: 10 Oktober 2026 09.00 WIB. CP2 20.00-22.00, CP3 08.00-09.00.
 
+## Review hybrid default — 10 Oktober 2026
+
+PR #32 (UI), #33 (engine), #34 (route) telah direview ulang oleh Main. Tiga regresi
+VERIFIED FIXED: deduplikasi race, graph mengikuti versi analisis, invalidasi cache
+pada perubahan konteks dengan snapshot tanggal sama. Gabungan 222 backend + 85
+frontend, build dan handoff lulus. [Catatan review](../reviews/2026-10-10-hybrid-default.md).
+Pengujian terbaru memakai rules/mock, tanpa provider berbayar. **MERGED:** #33
+`de4cf7e` → #34 `69272f6` → #32 `6779cea`, seluruh required checks lulus.
+Default analisis rules + Jev tanpa Agent, graph mengikuti versi aktif, cache konteks
+dan deduplikasi sudah terintegrasi. Smoke live revisi baru dan rehearsal tetap terpisah.
+
 ## Aktivasi Jev live — 10 Oktober 2026 01:10 WIB
 
 Pengguna memberikan key untuk build testing dan mengonfirmasi belum dipakai.

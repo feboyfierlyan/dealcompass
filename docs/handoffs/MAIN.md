@@ -1,17 +1,24 @@
 # Handoff MAIN
 
 ## Task dan status
+MAIN-HYBRID-REVIEW: tiga perbaikan PR #32/#33/#34 VERIFIED pada commit yang tercantum di [review hybrid](../reviews/2026-10-10-hybrid-default.md). MERGED berurutan #33 de4cf7e, #34 69272f6, #32 6779cea setelah required CI lulus. Catatan lama di bawah merupakan riwayat aktivasi Jev.
+
 MAIN-JEV-USAGE: implementasi dan provider live VERIFIED lokal; siap review PR/CI.
 Pengguna memberikan credential untuk testing dengan batas tim 100.000.000 input token,
 dan mengonfirmasi belum pernah dipakai. Smoke, P01–P04, dan UI P02 berhasil memakai Jev.
 P05 tetap rules karena insufficient evidence; tidak diklaim sebagai live.
 
 ## Branch dan commit
+Dokumentasi review/integrasi: `integrator/hybrid-review-record`. PR aplikasi menggunakan commit terbaru yang dicatat dalam review hybrid.
+
 `integrator/jev-usage-live` dari main b766770. PR terpisah dari redesign UI #29.
 Backend live berjalan dari checkout utama; frontend 5174 tetap dari worktree PR #29.
 Tidak mengubah atau menggabungkan branch UI.
 
 ## File dan fungsi
+- `docs/reviews/2026-10-10-hybrid-default.md`: hasil review dan checklist tiga regresi.
+- `docs/coordination/MAIN.md`: status integrasi hybrid terbaru.
+
 - `backend/integrations/usage.py`: SQLite ledger, initialize eksklusif, summary,
   reserve atomik, finish receipt input/output; unknown/pending menghentikan spending.
 - `jev.py`: wajib ledger untuk transport nyata, pencatatan sebelum validasi jawaban,
@@ -42,6 +49,8 @@ Preview http://127.0.0.1:5174/ → P02 → Jalankan analisis ulang. GET ranking 
 POST eksplisit memakai Jev. Tidak menyimpan key di frontend/PR/log maupun pesan tim.
 
 ## Pengujian aktual
+Review hybrid terbaru: gabungan engine + route + UI lulus 222/222 backend, 85/85 frontend, build TypeScript/Vite dan handoff. Reproduksi race tetap 10 request mock/satu workflow; browser graph berpindah ke jalur versi baru. Tidak memakai provider berbayar dalam review.
+
 - 26 targeted tests PASS (12 usage +14 live mock).
 - Seluruh backend `python -m unittest discover -s tests -v`: 200/200 PASS, 46.565s.
   Run awal menemukan non-JSON HTTP error berubah menjadi invalid_response; sudah
@@ -72,10 +81,13 @@ bersama; tidak ada deploy/public access baru. Tidak ada reset otomatis untuk rec
 unknown/pending: perlu rekonsiliasi berdasarkan usage provider agar tidak menghapus biaya.
 
 ## Tugas berikutnya
+Status terbaru: PR aplikasi #32/#33/#34 sudah merged. Tim sinkronkan main; rehearsal memakai backend/ledger bersama. Daftar di bawah adalah riwayat tugas aktivasi Jev.
+
 1. Review dan integrasikan PR Jev ini secara terpisah dari UI #29.
 2. Tim memakai backend bersama; cek usage sebelum/sesudah sesi demo/testing.
 3. Rehearsal/demo/submission; jangan rerun batch evaluasi besar tanpa kebutuhan.
 4. Jika provider gagal, tampilkan fallback rules; jangan klaim live dari label ranking.
 
 ## Update WIB
+2026-10-10 — review hybrid VERIFIED; #33/#34/#32 MERGED dengan required checks lulus. Catatan review dipublikasikan lewat PR dokumentasi integrator.
 2026-10-10 01:10 WIB — live verified dengan monitoring persisten. Key/DB tidak masuk Git.
