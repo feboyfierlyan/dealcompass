@@ -120,18 +120,24 @@ def analyze_deal_trace(context: DealContext, mode: str | None = None, client=Non
     else:
         deadline = started + budget_s()
         failure = None
+        calls_before = 0
         try:
             if client is None:
                 client = jev.client_from_env(mode)
+            calls_before = len(getattr(client, 'calls', []))
             rec, trace = _analyze(context, idx, mode, client, deadline, diagnostic=diagnostic)
+            if len(getattr(client, 'calls', [])) == calls_before:
+                failure = 'no_eligible_questions'  # P05: no provider request, no live label.
         except jev.JevError as e:
             failure = e.code
         except Exception as e:  # respons tak terduga tidak boleh menjatuhkan endpoint
             failure = f'internal_error:{type(e).__name__}'
-        calls = [asdict(c) for c in getattr(client, 'calls', [])] if client is not None else []
+        calls = [asdict(c) for c in getattr(client, 'calls', [])[calls_before:]] if client is not None else []
         if failure:
+            reason = (f'Jev ({mode}) tidak dipanggil: no_eligible_questions.'
+                      if failure == 'no_eligible_questions' else f'Jev ({mode}) gagal: {failure}.')
             rec, trace = _analyze(context, idx, 'rules', None, None, extra_unknowns=[
-                f'Jev ({mode}) gagal: {failure}. Seluruh analisis memakai rules deterministik; '
+                reason + ' Seluruh analisis memakai rules deterministik; '
                 'tidak ada label Jev yang dipakai.'], diagnostic=diagnostic)
         trace.jev_calls = calls
     trace.elapsed_ms = round((time.monotonic() - started) * 1000)

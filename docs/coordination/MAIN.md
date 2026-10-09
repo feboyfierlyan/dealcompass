@@ -44,6 +44,7 @@ BOY-04/BIMA-04/ICAL-04 selesai. Rehearsal tim dan submission belum diverifikasi.
 | BOY-04 | Boy | MERGED #22; VERIFIED | Ranking/diagnostic API, sumber→graph; 52 frontend/build dan sampling browser lulus |
 | BIMA-04 | Bima | MERGED #23; VERIFIED | 164backend, setup bersih, smoke15/15 cold/warm + restart, temuan sumber diperiksa |
 | ICAL-04 | Ical | MERGED #26; VERIFIED | Baseline aktual, eval per sumber, brief/claims; Jev live tetap BLOCKED terpisah |
+| MAIN-JEV-LIVE | Main | Implementasi VERIFIED lokal; provider BLOCKED | Launcher/check/smoke/analyze/serve;188tes PASS, key belum tersedia; [panduan](../../backend/integrations/JEV_LIVE.md) |
 | MAIN-02 | Main | IN_PROGRESS | UI/runbook/paket pitch terverifikasi; rehearsal, kecocokan brief dan submission tersisa |
 
 Status: TODO / IN_PROGRESS / BLOCKED / READY_FOR_REVIEW / VERIFIED / MERGED.
@@ -145,3 +146,9 @@ prompt ke chat Claude Ical; penugasan tertulis bukan bukti chat itu sudah bekerj
 2026-10-09 20:43 WIB: #23 merged2585bb3, BIMA-04 VERIFIED. Main164/164backend, setup bersih/pip check, empat15/15socket dan exit1 saat server mati. Fakta DATA_FINDINGS dicocokkan produsen/row asli. Kesiapan86/100; Boy100/Bima100/Ical85.
 
 2026-10-09 20:57 WIB: #26 mergeda635ccc, ICAL-04 VERIFIED. Main174tes,decision34/35 (E15 diketahui),ranking15/15,baseline identik. Panah/prosa demo diperjelas Main. Kesiapan92/100; Boy100/Bima100/Ical95; rehearsal/submission terbuka.
+
+2026-10-09 21:16 WIB: Main menyiapkan aktivasi Jev sesuai instruksi pengguna.
+188/188tes PASS termasuk14tes baru (mock); check lokal missing_key,0request.
+Pengguna mengonfirmasi belum punya akses/key TypeSafe. Provider live belum
+VERIFIED, progress inti92/100 tetap. P05 nol panggilan sekarang tidak dilabeli
+Jev; rules/policy/ranking tetap. Lihat JEV_LIVE.md dan handoff Main.
