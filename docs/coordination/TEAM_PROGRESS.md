@@ -1,12 +1,12 @@
 # Progres tim — baseline kesiapan lomba
 
-Snapshot: 9 Oktober 2026 20:28 WIB. Main ea96e23 mencakup BOY-04 PR #22.
-PR Bima#23 terlihat menunggu review; ICAL-04 belum diverifikasi. Pekerjaan lokal
-anggota tidak diasumsikan. [Bukti review BOY-04](../reviews/2026-10-09-boy04.md).
+Snapshot: 9 Oktober 2026 20:43 WIB. Main2585bb3 mencakup BOY-04 #22 dan
+BIMA-04 #23. ICAL-04 belum diverifikasi; pekerjaan lokal tidak diasumsikan.
+[Bukti BOY-04](../reviews/2026-10-09-boy04.md), [bukti BIMA-04](../reviews/2026-10-09-bima04.md).
 
 ## Makna angka
 
-**Estimasi kesiapan keseluruhan: 81/100. Boy100/100, Bima90/100, Ical85/100.**
+**Estimasi kesiapan keseluruhan: 86/100. Boy100/100, Bima100/100, Ical85/100.**
 Angka adalah penilaian mentor berbasis bobot deliverable internal, bukan rubric
 resmi panitia, jam kerja, persentase baris kode, nilai kemampuan anggota, akurasi
 AI, atau peluang juara. Angka anggota tidak dirata-rata untuk menghasilkan total:
@@ -21,10 +21,10 @@ baseline perencanaan yang baru ditetapkan, bukan metrik yang sudah diukur sebelu
 | Analisis keputusan, policy gate, ranking P01–P05 |20|20|Rules/approval dan ranking merged; bukan validasi akurasi closing |
 | API/integrasi engine |15|15|Priorities/diagnostic asli200, R8 ditutup |
 | Pengalaman aplikasi dan integrasi UI |20|20|UI ranking/diagnostic merged #22; 52 tes frontend, build dan sampling browser Main |
-| Pengujian serta kesiapan operasional demo |10|5|144backend historis/52frontend terbaru/build lulus; restart/runbook final belum |
+| Pengujian serta kesiapan operasional demo |10|10|164backend, setup bersih, smoke cold/warm + restart lulus; 52frontend review BOY-04 |
 | Pitch, pembuktian perbandingan dan rehearsal |10|1|Naskah demo BOY-03 ada; paket pembuktian/rehearsal tim belum diverifikasi |
 | Paket penyerahan final |5|0|Artefak/link sesuai ketentuan serta bukti penyerahan belum diverifikasi |
-| TOTAL |100|81|19poin tersisa: operasional5, pitch9, submission5 |
+| TOTAL |100|86|14poin tersisa: pitch/pembuktian/rehearsal9, submission5 |
 
 100 berarti fitur wajib pada scope yang disepakati tampil end-to-end, acceptance
 lulus, demo dapat diulang, tim telah rehearsal, dan penyerahan sesuai ketentuan
@@ -39,10 +39,10 @@ rules atau mengklaim juara. Jika panitia ternyata mewajibkannya, scope harus dir
   analisis/approval15, tes UI10, integrasi ranking+diagnostic20, acceptance UI10.
   BOY-04 VERIFIED/MERGED #22. Ini bukan kesiapan keseluruhan produk100; Boy
   tetap memimpin demo dan memperbaiki bug jika ditemukan saat rehearsal.
-- **Bima90/100**: ingestion25, graph/provenance25, diagnostic20, API20. Sisa10
-  runbook, smoke dari proses baru/restart dan kesiapan backend demo. Angka berbasis
-  deliverable modul, bukan kontribusi personal; revisi API R8 tetap dikreditkan
-  kepada pelaksana Ical. BIMA-04 PR #23 menunggu review; tambahan kredit belum diberikan.
+- **Bima100/100 pada scope backend+runbook**: ingestion25, graph/provenance25,
+  diagnostic20, API20, runbook/smoke/restart10. BIMA-04 VERIFIED/MERGED #23.
+  Ini kredit deliverable modul; revisi API R8 tetap diatribusikan kepada Ical.
+  Bima tetap mendukung startup/recovery pada mesin demo dan menjelaskan sumber.
 - **Ical85/100**: analisis rules30, ranking25, policy/provenance20, evaluasi existing10.
   Sisa15 paket pembuktian/baseline/penjelasan/rehearsal. ICAL-03 dan takeover R8
   selesai; ICAL-04 TODO. Jev: adapter+mock/replay ada, live belum diverifikasi,
@@ -52,16 +52,17 @@ rules atau mengklaim juara. Jika panitia ternyata mewajibkannya, scope harus dir
 
 1. Boy → BOY-04 selesai; sync main dan latihan demo menggunakan frontend/TESTING.md.
    Catat bug nyata saja; tidak ada tugas fitur baru yang perlu dimulai sekarang.
-2. Bima → [BIMA-04](../prompts/BIMA-04.md): backend demo/runbook/smoke/restart dan
-   ringkasan fenomena data bersumber. Branch baru bima/demo-readiness.
+2. Bima → BIMA-04 selesai; gunakan runbook dan smoke di mesin demo bersama Boy.
+   Siapkan recovery dan jawaban fenomena data; jangan ulang implementasi selesai.
 3. Ical → [ICAL-04](../prompts/ICAL-04.md): pembuktian CRM-only vs graph+rules,
    jawaban mentor, keterbatasan/eval; Jev live hanya jika credential/akses tersedia.
    Branch baru ical/evidence-demo-pack.
 4. Main review setiap PR saat siap; tidak menunggu tiga PR sekaligus. Semua WAJIB
    handoff .md. Freeze kontrak/metode sementara; perubahan lintas modul ke Main.
 
-UI Boy kini siap untuk rehearsal final. Pekerjaan paralel yang masih tersisa: smoke backend, penjelasan metode, baseline,
-ringkasan data, dokumentasi operasional dan pengecekan kesiapan Jev.
+UI dan runbook kini siap untuk rehearsal tim. Sisa: paket baseline/pembuktian
+Ical, latihan presentasi bersama, kecocokan brief serta artefak penyerahan. Jev
+live tetap dipantau terpisah; tidak diasumsikan dari smoke rules.
 
 ## Rencana waktu tim (target internal, bukan jadwal baru panitia)
 
@@ -86,3 +87,5 @@ Laporan ini statis/manual, bukan monitor otomatis. Status runtime deployment,
 credential dan submission tidak diasumsikan dari keberhasilan tes lokal.
 
 Riwayat: baseline19:36WIB75/100 → snapshot20:28WIB81/100 (+6 area UI). Bobot lain tetap; Bima/Ical tidak diberi kredit hanya karena PR atau klaim selesai.
+
+Riwayat20:43WIB:81→86/100 (+5 operasional BIMA-04); Bima90→100 setelah review nyata. Pitch dan submission belum mendapat kredit tambahan.
