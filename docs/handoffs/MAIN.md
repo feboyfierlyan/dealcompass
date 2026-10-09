@@ -1,55 +1,49 @@
 # Handoff MAIN
 
 ## Task dan status
-Penugasan R8 dialihkan ke Ical atas permintaan pengguna. PR #16 tetap terbuka;
-perbaikan belum diverifikasi. Ical #15 sudah merged, Boy #14 tetap R9.
-Ini perubahan penugasan, bukan klaim endpoint ranking sudah berhasil.
+PR Boy #14 MERGED b059bad. R9 VERIFIED setelah Main mengulang 34/34 frontend dan
+build. R8 PR #16 tetap menunggu revisi Ical; API/UI ranking belum dinyatakan siap.
 
 ## Branch dan commit
-integrator/reassign-r8-ical dari main 806f24e. PR #16 masih OPEN, head 9454e87
-pada pemeriksaan penugasan. Tidak mengubah branch kode milik anggota.
+integrator/verify-boy-r9 dari main b059bad. Revisi Boy 4fe31ca, head final c6c368e
+setelah sinkron main fa6abdf; merge PR #14 b059bad. Checkout review terisolasi
+integrator/review-boy-r9. Catatan Main ini hanya dokumentasi.
 
 ## File dan fungsi
-MAIN.md mencatat pelaksana sementara Ical. ICAL-R8-TAKEOVER.md memberi instruksi
-checkout, perbaikan, acceptance dan atribusi handoff. BIMA-03-R8.md mengarahkan
-ke penugasan baru. Handoff Main ini diperbarui. Tidak ada kode aplikasi berubah.
+MAIN.md menutup R9 dan memperbarui tugas/status produk. Review boy-r9 mencatat
+perintah, batas pengujian dan merge. Handoff Main diperbarui; tidak mengedit kode
+anggota, dependency, CI, kontrak atau dataset.
 
 ## Kontrak dan dependency
-Klarifikasi Main: evidence path boleh menelusuri kedua arah, tetapi pasangan node
-harus memakai edge asli dengan source/target/relation/provenance tetap. Kontrak
-awal ambigu mengenai traversal; Ical sekarang ditugaskan memperbaiki validator
-modul Bima. Handoff BIMA.md wajib menyebut pelaksana Ical; ownership CI berbasis
-branch tetap berlaku, tanpa perubahan/pelemahan CI.
-Tidak ada dependency baru atau perubahan API lama.
+API v1 tetap. R9 hanya assertion dan dokumentasi Boy; pemeriksaan pengalaman
+terbaru, kesediaan, izin sebelum perkenalan serta unknowns tetap kuat. Scope
+pengalihan R8 ke Ical pada branch Bima dan atribusi handoff BIMA.md tetap berlaku.
 
 ## Cara menjalankan
-Teruskan ICAL-R8-TAKEOVER.md ke chat Claude Ical. Ical sync main pada checkout
-sendiri dari branch bima/diagnostics-api dan lanjutkan PR #16. Bima tidak mengerjakan
-R8 bersamaan. Boy tetap menjalankan BOY-03-R9.md di PR #14.
+Main menjalankan backend rules lokal port 8126, kompilasi helper TypeScript ke
+/tmp, lalu 34 tes sesuai review boy-r9. Server pengujian dihentikan setelah selesai.
+Tim dapat menjalankan main dan naskah demo frontend/TESTING.md.
 
 ## Pengujian aktual
-Penugasan ini hanya dokumentasi: handoff dan diff checks; CI sebagai gate merge.
-Bukti review sebelumnya (bukan tes ulang pada penugasan ini): 139/139 unittest; eval decision 34/35 (inti 34/34, E15 known limitation),
-ranking 15/15; frontend build lulus, 32/34 tes lulus (P03/P04 regex lama gagal).
-HTTP priorities asli 503. Diagnostic pipeline/DL-002 200. Browser P02 analisis →
-sumber I0348 → graph 3 node/2 edge berhasil. Handoff/diff checks dijalankan untuk
-PR dokumentasi; CI tetap gate merge. Rincian/perintah ada di dokumen review.
+Main: 34/34 frontend, 0 gagal/skip; production build, handoff/ownership dan diff
+checks lulus. Lima analisis dan graph memakai API asli; transport/lifecycle mock.
+CI verify c6c368e SUCCESS. Tidak mengulang backend suite atau browser lokal pada
+revisi yang hanya menyentuh tes/dokumentasi ini. Catatan Main dicek handoff/diff;
+CI tetap gate merge. Bukti detail ada di docs/reviews/2026-10-09-boy-r9.md.
 
 ## Fixture dan keterbatasan
-Ranking rules, bukan probabilitas closing. Jev live belum diuji. Tes lifecycle dan
-transport frontend memakai mock; tes graph/analisis memakai HTTP asli. Probe arah
-validator hanya di memori untuk diagnosis, tidak menjadi kode fix. Review ini
-tidak mengulang seluruh pemeriksaan mobile/manual Boy.
+Smoke desktop/mobile P03/P04 dalam handoff Boy adalah hasil Boy, bukan rerun Main.
+Jev live belum diuji. Ranking engine sudah merged tetapi endpoint/UI ranking belum
+siap. Status request sesi tidak mengubah status bisnis API.
 
 ## Blocker
-R8: validator path Bima menolak 12 traversal sah, sehingga endpoint asli 503.
-R9: assertion teks frontend P03/P04 belum kompatibel rekomendasi terbaru Ical.
-UI ranking/diagnostic menunggu kedua PR diverifikasi; jangan hardcode ranking.
+Tidak ada blocker Boy R9 setelah verifikasi. R8 API priorities tetap pekerjaan
+Ical pada PR #16; review R9 ini tidak memeriksa atau mengklaim perbaikannya selesai.
 
 ## Tugas berikutnya
-Pengguna meneruskan prompt takeover kepada Ical. Ical mengerjakan R8 dan update
-handoff BIMA.md dengan atribusi jujur; Boy menyelesaikan R9. Main review ulang
-kedua PR setelah revisi. Tidak ada pesan otomatis ke chat AI Ical.
+Boy sync main dan dapat memakai naskah demo. Ical melanjutkan R8 sesuai prompt
+takeover dan wajib mencatat pelaksana pada handoff BIMA.md. Main review #16 setelah
+revisi; BOY-04 ditugaskan setelah API nyata lulus. Tidak ada pesan otomatis ke AI.
 
 ## Update WIB
-2026-10-09 19:09 WIB
+2026-10-09 19:22 WIB
