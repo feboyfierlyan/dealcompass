@@ -45,12 +45,12 @@ const acceptance = {
   'DL-005': [/menjadwalkan discovery/, /bukan berarti tidak ada risiko/, /Ini bukan tanda deal gagal, kalah, atau bebas risiko\./],
 };
 
-test('REAL HTTP layer 1: each API priority shows action and proof controls first, then owner, target, approvals and context, in plain words', () => {
+test('REAL HTTP guided layer: goal and gate precede preparation, full API action and evidence remain available', () => {
   for (const item of ranking.items) {
     const context = joined(item.deal_id), r = item.recommendation;
     const { view, html } = action({ id: item.deal_id, priority: item, context });
     assert.equal(view.source, 'priority');
-    const steps = ['Tindakan yang disarankan', 'Lihat alasan &amp; bukti', escape(r.action), 'Penanggung jawab', 'Target langkah berikutnya', 'Persetujuan yang diperlukan', 'Mengapa perlu diperhatikan'];
+    const steps = ['Langkah berikutnya', 'Hasil yang ingin dicapai', 'Pastikan sebelum bertindak', 'Siapkan tindak lanjut', 'Baca usulan lengkap dan batasannya', 'Tindakan yang disarankan', escape(r.action), 'Target langkah berikutnya', 'Lihat alasan &amp; bukti'];
     for (let i = 1; i < steps.length; i++) assert.ok(html.indexOf(steps[i - 1]) >= 0 && html.indexOf(steps[i - 1]) < html.indexOf(steps[i]), `${item.deal_id}: ${steps[i - 1]} before ${steps[i]}`);
     for (const pattern of acceptance[item.deal_id]) assert.match(html, pattern, `${item.deal_id} acceptance`);
     for (const label of ['Status request sesi', 'GET ', 'POST ', 'Tier acceleration', 'tier acceleration', 'Status konteks CRM']) assert.ok(!html.includes(label), `${item.deal_id}: no technical label ${label}`);
@@ -168,4 +168,51 @@ test('structured evidence reads as source fields; missing is not zero and raw so
   const message = joined('DL-002').evidence.find(e => e.source_id === 'I0348');
   const quote = render(React.createElement(SourceContent, {evidence:message}));
   assert.ok(quote.includes(escape(interactionMeta(message).message)));
+});
+
+
+test('REAL HTTP plan export carries the complete action, approval gates, unknowns and source locators for all five deals', () => {
+  const { buildFollowUpBrief } = require(path.join(build, 'lib/planning.js'));
+  for (const item of ranking.items) {
+    const c = joined(item.deal_id), r = item.recommendation;
+    const brief = buildFollowUpBrief(r, c, '2026-10-01');
+    assert.ok(brief.includes(r.action)); assert.ok(brief.includes(r.milestone));
+    assert.ok(brief.includes(c.deal.account_name)); assert.ok(brief.includes('2026-10-01'));
+    assert.ok(brief.includes('Belum dikirim, belum disimpan ke CRM, dan bukan persetujuan.'));
+    for (const line of [...r.approvals_needed, ...r.unknowns, ...c.unknowns]) assert.ok(brief.includes(line));
+    for (const id of r.evidence_ids) { const e = c.evidence.find(x => x.id === id); assert.ok(brief.includes(id)); if (e) assert.ok(brief.includes(e.source_file) && brief.includes(e.source_id)); }
+    if (!r.approvals_needed.length) assert.ok(brief.includes('Ini tidak berarti tindakan sudah disetujui.'));
+  }
+});
+test('MOCK presentation titles only translate exact gate values and never carry an old priority title into re-analysis', () => {
+  const { taskHeading } = require(path.join(build, 'lib/planning.js'));
+  const item = ranking.items.find(x => x.deal_id === 'DL-002');
+  assert.equal(taskHeading(item, 'priority').title, 'Minta keputusan atas diskon');
+  assert.equal(taskHeading(item, 'session').title, 'Siapkan langkah berikutnya');
+  const unknown = { ...item, factors: [{name:'gate_approval_izin',value:'MOCK syarat berbeda'}] };
+  assert.equal(taskHeading(unknown, 'priority').title, 'Siapkan langkah berikutnya');
+  assert.equal(taskHeading(unknown, 'priority').note, 'MOCK syarat berbeda');
+  assert.equal(taskHeading(null, 'priority').title, 'Siapkan langkah berikutnya');
+});
+test('MOCK plan with missing owner, source and target never claims a completed task or available evidence', () => {
+  const { buildFollowUpBrief } = require(path.join(build, 'lib/planning.js'));
+  const r = { ...ranking.items[0].recommendation, owner_id: null, action: 'MOCK jangan bertindak sebelum konfirmasi.', milestone:'', approvals_needed:[], unknowns:[], evidence_ids:['missing-record'], precedent_ids:[] };
+  const brief = buildFollowUpBrief(r, null, null);
+  assert.ok(brief.includes('Belum ditentukan'));
+  assert.ok(brief.includes('missing-record (sumber belum tersedia)'));
+  assert.ok(brief.includes('bukan konfirmasi bebas risiko'));
+  assert.ok(brief.includes(r.action));
+});
+
+test('REAL HTTP plan dialog keeps approval and consent text visible while original export remains available', () => {
+  const { FollowUpPlan } = require(path.join(build, 'components/FollowUpPlan.js'));
+  for (const id of ['DL-002','DL-004']) {
+    const c = joined(id), r = ranking.items.find(x => x.deal_id === id).recommendation;
+    const html = render(React.createElement(FollowUpPlan, { recommendation:r, context:c, snapshot:'2026-10-01', onClose:noop }));
+    assert.ok(html.includes('aria-labelledby=') && html.includes('aria-describedby='));
+    assert.ok(html.includes('Salin rencana') && html.includes('Menyalin tidak mengirim pesan atau mengubah CRM.'));
+    for (const gate of r.approvals_needed) assert.ok(html.indexOf(escape(gate)) < html.indexOf('Lihat teks yang akan disalin'));
+    if (id === 'DL-004') assert.ok(html.indexOf('kandidat bukan izin') < html.indexOf('Lihat teks yang akan disalin'));
+    assert.ok(html.includes('readOnly=""') && html.includes(escape(r.action)));
+  }
 });

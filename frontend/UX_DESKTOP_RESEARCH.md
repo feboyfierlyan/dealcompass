@@ -1,6 +1,9 @@
 # Riset dan keputusan UX desktop — PR #29
 
 Pelaksana awal Ical/Claude; lanjutan desktop Main/Codex, 9 Oktober 2026.
+> Versi ini adalah iterasi awal. Feedback berikutnya dan alur final ada di
+> [UX_SALES_FLOW_RESEARCH.md](UX_SALES_FLOW_RESEARCH.md).
+
 Target: sales nonteknis mampu memilih prioritas, memahami tindakan berikutnya, dan memeriksa
 alasan tanpa harus membaca formula atau menguasai graph. Scope P01–P05; fokus desktop.
 

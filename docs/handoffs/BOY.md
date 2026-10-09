@@ -30,6 +30,16 @@ diklaim ulang di sini; run awal di bawah milik Ical; run lanjutan Main ditandai 
 - [ ] Uji kegunaan dengan rekan tim: **belum dilakukan** (target 10 detik/30 detik/≤2 interaksi
   belum diukur).
 
+### Iterasi final berdasarkan feedback sales — Main/Codex
+
+- [x] Mobbin MCP: 5 flow + 7 screen baru; keputusan dan seluruh inventaris UI dicatat di
+  `frontend/UX_SALES_FLOW_RESEARCH.md`.
+- [x] Panduan kontekstual, overview tugas singkat, satu CTA **Siapkan tindak lanjut**.
+- [x] Modal rencana yang bisa diperiksa/disalin; seluruh teks bisnis dan sumber ikut export.
+- [x] Nama deal/tab sticky, default graph jalur API, kontrol advanced terlipat, search recovery.
+- [x] 77 frontend tests, build; browser desktop, modal keyboard dua arah, sumber → graph.
+- [ ] Usability sales manusia dan clipboard lintas aplikasi oleh pengguna belum diverifikasi.
+
 ### Masalah UX utama dan perbaikannya
 
 1. Prioritas tertutup hero, tiga metrik dan kotak ranking; detail deal di bawah lipatan →
@@ -78,6 +88,14 @@ Commit awal Ical 3b683dd. Main melanjutkan di checkout review tersendiri, branch
 Server pratinjau lanjutan 5174; server anggota lain 5173/8000 tidak dihentikan.
 
 ## File dan fungsi
+- Iterasi final: `ActionOverview.tsx` (judul tujuan/gate, owner, target, persiapan),
+  `FollowUpPlan.tsx` (native dialog, salin, error fallback, keyboard wrap), `lib/planning.ts`
+  (label gate exact-match, fallback generik, export verbatim dengan provenance).
+- `Dashboard.tsx` menambah panduan; `DealWorkspace.tsx` navigasi sticky dan jalur default
+  yang tidak menimpa fokus sumber; ContextGraph advanced disclosure; EvidenceBrowser recovery.
+- `frontend/UX_SALES_FLOW_RESEARCH.md`: riset 12 referensi, matriks seluruh layar/state,
+  micro-interactions, batas produk dan rehearsal. Bagian file awal di bawah adalah riwayat.
+
 - `frontend/src/main.tsx`: header ringkas (merek, konteks, tombol fixture khusus dev).
 - `frontend/src/Dashboard.tsx`: master-detail; daftar prioritas; `effectiveSelection`; status
   ranking loading/siap/gagal/tidak tersedia; GET ranking dan temuan saat muat, tanpa POST.
@@ -147,6 +165,16 @@ Perintah tes lengkap: `frontend/TESTING.md`.
 - **1:25–1:30** #5: “Lengkapi informasi”, bukan gagal/kalah/bebas risiko. “Mode rules, bukan Jev live.”
 
 ## Pengujian aktual
+
+### Run final alur sales Main/Codex
+77/77 frontend lulus: 31 helper + 46 transport/render. Build lulus. Browser nyata overview
+P01–P05, rencana P02/P04, copy-success UI, Tab/Shift+Tab wrap, Escape/fokus kembali,
+source I0335 → graph sumber spesifik, search empty dan retry 502 pulih setelah menyalakan
+backend rules pada port kosong 8000. 1440×900 dan viewport harness iframe 1280×720 diverifikasi
+ukuran/overflow via DOM; footer modal laptop terlihat. Isi export diuji utuh untuk semua deal.
+API baca clipboard alat menghasilkan kosong: belum mengklaim verifikasi clipboard OS.
+Run 73/70 di bawah adalah riwayat iterasi sebelumnya, bukan total terbaru.
+
 
 ### Lanjutan Main/Codex (desktop)
 73/73 frontend lulus (31 + 42), build TypeScript/Vite lulus. Perintah lengkap di
@@ -238,6 +266,6 @@ Catatan pelanjut: pertahankan pendingFocus + useEffect, POST hanya melalui analy
 provenance dan semua gate bisnis. Jangan mengganti saran dengan ringkasan yang membuang syarat.
 
 ## Update WIB
-2026-10-09 23:17 WIB — lanjutan desktop Main/Codex READY_FOR_REVIEW pada PR #29;
-73/73 frontend, build, browser desktop. Riwayat awal Ical dipertahankan;
-BOY-04 tetap MERGED #22/VERIFIED milik Boy. PR redesign ini belum merged.
+2026-10-10 00:08 WIB — alur sales desktop final READY_FOR_REVIEW pada PR #29. 77/77 frontend,
+build, uji browser terarah; riset Mobbin dan handoff diperbarui. Belum merged/deployed.
+Implementasi awal Ical, lanjutan Main; riwayat BOY-04 tetap milik Boy.

@@ -75,7 +75,7 @@ export function RecommendationSources({ ids, context, onEvidence }: { ids: strin
   const byId = new Map(context.evidence.map(e => [e.id, e]));
   const records = orderEvidence(unique.flatMap(id => byId.has(id) ? [byId.get(id)!] : []));
   const missing = unique.filter(id => !byId.has(id));
-  const size = 6, shown = records.slice(page * size, (page + 1) * size);
+  const size = 4, shown = records.slice(page * size, (page + 1) * size);
   return <section className="reason-section" aria-label="Bukti yang dirujuk saran">
     <h3>Bukti yang dirujuk saran ini <span className="count">{unique.length}</span></h3>
     <p className="note">Percakapan ditampilkan lebih dulu. Pilih untuk membaca record aslinya.</p>
@@ -86,7 +86,7 @@ export function RecommendationSources({ ids, context, onEvidence }: { ids: strin
       return <li key={e.id}><button className="evidence-item" onClick={() => onEvidence(e.id)}>
         <span className="evidence-item-head"><span className="tag">{kind}</span><span className="muted">{dateLabel(e.date)}</span></span>
         <strong>{title}</strong>
-        {meta?.message && <span className="evidence-quote">“{meta.message}”</span>}
+        {meta?.message && <span className="evidence-quote preview-quote">“{meta.message}”</span>}
         <span className="evidence-item-foot"><span className="muted small">Record asli</span><span className="link-text">Buka bukti <Icon name="arrow" size={14}/></span></span>
       </button></li>;
     })}</ul>

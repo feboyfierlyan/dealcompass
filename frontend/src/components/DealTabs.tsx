@@ -4,7 +4,8 @@ import type { DealContext } from '../lib/contracts';
 import type { EvidencePath, PriorityItem } from '../lib/phase3';
 import { dateLabel } from '../lib/format';
 import { evidenceTitle, gateSummary, interactionMeta, obstacleEvidence, recommendationView } from '../lib/present';
-import { ActionSummary, ExplanationGroups, PrecedentList, RecommendationSources, UnknownList } from './AnalysisReport';
+import { ActionOverview } from './ActionOverview';
+import { ExplanationGroups, PrecedentList, RecommendationSources, UnknownList } from './AnalysisReport';
 import { EvidencePaths, PriorityRationale } from './Phase3Panels';
 import { ErrorNotice } from './Notice';
 import { Icon } from './Icon';
@@ -40,12 +41,8 @@ export function ActionTab({ context, priority, rankingState, view, fixture, snap
   const r = view.recommendation;
   const running = session.status === 'running';
   const rerunNote = useId();
-  const pathsLabel = view.source === 'session' ? 'Lihat hubungan data dari analisis prioritas' : 'Lihat hubungan yang mendukung saran ini';
   return <div className="tab-stack">
-    {r ? <ActionSummary recommendation={r} context={context} fixture={fixture} onEvidence={onEvidence} actions={<>
-      <button className="button primary" onClick={onReasons}>Lihat alasan & bukti<Icon name="arrow" size={17}/></button>
-      <button className="button secondary" onClick={onShowPaths} disabled={!priority?.evidence_paths.length}><Icon name="graph" size={17}/>{pathsLabel}</button>
-    </>}/>
+    {r ? <ActionOverview key={`${r.deal_id}-${view.source}-${JSON.stringify(r)}`} recommendation={r} context={context} priority={priority} source={view.source} snapshot={snapshot} fixture={fixture} onEvidence={onEvidence} onReasons={onReasons} onShowPaths={onShowPaths}/>
       : rankingState === 'loading' && !running && session.status !== 'failed' ? <div className="action-card skeleton" role="status"><span className="visually-hidden">Menyiapkan saran dari urutan prioritas</span><i/><i/><i/></div>
       : <section className="action-card empty"><h3>Saran untuk deal ini belum tersedia</h3>
         <p>{rankingState === 'error' ? 'Urutan prioritas gagal dimuat, sehingga saran yang dipakai untuk prioritas belum bisa ditampilkan.' : 'Saran dari urutan prioritas tidak tersedia pada mode ini.'} Anda dapat meminta analisis khusus untuk deal ini.</p>
@@ -53,7 +50,7 @@ export function ActionTab({ context, priority, rankingState, view, fixture, snap
         {running && <p className="status-line" role="status"><span className="spinner"/>Menjalankan analisis…</p>}
         {session.status === 'failed' && session.error && <ErrorNotice error={session.error} retry={onAnalyze} subject="Analisis"/>}
       </section>}
-    <WhyBlock priority={priority} context={context} rankingState={rankingState} onEvidence={onEvidence}/>
+
     {r && <section className="origin" aria-label="Asal saran">
       <div className="origin-row">
         <p><Icon name="history" size={16}/>{view.source === 'session'
@@ -75,6 +72,8 @@ export function ActionTab({ context, priority, rankingState, view, fixture, snap
 export function ReasonsTab({ priority, view, context, onEvidence, onEdge, onShowPath }: { priority: PriorityItem | null; view: View; context: DealContext; onEvidence: OpenEvidence; onEdge: (id: string) => void; onShowPath: (path: EvidencePath) => void }) {
   const r = view.recommendation;
   return <div className="tab-stack">
+    <div className="section-intro"><span className="eyebrow">Dari konteks ke keputusan</span><h3>Periksa alasan di balik saran.</h3><p>Mulai dari percakapan pelanggan, lalu periksa sumber dan hubungan yang mendukungnya.</p></div>
+    <WhyBlock priority={priority} context={context} rankingState={priority ? 'ready' : 'unavailable'} onEvidence={onEvidence}/>
     {r && view.hasPriority && view.hasSession && <p className="version-note">Bukti dan penjelasan di bawah mengikuti <strong>{view.source === 'session' ? 'hasil analisis ulang' : 'saran dari urutan prioritas'}</strong>.</p>}
     {r && <RecommendationSources ids={r.evidence_ids} context={context} onEvidence={onEvidence}/>}
     {r && <PrecedentList recommendation={r} context={context} onEvidence={onEvidence}/>}

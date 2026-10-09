@@ -134,7 +134,7 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
 
   return <div className={`workspace ${drawerOpen && wide ? 'with-drawer' : ''}`}>
     <article className="detail" aria-labelledby={ids.title}>
-      <header className="detail-head">
+      <div className="detail-navigation"><header className="detail-head">
         {onBack && <button className="back-button" onClick={onBack}><Icon name="back" size={18}/>Semua deal</button>}
         <h2 id={ids.title} tabIndex={-1}>{deal.account_name}</h2>
         <div className="detail-meta">
@@ -146,6 +146,7 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
       </header>
       <div className="tabs" role="tablist" aria-label="Detail deal">{TABS.map((item, index) => <button key={item.id} id={`${ids.panel}-tab-${item.id}`} role="tab" aria-controls={tab === item.id ? `${ids.panel}-${item.id}` : undefined} aria-selected={tab === item.id} tabIndex={tab === item.id ? 0 : -1}
         onClick={() => setTab(item.id)} onKeyDown={e => { const next = nextTabIndex(e.key, index, TABS.length); if (next === null) return; e.preventDefault(); setTab(TABS[next].id); document.getElementById(`${ids.panel}-tab-${TABS[next].id}`)?.focus(); }}><Icon name={item.icon} size={17}/>{item.label}</button>)}</div>
+      </div>
       <div className="tab-panel" role="tabpanel" id={`${ids.panel}-${tab}`} aria-labelledby={`${ids.panel}-tab-${tab}`} tabIndex={-1} aria-busy={loading}>
         {loading && <div className="loading-line" role="status"><span className="spinner"/>Memuat data deal…</div>}
         {contextError && <ErrorNotice error={contextError} retry={() => setRefresh(v => v + 1)} subject="Data deal"/>}
@@ -157,8 +158,8 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
           onEdge={id => showGraph({ target: { kind: 'edge', id } })} onShowPath={path => showGraph({ paths: [path] })}/>}
         {tab === 'explore' && <div className="tab-stack">
           <div className="subnav" role="group" aria-label="Bagian data">{exploreViews.map(item => <button key={item.id} aria-pressed={explore === item.id} onClick={() => setExplore(item.id)}>{item.label}</button>)}</div>
-          {explore === 'graph' && (context ? <section className="explore-panel" aria-labelledby={ids.graph}><h3 id={ids.graph} tabIndex={-1}>Peta hubungan</h3>
-            <ContextGraph key={graphRequest?.sequence ?? 0} initialFocus={graphRequest?.target} initialPaths={graphRequest?.paths} context={context} selection={selection} onSelect={value => select(value, false)}/></section>
+          {explore === 'graph' && (context ? <section className="explore-panel" aria-labelledby={ids.graph}><div className="section-intro"><span className="eyebrow">CONTEXT GRAPH</span><h3 id={ids.graph} tabIndex={-1}>Peta hubungan</h3><p>Pilih orang, percakapan, atau relasi untuk membaca sumbernya. Garis putus-putus berarti dugaan, bukan fakta terkonfirmasi.</p></div>
+            <ContextGraph key={graphRequest?.sequence ?? 0} initialFocus={graphRequest?.target} initialPaths={graphRequest ? graphRequest.paths : (allPaths.length ? allPaths : undefined)} context={context} selection={selection} onSelect={value => select(value, false)}/></section>
             : !loading && <p className="muted">Peta hubungan tampil setelah data deal tersedia.</p>)}
           {explore === 'evidence' && <EvidenceBrowser records={context?.evidence ?? []} selection={selection} onSelect={value => select(value)}/>}
           {explore === 'method' && <section className="explore-panel">{joined.validPriority ? <PriorityFactors item={joined.validPriority} onEvidence={id => select({ kind: 'evidence', id })}/> : <p className="muted">Faktor prioritas belum tersedia untuk deal ini.</p>}{methodology && <Methodology data={methodology}/>}</section>}

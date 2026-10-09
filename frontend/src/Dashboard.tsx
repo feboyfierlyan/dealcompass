@@ -21,6 +21,7 @@ export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) 
   const [refresh, setRefresh] = useState(0);
   const [userChoice, setUserChoice] = useState<string | null>(null);
   const [showDetail, setShowDetail] = useState(false);
+  const [showGuide, setShowGuide] = useState(true);
   const narrow = useMedia('(max-width: 899px)');
   const detailRef = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -76,14 +77,19 @@ export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) 
   const listOnly = narrow && !detailOnly;
 
   return <main id="main-content" className={`layout ${detailOnly ? 'show-detail' : ''} ${listOnly ? 'show-list' : ''}`}>
+    <div className="workflow-guide" hidden={detailOnly}>
+      <div><span className="eyebrow">DEAL ACCELERATION</span><h1>Dari prioritas ke tindak lanjut.</h1></div>
+      <button className="text-button small" aria-expanded={showGuide} onClick={() => setShowGuide(value => !value)}>{showGuide ? 'Tutup panduan' : 'Cara menggunakan'}<Icon name="info" size={16}/></button>
+      {showGuide && <ol className="guide-steps"><li><span>1</span><div><strong>Pilih deal</strong><p>Mulai dari urutan teratas di kiri.</p></div></li><li><span>2</span><div><strong>Pahami langkahnya</strong><p>Cek target dan hal yang perlu dipastikan.</p></div></li><li><span>3</span><div><strong>Siapkan tindak lanjut</strong><p>Periksa rencana, lalu salin untuk digunakan.</p></div></li></ol>}
+    </div>
     <section className="queue" aria-labelledby="queue-title" hidden={detailOnly}>
       <div className="queue-head">
-        <h1 id="queue-title">Prioritas tindak lanjut</h1>
-        <p>Mulai dari urutan teratas. Pilih deal untuk melihat langkah berikutnya.</p>
+        <h2 id="queue-title">Deal prioritas <span className="count">{deals.length || '—'}</span></h2>
+        <p>Urutan yang perlu perhatian sales.</p>
       </div>
       <div className="queue-status">
         {rankingState === 'loading' && <p role="status" className="status-line"><span className="spinner"/>Menyusun urutan prioritas…</p>}
-        {rankingState === 'ready' && <p className="status-line">Urutan perhatian sales{data ? `, data per ${dateLabel(data.snapshot_date)}` : ''}. Bukan peluang closing.</p>}
+        {rankingState === 'ready' && <p className="status-line">Data{data ? ` per ${dateLabel(data.snapshot_date)}` : ''}. Bukan peluang closing.</p>}
         {rankingState === 'unavailable' && <p className="status-line">Urutan prioritas tidak tersedia pada mode ini. Daftar mengikuti urutan CRM.</p>}
         {rankingState === 'error' && <ErrorNotice error={asApiError(priorityState.error, 'Urutan prioritas tidak valid.')} retry={() => void priorities.run()} subject="Urutan prioritas" retryLabel="Muat ulang urutan"/>}
         {rankingState === 'error' && <p className="status-line">Daftar di bawah mengikuti urutan CRM, bukan prioritas. Deal tetap bisa dibuka.</p>}

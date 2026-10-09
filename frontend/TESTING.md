@@ -5,7 +5,7 @@ Tidak ada perubahan dependency, kontrak API, dataset, backend, ranking atau atur
 Redesign UI/UX dikerjakan Ical atas penugasan pengguna/Main di area frontend Boy;
 riwayat dan hasil uji BOY-02..04 tetap milik Boy (lihat `docs/handoffs/BOY.md`).
 
-## Build dan seluruh tes frontend (73)
+## Build dan seluruh tes frontend (77)
 
 Backend lokal **rules** wajib menyala karena sebagian tes memanggil HTTP nyata:
 
@@ -21,7 +21,7 @@ UX_BUILD=/tmp/dealcompass-desktop-tests
 npm --prefix frontend run build
 node --test frontend/tests/contracts.test.mjs frontend/tests/graph.test.mjs frontend/tests/session.test.mjs frontend/tests/present.test.mjs
 frontend/node_modules/.bin/tsc frontend/src/components/DealTabs.tsx frontend/src/components/EvidencePanel.tsx frontend/src/components/ContextGraph.tsx frontend/src/components/Phase3Panels.tsx frontend/src/lib/graphView.ts frontend/src/lib/api.ts frontend/src/lib/resource.ts --target ES2022 --module commonjs --jsx react-jsx --outDir "$UX_BUILD" --skipLibCheck --strict
-NODE_PATH="$PWD/frontend/node_modules" API_TEST_BUILD="$UX_BUILD/lib" ANALYSIS_TEST_BUILD="$UX_BUILD" PHASE3_TEST_BUILD="$UX_BUILD" REDESIGN_TEST_BUILD="$UX_BUILD" node --test frontend/tests/api.test.cjs frontend/tests/analysis.test.cjs frontend/tests/phase3.test.cjs frontend/tests/redesign.test.cjs
+NODE_PATH="$PWD/frontend/node_modules" API_TEST_BUILD="$UX_BUILD/lib" ANALYSIS_TEST_BUILD="$UX_BUILD" PHASE3_TEST_BUILD="$UX_BUILD" REDESIGN_TEST_BUILD="$UX_BUILD" node --test --test-concurrency=1 frontend/tests/api.test.cjs frontend/tests/analysis.test.cjs frontend/tests/phase3.test.cjs frontend/tests/redesign.test.cjs
 ```
 
 | Suite | Tes | Isi | Nyata / mock |
@@ -33,32 +33,29 @@ NODE_PATH="$PWD/frontend/node_modules" API_TEST_BUILD="$UX_BUILD/lib" ANALYSIS_T
 | present | 12 | pilihan default/pilihan pengguna, versi saran, tab keyboard, unknowns, owner, judul bukti, arah jalur | sintetis murni |
 | analysis | 8 | POST rules nyata lima deal dirender ActionTab+ReasonsTab; teks API utuh; urutan lapisan 1; bukti → graph | HTTP nyata + 3 sintetis |
 | phase3 | 18 | ranking/diagnostic nyata, join ID/snapshot, corruption, lifecycle | HTTP nyata + mock/sintetis berlabel |
-| redesign | 9 | lapisan 1 lima deal, state loading/gagal, versi analisis ulang, panel bukti I0348, jalur di peta, guard tanpa POST otomatis, ID sumber terverifikasi/ambigu, field sumber/null | HTTP nyata (GET saja), MOCK, STATIC berlabel |
+| redesign | 13 | lapisan 1 lima deal, state loading/gagal, versi analisis ulang, panel bukti I0348, jalur di peta, guard tanpa POST otomatis, ID sumber terverifikasi/ambigu, field sumber/null | HTTP nyata (GET saja), MOCK, STATIC berlabel |
 
 Tes real API mengharuskan mode rules; tidak ada fallback fixture diam-diam.
 `GRAPH_API_URL` mengganti host backend. Ekspektasi angka mengikuti snapshot 2026-10-01
 (P02: 1.305 node, 2.895 relasi, 1.361 bukti) dan berada **di tes saja**, bukan di komponen.
 
-## Struktur tampilan yang diuji
+## Struktur tampilan final yang diuji
 
-- **Beranda** “Prioritas tindak lanjut”: lima deal dalam urutan API (nomor, nama, tahap,
-  potensi tahunan; “Perlu persetujuan” bila API mencantumkan approval dan “Lengkapi
-  informasi” untuk discovery). Syarat lengkap tersedia di detail.
-  Prioritas #1 terbuka otomatis setelah ranking tiba; pilihan pengguna tidak ditimpa.
-  Ranking gagal: daftar tetap bisa dibuka dalam urutan CRM dengan pemberitahuan jelas.
-- **Detail, tab Saran tindakan** (lapisan 1): Tindakan yang disarankan, tombol
-  “Lihat alasan & bukti” dan “Lihat hubungan yang mendukung saran ini” → teks tindakan →
-  Penanggung jawab → Target langkah berikutnya → Persetujuan yang diperlukan →
-  Yang masih perlu dipastikan → Mengapa perlu diperhatikan. Asal saran satu baris (“Dari urutan prioritas · data per …”);
-  analisis ulang hanya lewat tombol “Jalankan analisis ulang”.
-- **Alasan & bukti** (lapisan 2): bukti yang dirujuk, keputusan terdahulu (hanya bila ada di
-  data), hubungan data pendukung, alasan urutan termasuk skor (terlipat), penjelasan analisis,
-  informasi yang belum diketahui.
-- **Jelajahi data** (lapisan 3): Peta hubungan, Semua bukti, Cara prioritas dihitung,
-  Temuan dari data, Rincian teknis (ID, status CRM, endpoint, JSON mentah).
-- **Panel bukti**: hanya saat dipilih. ≥1800 px panel samping non-modal (Esc menutup);
-  <1800 px `dialog` modal (Esc/latar/tombol Tutup). Fokus pindah ke judul panel dan kembali
-  ke pemicu saat ditutup.
+- Panduan tiga langkah dapat ditutup/dibuka. Lima deal mengikuti ranking API, pilihan
+  pengguna tetap. Ranking gagal tetap mengizinkan daftar CRM dengan penjelasan eksplisit.
+- Overview: judul tugas dari gate yang dikenali, owner, target API, batas tindakan,
+  satu primary CTA **Siapkan tindak lanjut**. Usulan lengkap dan gate asli dalam disclosure.
+- Rencana: tindakan penuh, target, persetujuan dan unknown spesifik; export lengkap termasuk
+  semua unknown/sumber. Salin bukan pengiriman, pencatatan CRM, approval, atau task selesai.
+- Alasan & bukti: kutipan penyebab, empat sumber per halaman, preseden, jalur, metode dan
+  penjelasan. Source inspector dan raw JSON tetap tersedia.
+- Jelajahi data: graph default jalur API; target sumber mengalahkan default; kontrol graph
+  dan pencarian lanjutan terlipat. Semua bukti, metode, diagnostic dan teknis tetap tersedia.
+- Desktop: nama deal/tab sticky; inspector overlay <1800 px. Modal rencana terpisah memakai
+  fokus judul, Tab/Shift+Tab wrap, Escape, dan fokus kembali ke pemicu.
+
+Bagian langkah browser/naskah demo di bawah mencatat iterasi awal Ical/Main. Untuk alur final,
+ikuti [UX_SALES_FLOW_RESEARCH.md](UX_SALES_FLOW_RESEARCH.md), termasuk rehearsal lima menit.
 
 ## Pemeriksaan browser nyata
 
@@ -220,3 +217,19 @@ Screenshot lanjutan: `tests/screenshots/main-desktop-1440.jpg`, `main-desktop-12
 `main-source-1440.jpg`, `main-graph-p04-1440.jpg`. Foto baseline/hasil Ical tetap disimpan.
 Riset Mobbin, alasan keputusan dan batas di [UX_DESKTOP_RESEARCH.md](UX_DESKTOP_RESEARCH.md).
 Uji kegunaan manusia, mobile terbaru, Jev live dan dampak bisnis belum diukur.
+
+## Verifikasi alur sales final
+
+77 tests lulus: 31 + 46. Empat tes baru menambahkan cakupan export seluruh P01–P05,
+judul gate/fallback/session, sumber/owner hilang, serta kondisi yang terlihat dalam modal.
+Assertion urutan presentasi disesuaikan; semua assertion bisnis/provenance tetap ada.
+Build produksi lulus. Backend rules review checkout pada 8000; frontend 5174.
+
+Browser: panduan, overview P01–P05, rencana P02/P04, copy-success, keyboard trap dua arah,
+Escape/fokus kembali, I0335 → graph terfokus, no-results dan pemulihan 502 setelah backend
+mati. 1440×900 dan iframe harness 1280×720 (viewport override alat tidak konsisten; ukuran
+iframe diverifikasi dari DOM). Modal laptop 656 px tinggi dan footer terlihat.
+
+Screenshot final prefiks `sales-flow-` di tests/screenshots. Clipboard OS belum terverifikasi
+melalui API baca clipboard alat (string kosong); status writeText sukses terlihat dan isi
+export diuji utuh. Tidak mengklaim mobile, human usability, atau Jev live.

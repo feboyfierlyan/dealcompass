@@ -12,8 +12,9 @@ export function EvidenceBrowser({ records, selection, onSelect }: { records: Evi
   const filtered = records.filter(e => `${e.id} ${e.source_id} ${e.source_file} ${e.excerpt}`.toLowerCase().includes(query.trim().toLowerCase()));
   const pages = Math.max(1, Math.ceil(filtered.length / 12));
   return <section className="evidence-browser" aria-label="Semua bukti deal">
-    <label className="field">Cari seluruh bukti<input placeholder="ID, nama file, atau isi sumber" value={query} onChange={e => { setQuery(e.target.value); setPage(0); }}/></label>
+    <label className="field">Cari seluruh bukti<input placeholder="Cari nama, percakapan, atau keputusan…" value={query} onChange={e => { setQuery(e.target.value); setPage(0); }}/></label>
     <p className="small muted" role="status">{filtered.length} cocok dari {records.length} bukti · menampilkan {Math.min(page * 12 + 1, filtered.length)}–{Math.min((page + 1) * 12, filtered.length)}</p>
+    {query && <button className="text-button small" onClick={() => { setQuery(''); setPage(0); }}><Icon name="close" size={14}/>Hapus pencarian</button>}
     {!filtered.length && <p>{records.length ? 'Tidak ada bukti yang cocok. Hapus pencarian untuk melihat semua sumber.' : 'Bukti belum tersedia dari layanan.'}</p>}
     <ul className="evidence-rows">{filtered.slice(page * 12, (page + 1) * 12).map(e => {
       const { kind, title } = evidenceTitle(e), active = selection?.kind === 'evidence' && selection.id === e.id;

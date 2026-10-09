@@ -42,10 +42,10 @@ for (const [id, acceptance] of cases) test(`${id}: real rules response renders i
   const reasons=renderToStaticMarkup(React.createElement(ReasonsTab,{priority:null, view, context, onEvidence:noop, onEdge:noop, onShowPath:noop}));
   const html=action+reasons;
   for(const text of [r.action,r.milestone,...r.approvals_needed,...r.precedent_comparison,...r.unknowns,...context.unknowns]) assert.ok(html.includes(escape(text)), `Full API text retained: ${text.slice(0,80)}`);
-  // Layer 1 reads action -> owner -> target -> approvals -> analysis-specific unknowns; reasons follow in the second tab.
+  // Guided overview precedes the full unmodified proposal; business gates remain accessible and are included in the plan.
   const order=(markup,headings)=>{for(let i=1;i<headings.length;i++) assert.ok(markup.indexOf(headings[i-1])>=0&&markup.indexOf(headings[i-1])<markup.indexOf(headings[i]),`${headings[i-1]} before ${headings[i]}`);};
   const specific=splitUnknowns(r,context).specific;
-  order(action,['Tindakan yang disarankan','Lihat alasan &amp; bukti',escape(r.action),'Penanggung jawab','Target langkah berikutnya','Persetujuan yang diperlukan',...(specific.length?['Yang masih perlu dipastikan']:[]),'Mengapa perlu diperhatikan']);
+  order(action,['Langkah berikutnya','Siapkan tindak lanjut','Baca usulan lengkap dan batasannya','Tindakan yang disarankan',escape(r.action),'Target langkah berikutnya','Lihat alasan &amp; bukti']);
   for(const text of specific) assert.ok(action.includes(escape(text)),`Analysis-specific unknown stays next to the action: ${text.slice(0,60)}`);
   for(const text of r.approvals_needed) assert.ok(action.includes(escape(text)),'Approvals stay in layer 1');
   if(!r.approvals_needed.length) assert.ok(action.includes('Ini tidak berarti tindakan sudah disetujui.'));
