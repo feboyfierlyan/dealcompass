@@ -7,15 +7,15 @@ Bandingkan CRM-only, graph + rules, graph + Jev saat implementasi siap.
 
 ## Isi
 
-- `cases.py`: 30 kasus (label manusia = pemeriksaan per kasus) di atas
-  `build_deal_context` nyata (graph Bima, dataset asli). Kasus mutasi/parafrase
-  menambah/mengubah record SINTETIS pada salinan konteks dengan format produsen
-  (excerpt JSON). Kasus Jev memakai transport mock, bukan panggilan live.
-- `run_eval.py`: menjalankan kasus + invarian lima deal nyata dan menulis
-  `results/latest.json` dan `results/latest.md`.
-
-Fixture tulisan tangan ICAL-01 dihapus pada ICAL-02 karena berbeda dari
-representasi produsen (review R2/R3).
+- `cases.py`: 35 kasus decision (label manusia = pemeriksaan per kasus) di atas
+  `build_deal_context` nyata. Mutasi/parafrase = record SINTETIS pada salinan konteks
+  dengan format produsen (excerpt JSON). Kasus Jev memakai transport mock, bukan live.
+- `ranking_cases.py`: 15 kasus ranking ICAL-03 di atas konteks + diagnostic nyata Bima;
+  mutasi sintetis berlabel (tukar ID, tie, nilai/tahap/pesan, approval gate, data hilang).
+  Ranking tidak memakai Jev.
+- `ranking.md`: metode, bobot, tie-break, tradeoff, sensitivitas dan hasil ranking.
+- `run_eval.py`: menjalankan keduanya dan menulis `results/latest.{json,md}` (decision) serta
+  `results/ranking_latest.{json,md}` (ranking).
 
 ```bash
 python -m evaluation.run_eval
@@ -23,7 +23,6 @@ python -m evaluation.run_eval
 
 ## Status
 
-Hasil terakhir: `results/latest.md` (graph nyata + rules). Belum ada pembanding
-CRM-only, belum ada holdout terpisah, dan belum ada panggilan Jev live; hasil
-ini tidak boleh dilaporkan sebagai akurasi Jev. E15 adalah batas aturan yang
-diketahui (parafrase tanpa kata kunci harga).
+Decision: 34/35 (inti 34/34); E15 batas parafrase rules yang diketahui. Ranking: 15/15.
+Belum ada pembanding CRM-only, holdout terpisah, backtest closing, atau panggilan Jev live;
+hasil tidak boleh dilaporkan sebagai akurasi Jev atau validasi closing.

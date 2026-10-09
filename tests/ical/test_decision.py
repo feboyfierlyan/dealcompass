@@ -88,12 +88,13 @@ class RealGraphIntegrationTests(unittest.TestCase):
     def test_p03_p04_read_available_reference_candidates(self):
         rec3, t3 = analyze_deal_trace(real('DL-003'), mode='rules')
         status = {c['account_id']: c['status'] for c in t3.reference_candidates}
-        self.assertEqual(status, {'C03': 'ditolak', 'C09': 'shortlist', 'C17': 'shortlist', 'C27': 'ditolak'})
+        self.assertEqual(status, {'C03': 'cek_dengan_catatan', 'C09': 'cek_pertama', 'C17': 'cek_pertama', 'C27': 'cek_pertama'})
+        self.assertTrue(all(c['suitability'] is None and c['contact_consent'] is None for c in t3.reference_candidates))
         self.assertIn('C09', rec3.action)
         self.assertIn('C17', rec3.action)
         rec4, t4 = analyze_deal_trace(real('DL-004'), mode='rules')
         self.assertEqual([c['account_id'] for c in t4.reference_candidates], ['C06'])
-        self.assertIn('Saiyo Group (C06)', rec4.action)
+        self.assertIn('Saiyo Group (C06', rec4.action)
         self.assertTrue(any('tidak membuktikan saling kenal' in c for c in rec4.precedent_comparison))
 
     def test_p05_states_insufficient_information(self):
