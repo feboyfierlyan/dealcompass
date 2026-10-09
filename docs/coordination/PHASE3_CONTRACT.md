@@ -1,7 +1,8 @@
 # Kontrak penugasan fase 3 — ranking dan diagnostic
 
 Pemilik kontrak: Main. Disepakati 2026-10-09 18:11 WIB untuk ICAL-03/BIMA-03.
-**Status: spesifikasi implementasi; endpoint/fungsi baru di bawah belum tersedia.**
+**Status 2026-10-09: engine #15 dan API #16 sudah MERGED/VERIFIED; endpoint
+ranking/diagnostic asli200. UI BOY-04 belum selesai.**
 Tidak mengubah semantik endpoint v1 yang sudah berjalan. Snapshot 2026-10-01.
 
 ## Pembagian area dan urutan integrasi
@@ -12,7 +13,7 @@ Tidak mengubah semantik endpoint v1 yang sudah berjalan. Snapshot 2026-10-01.
   model respons baru di backend/api/phase3_models.py, tests/bima dan handoff BIMA.
   Main mengizinkan model baru di area API sesuai wire contract dokumen ini;
   backend/contracts.py lama tidak diubah pada fase ini.
-- Boy: tetap BOY-03, kemudian integrasi endpoint fase 3 setelah Main review.
+- Boy: BOY-03 sudah merged; lanjut BOY-04 sesuai docs/prompts/BOY-04.md.
 - Bima dapat menyelesaikan diagnostic dan mock contract test prioritas tanpa menunggu
   ranking Ical. Ranking belum tersedia -> HTTP 501 PRIORITIES_NOT_IMPLEMENTED,
   bukan ranking dummy 200. PR boleh dikirim dengan status dependency jelas.
