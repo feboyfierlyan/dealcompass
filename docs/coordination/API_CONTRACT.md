@@ -13,8 +13,8 @@ Jangan menukar keduanya pada path endpoint.
 - `POST /api/deals/{deal_id}/analyze`: tanpa body, respons `Recommendation`.
 - `POST /api/ask`: fase berikutnya; belum menjadi endpoint v1 dan belum diimplementasikan.
 
-Bootstrap mengimplementasikan health dan daftar deal. Dua endpoint detail dan
-analyze memberi 501 sampai Bima/Ical melengkapinya. ID tidak dikenal memberi 404.
+Setelah PR #6, health, daftar deal dan detail graph tersedia di main. Endpoint
+analyze masih 501 sampai implementasi Ical lolos review integrasi. ID tidak dikenal memberi 404.
 Error berbentuk `{detail: {code, message}}`. Jangan mengembalikan 200 berisi
 analisis palsu ketika mesin belum tersedia. Gangguan layanan berikutnya harus
 memakai error yang jelas atau mode fallback yang eksplisit.
@@ -77,3 +77,18 @@ dan pencatatan. I0348 adalah permintaan, bukan approval. Jika digunakan untuk
 pilot, jumlah/durasi yang diusulkan harus ditandai skenario. Pisahkan fakta,
 inferensi, dan rekomendasi. Seluruh produk final mencakup P01-P05.
 
+
+## Klarifikasi Main setelah review PR #5-#7
+
+Struktur v1 tetap. Produsen konteks kanonis adalah implementasi Bima di main:
+
+- Untuk row sumber, excerpt adalah string JSON object dari field row asli. Untuk interaksi, baca field isi sebagai pesan dan account_id sebagai pemilik; subjek adalah metadata terpisah. Jangan parse row memakai split koma.
+- Agregat usage memiliki evidence_type inferred dan excerpt JSON hasil agregasi; source_id berupa locator baris. Jangan menganggap setiap excerpt adalah pesan pelanggan.
+- Konteks memuat prospek fokus dan akun referensi. Sinyal hambatan/request/approval prospek harus terkait context.deal.account_id/deal_id. Bukti akun lain hanya mendukung preseden atau pembandingan, kecuali hubungan lintas akun dijelaskan eksplisit sebagai inferensi.
+- Relasi aktual: interaction_for (interaction -> account), employed_at (contact -> account/organization), overlapping_employment (contact -> contact), related_account_shared_industry/feature_usage/work_overlap/prior_employment/same_competitor (deal -> account), candidate_precedent_* (deal -> decision).
+- related_account_* berarti kandidat pencarian bersumber, belum membuktikan kelayakan atau kesediaan menjadi referensi. Konsumen tidak boleh mengatakan kandidat tidak tersedia hanya karena mencari nama relasi fixture yang berbeda.
+- Tidak ada relasi pengambil_keputusan eksplisit saat ini. Penetapan identitas membutuhkan bukti interaksi dan resolusi kontak/masa kerja; jabatan tertinggi saja tidak cukup.
+- Frontend boleh membuat tampilan subgraph fokus, tetapi harus menyatakan jumlah/lingkup yang ditampilkan dan tetap menyediakan akses ke bukti lengkap.
+- Fixture pengembangan harus mengikuti representasi produsen nyata. Fixture bukan kontrak semantik alternatif.
+
+Lihat docs/reviews/2026-10-09-pr5-7.md untuk reproduksi dan acceptance perbaikan.
