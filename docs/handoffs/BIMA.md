@@ -15,7 +15,9 @@ Histori: BIMA-01 [PR #6](https://github.com/feboyfierlyan/dealcompass/pull/6) da
 ## Branch dan commit
 Branch baru **`bima/diagnostics-api`** dibuat dari `origin/main` `712acf9` setelah `git status --short --branch` menunjukkan checkout bersih dan `git fetch origin` berhasil. Branch lama `bima/data-graph` dipertahankan.
 
-Refresh kedua `git fetch origin && git merge --ff-only origin/main` menghasilkan “Already up to date.” Tidak cherry-pick branch Ical. Commit/push/PR BIMA-03 belum dibuat pada pembaruan ini; receipt SHA dan URL ditambahkan setelah publikasi berhasil.
+Refresh kedua `git fetch origin && git merge --ff-only origin/main` menghasilkan “Already up to date.” Remote main juga teramati `712acf945a75cd387220ad15f4ef15aacbdb23bc` melalui API sebelum publikasi; tidak cherry-pick branch Ical.
+
+Commit implementasi beserta handoff: [`6551ab8d6e84d5a8e219df6494412fde647230d7`](https://github.com/feboyfierlyan/dealcompass/commit/6551ab8d6e84d5a8e219df6494412fde647230d7). `git push -u origin bima/diagnostics-api` berhasil tanpa force dan tracking branch sendiri. **[PR #16](https://github.com/feboyfierlyan/dealcompass/pull/16)** baru dibuka ke main, review diminta ke Main (`feboyfierlyan`), belum merged/approved. Receipt ini dicommit terpisah tanpa perubahan kode.
 
 ## File dan fungsi
 | File/fungsi | Input → output / tanggung jawab |
@@ -72,7 +74,7 @@ Eksekusi 2026-10-09 WIB pada checkout BIMA-03:
 4. **HTTP nyata** server uvicorn port 8767, stdlib urllib (bukan TestClient), selesai 18:31:01 WIB: diagnostic DL-001–DL-005 dan pipeline 200, seluruh payload sama dengan produsen kanonis + top-level schema_version; setiap direct excerpt sama dengan row raw, source_file/source_id tepat. Unknown DL-999, account P02 dan closed DL-006 404. Priorities tanpa engine Ical nyata 501. Health/list 200, list tetap lima rank null; detail kelima deal 200/DealContext valid dan POST analyze kelima deal 200/Recommendation valid mode rules.
 5. **HTTP socket nyata dengan engine SYNTHETIC/MOCK**, server in-memory terpisah port 8768, selesai 18:32:20 WIB: mock lengkap 200, lima ranks/readiness/schema, seluruh records cocok union canon dan seluruh paths cocok directed edges asli. Incomplete/source fabricated/path reversed/nonfinite/engine exception/nested missing dependency →503 PRIORITIES_UNAVAILABLE. Diagnostic corruption →503 DIAGNOSTICS_UNAVAILABLE. Secret placeholder tidak muncul pada respons; unit test juga memeriksa log redaction.
 6. Smoke HTTP regression final pada **18:35:22 WIB**: unresolved source pada methodology →503; source terdaftar pada extra methodology provenance →200 dan field retained. Tetap SYNTHETIC/MOCK, bukan ranking bisnis nyata.
-7. `python scripts/check_handoff.py --all` lulus: “Handoff valid. Main tetap memverifikasi kebenaran laporan dan integrasi.” Validasi ownership diff committed dicatat setelah commit berhasil. Server production smoke port 8767 juga sudah dihentikan.
+7. `python scripts/check_handoff.py --all` lulus: “Handoff valid. Main tetap memverifikasi kebenaran laporan dan integrasi.” `python scripts/check_handoff.py --base origin/main --head HEAD --branch bima/diagnostics-api` pada `6551ab8` lulus terhadap diff committed sepuluh file milik Bima/handoff. Server production smoke port 8767 juga sudah dihentikan.
 
 ### Latency aktual
 Client wall-clock mencakup HTTP/serialisasi. Cold adalah request pertama diagnostic pada server baru; warm median adalah tiga request berurutan. Ini pengukuran lokal, bukan SLA/benchmark produksi. Pipeline cold dan ranking bisnis nyata belum diukur.
@@ -97,11 +99,11 @@ Tidak ada blocker untuk diagnostic API dan adapter validation. **Dependency inte
 Jev live/UI BOY-04/kualitas ranking bukan klaim verifikasi BIMA-03. Main perlu merge/review Ical dan melakukan integrasi ranking nyata; sesudah itu Bima sync main, restart dan smoke priorities/source/paths tanpa mock.
 
 ## Tugas berikutnya
-1. Bima: commit/push dan PR BIMA-03 baru, tambah receipt SHA/URL; tanggapi review Main.
+1. Bima: PR #16 sudah dibuka dan review Main diminta; tanggapi review pada branch yang sama serta sertakan handoff di setiap perubahan.
 2. Main: review endpoints/validation/provenance/HTTP evidence dan dependency. Hanya Main menetapkan VERIFIED/MERGED; PR #10 tetap selesai.
 3. Setelah ICAL-03 merged: sync origin/main tanpa cherry-pick, restart server; smoke priorities 200 nyata P01–P05, rank/readiness/union sources/original paths dan latency. Jangan menyebut mock sebagai integrasi ini.
 4. Main/Boy: integrasikan diagnostic/priorities setelah review, join per deal_id; status daftar v1 tidak diubah oleh pekerjaan ini.
 5. Tim: konfirmasi authority/approval/reference criteria/consent/discovery yang masih unknown. Scope final tetap P01–P05, bukan hanya P02.
 
 ## Update WIB
-2026-10-09 18:35:22 WIB (waktu aktual smoke regression BIMA-03, UTC+07:00). READY_FOR_REVIEW; bukan approval Main atau ranking bisnis nyata.
+2026-10-09 18:42:20 WIB (waktu aktual PR #16 dibuat dan review Main diminta, UTC+07:00). READY_FOR_REVIEW; bukan approval Main atau ranking bisnis nyata.
