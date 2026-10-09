@@ -13,8 +13,8 @@ const base = process.env.GRAPH_API_URL || 'http://127.0.0.1:8000';
 const cases = [
   ['DL-001', /Rina Hapsari.*inferensi.*dikonfirmasi/i],
   ['DL-002', /Jangan menawarkan.*diskon 20%.*sebelum VP Sales/i],
-  ['DL-003', /meminta izin.*calon referensi.*verifikasi/i],
-  ['DL-004', /meminta izin.*calon referensi.*verifikasi/i],
+  ['DL-003', /memeriksa pengalaman terbaru.*sebelum perkenalan/i],
+  ['DL-004', /memeriksa pengalaman terbaru.*sebelum perkenalan/i],
   ['DL-005', /discovery.*sebelum menawarkan/i],
 ];
 const escape = s => s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#x27;');
@@ -24,7 +24,12 @@ for (const [id, acceptance] of cases) test(`${id}: real rules response renders i
   const context=await contextResponse.json(), r=await analysisResponse.json();
   assert.ok(isContext(context)); assert.ok(isRecommendation(r));
   assert.equal(r.engine_mode,'rules'); assert.equal(context.deal.rank,null);
-  assert.match(r.action,acceptance);
+  assert.match(r.action,acceptance, `${id}: action retains its business gate (P03/P04: verify latest experience before introduction)`);
+  if(id==='DL-003'||id==='DL-004') {
+    assert.match(r.action,/menanyakan kesediaan.*sebelum perkenalan/i, `${id}: ask willingness before introduction`);
+    assert.match(r.action,/izin kontak.*sebelum perkenalan/i, `${id}: obtain contact permission before introduction`);
+    assert.ok(r.unknowns.some(x=>/Kesesuaian, kesediaan dan izin kontak.*belum diketahui.*kandidat bukan izin/i.test(x)), `${id}: candidate suitability and consent remain unknown`);
+  }
   if(id==='DL-002') assert.ok(r.approvals_needed.some(x=>/VP Sales.*20%.*Belum ada keputusan sah/.test(x)));
   if(id==='DL-004') assert.ok(r.precedent_comparison.some(x=>/overlap tidak membuktikan saling kenal/.test(x)));
   if(id==='DL-005') assert.ok(r.unknowns.some(x=>/tidak cukup.*bukan berarti tidak ada risiko/.test(x)));

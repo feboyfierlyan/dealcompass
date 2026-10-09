@@ -56,7 +56,7 @@ dan mobile 390x844:
 7. Tab Bukti: cari I0296/I0348 atau ID preseden; hapus pencarian dan buka halaman
    berikutnya. Panel sumber memuat enam record per halaman dan pencarian sendiri.
    Record JSON asli tetap dapat dibuka; isi percakapan diambil persis dari field isi.
-8. Analisis pada base main 712acf9 menghasilkan 200 mode rules. Status request sesi
+8. Analisis backend main terbaru dalam mode rules menghasilkan 200. Status request sesi
    menjadi Respons diterima, sementara status bisnis API tetap terpisah. Unknowns
    dan approval wajib tetap terlihat/terjangkau; HTTP 200 bukan bukti cukup.
 
@@ -109,8 +109,8 @@ ke komponen. Pada desktop 1440x1000 dan mobile 390x844, jalankan analisis setiap
 | --- | --- | --- |
 | P01 | Tindakan menyebut Rina Hapsari sebagai identitas inferensi yang perlu konfirmasi. | I0343, K017 dan employment; bukan decision-maker terkonfirmasi otomatis. |
 | P02 | Usulan tidak menawarkan diskon 20% sebelum VP Sales memutuskan dan mencatat. | I0348 request; pending approval E01 tetap terlihat. Preseden D-2025-02/06 bukan approval P02. |
-| P03 | Kandidat referensi perlu izin account owner, verifikasi kepuasan dan kesediaan. | I0334; shortlist dari API, tidak ditimpa laporan internal Bima. |
-| P04 | Calon referensi perlu izin dan verifikasi; overlap tidak membuktikan saling kenal. | I0335; employment K028/K116 menuju overlap graph inferred. |
+| P03 | Account manager memeriksa pengalaman terbaru, menanyakan kesediaan dan izin kontak sebelum perkenalan. Kesesuaian dan consent kandidat masih belum diketahui. | I0334; shortlist dari API, tidak ditimpa laporan internal Bima. |
+| P04 | Pengalaman terbaru diverifikasi, kesediaan dan izin kontak ditanyakan sebelum perkenalan; overlap tidak membuktikan saling kenal. | I0335; employment K028/K116 menuju overlap graph inferred. |
 | P05 | Discovery sebelum menawarkan harga/paket; bukti interaksi belum cukup. | DL-005; 200 tetap mempunyai unknowns, bukan low risk/loss/closing. |
 
 Urutan panel: tindakan → owner → milestone → approval → penjelasan/preseden →
@@ -118,6 +118,11 @@ unknowns → sumber. Semua teks API dipertahankan; prefix FAKTA/INTERPRETASI/SKE
 hanya menjadi kelompok visual. Pernyataan tanpa prefix berada di Penjelasan lainnya.
 Owner tetap ID sumber. Approval kosong tidak berarti sudah disetujui. Unknowns dari
 konteks berada pada disclosure dengan jumlah; unknowns tambahan analisis tampil langsung.
+
+R9: tiga gate referensi P03/P04 diperiksa dengan assertion terpisah terhadap action
+API terbaru. Tes juga memastikan unknowns tidak berubah menjadi consent, seluruh
+teks laporan tetap utuh, dan bukti tetap membuka node/relasi asli. Tidak ada aturan
+bisnis baru pada komponen UI.
 
 ### Alur sumber ke graph
 
