@@ -26,7 +26,7 @@ Tidak ada komunikasi otomatis antar-chat AI.
 | MAIN-01 | Main | VERIFIED untuk smoke rules | HTTP dan browser P01-P05 menghasilkan analisis; persiapan demo final lanjut |
 | TEAM-02 | Semua | IN_PROGRESS | Engine ranking merged; integrasi API dan UI belum selesai |
 | ICAL-03 | Ical | MERGED #15 | Ranking rules, sumber/path dan referensi terbaru; evaluasi 15/15 |
-| BIMA-03 | Bima | BLOCKED R8, PR #16 | Diagnostic smoke 200; priorities asli 503 akibat validasi arah traversal |
+| BIMA-03 / R8 | Ical sementara; modul Bima | TODO R8 dialihkan; PR #16 menunggu revisi | Diagnostic smoke 200; priorities asli 503 pada review terakhir |
 | MAIN-02 | Main | TODO | Pertanyaan baru, cross-track, fallback, restart, demo dan submission |
 
 Status: TODO / IN_PROGRESS / BLOCKED / READY_FOR_REVIEW / VERIFIED / MERGED.
@@ -65,11 +65,12 @@ ketika anggota hanya mengatakan selesai.
 
 - Boy: [revisi R9](../prompts/BOY-03-R9.md) di PR #14. Sinkronkan main terbaru;
   perbaiki assertion P03/P04, jalankan ulang 34 tes/build dan smoke kedua deal.
-- Bima: [revisi R8](../prompts/BIMA-03-R8.md) di PR #16. Terima traversal dua arah
-  dengan relasi asli; tambahkan regresi endpoint memakai rank_deals nyata dari main.
-- Ical: ICAL-03 selesai/merged. Tidak perlu mengubah ranking untuk mengikuti mock
-  validator Bima. Siapkan penjelasan metode, sensitivitas bobot dan keterbatasan
-  dari evaluation/ranking.md; perubahan lanjutan melalui tugas terpisah.
+- Ical: pengguna mengalihkan R8 kepadamu. Ikuti [prompt takeover](../prompts/ICAL-R8-TAKEOVER.md)
+  di branch bima/diagnostics-api / PR #16 dengan checkout sendiri. Scope sementara
+  backend/api, tests/bima dan handoff BIMA.md; catat pelaksana Ical secara eksplisit.
+  Ranking ICAL-03 sudah merged dan tidak perlu diubah untuk mengikuti mock API.
+- Bima: jangan mengerjakan R8 bersamaan selama takeover Ical. Kepemilikan modul
+  tetap Bima; penugasan sementara ini tidak mengubah scope anggota secara umum.
 - Main: review ulang #14/#16 setelah revisi. BOY-04 baru ditugaskan setelah API
   priorities asli 200 dan kontrak/provenance lulus. Jangan hardcode urutan ke UI.
 - Semua: WAJIB update handoff .md pada PR sendiri; maksimal READY_FOR_REVIEW.
@@ -108,3 +109,8 @@ UI, ranking dan uji acceptance bisnis tetap belum selesai.
 2026-10-09 18:11 WIB: kontrak dan prompt ICAL-03/BIMA-03 tersedia. Status implementasi tetap TODO, bukan VERIFIED. Boy tetap BOY-03; tidak menunggu dua PR baru untuk merapikan analisis nyata yang sudah ada.
 
 2026-10-09 19:02 WIB: #15 merged c7582a6. #14 ditahan R9; #16 ditahan R8. Kontrak traversal diperjelas Main. Bukti gabungan dan prompt revisi ada di review PR14-16.
+
+2026-10-09 19:09 WIB: atas permintaan pengguna, R8 dialihkan ke AI Ical terlebih
+dahulu. PR #16 tetap digunakan. Handoff BIMA.md wajib mencatat pelaksana Ical;
+status revisi belum diverifikasi. Boy tetap R9 di PR #14. Pengguna meneruskan
+prompt ke chat Claude Ical; penugasan tertulis bukan bukti chat itu sudah bekerja.
