@@ -19,8 +19,10 @@ mode rules, engine_mode='rules', alasan dicatat di unknowns.
 """
 import json
 import os
+import re
 import time
 from dataclasses import asdict, dataclass, field
+from datetime import date, timedelta
 
 from backend.contracts import DealContext, Recommendation
 from backend.decision import policy
@@ -104,19 +106,24 @@ def validate_context(context: DealContext, idx: ContextIndex) -> list[str]:
     return issues
 
 
-def analyze_deal_trace(context: DealContext, mode: str | None = None, client=None) -> tuple[Recommendation, DecisionTrace]:
+def analyze_deal_trace(context: DealContext, mode: str | None = None, client=None,
+                       diagnostic: dict | None = None) -> tuple[Recommendation, DecisionTrace]:
+    """diagnostic (opsional): laporan analyze_deal_initial Bima untuk deal yang sama, dipakai untuk
+    pemeriksaan silang referensi/kewenangan/approval. Tanpa diagnostic hasil tetap dari konteks saja."""
     started = time.monotonic()
+    if diagnostic is not None and diagnostic.get('deal_id') != context.deal.deal_id:
+        raise ValueError(f'diagnostic deal_id {diagnostic.get("deal_id")!r} tidak cocok dengan konteks {context.deal.deal_id}')
     mode = client.mode if client is not None else resolve_mode(mode)
     idx = ContextIndex(context)
     if mode == 'rules':
-        rec, trace = _analyze(context, idx, 'rules', None, None)
+        rec, trace = _analyze(context, idx, 'rules', None, None, diagnostic=diagnostic)
     else:
         deadline = started + budget_s()
         failure = None
         try:
             if client is None:
                 client = jev.client_from_env(mode)
-            rec, trace = _analyze(context, idx, mode, client, deadline)
+            rec, trace = _analyze(context, idx, mode, client, deadline, diagnostic=diagnostic)
         except jev.JevError as e:
             failure = e.code
         except Exception as e:  # respons tak terduga tidak boleh menjatuhkan endpoint
@@ -125,7 +132,7 @@ def analyze_deal_trace(context: DealContext, mode: str | None = None, client=Non
         if failure:
             rec, trace = _analyze(context, idx, 'rules', None, None, extra_unknowns=[
                 f'Jev ({mode}) gagal: {failure}. Seluruh analisis memakai rules deterministik; '
-                'tidak ada label Jev yang dipakai.'])
+                'tidak ada label Jev yang dipakai.'], diagnostic=diagnostic)
         trace.jev_calls = calls
     trace.elapsed_ms = round((time.monotonic() - started) * 1000)
     return rec, trace
@@ -146,7 +153,7 @@ class _Jev:
         return self.client.ask(state, questions, timeout_s=remaining)
 
 
-def _analyze(context, idx: ContextIndex, mode, client, deadline, extra_unknowns=()):
+def _analyze(context, idx: ContextIndex, mode, client, deadline, extra_unknowns=(), diagnostic=None):
     deal = context.deal
     trace = DecisionTrace(deal_id=deal.deal_id, engine_mode=mode)
     trace.validation_issues = validate_context(context, idx)
@@ -218,7 +225,8 @@ def _analyze(context, idx: ContextIndex, mode, client, deadline, extra_unknowns=
     else:
         latest = max(blocking, key=lambda o: (o.date or '', o.source_id))
         trace.main_obstacle = latest.category
-        milestone = _PLAYBOOKS[latest.category](idx, signals, trace, use, outlets, latest, trust_accounts)
+        milestone = _PLAYBOOKS[latest.category](idx, signals, trace, use, outlets, latest, trust_accounts,
+                                                diagnostic=diagnostic)
 
     # Preseden.
     assessments: list[PrecedentAssessment] = [assess(idx, d, signals, trust_accounts)
@@ -267,7 +275,7 @@ def _analyze(context, idx: ContextIndex, mode, client, deadline, extra_unknowns=
 
 # --- Playbook per hambatan --------------------------------------------------------------
 
-def _price(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_accounts):
+def _price(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_accounts, diagnostic=None):
     deal = idx.deal
     if s.competitor and idx.deal_record():
         use(idx.deal_record().evidence_id)
@@ -345,6 +353,17 @@ def _price(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_acc
                 f'Belum ada keputusan sah yang tercatat untuk {deal.deal_id}.')
     if vp:
         use(*(idx.find('employees.csv', e).evidence_id for e in sorted(vp)))
+    if diagnostic is not None:
+        for f in diagnostic.get('findings', []):
+            look = f.get('decision_lookup')
+            if not look:
+                continue
+            n_focus = len(look.get('focus_log_evidence_ids') or [])
+            trace.facts.append(f'Verifikasi Bima {f.get("finding_id")}: pencarian {look.get("inspected_record_count")} record '
+                               f'decision_log menemukan {n_focus} log untuk {look.get("account_id")}/{look.get("deal_id")}.')
+            if n_focus and pending:
+                trace.unknowns.append('Verifikasi Bima menemukan log keputusan fokus yang tidak dibaca sebagai approval sah; '
+                                      'periksa nilai/pemutus log tersebut.')
 
     # Ringkasan keputusan diskon >10% pada candidate_decisions (konteks, bukan seluruh log).
     big = [d for d in idx.context.candidate_decisions
@@ -374,7 +393,7 @@ def _price(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_acc
             'Tanggapan tertulis pelanggan atas opsi harga yang sesuai kebijakan.')
 
 
-def _decision_maker(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_accounts):
+def _decision_maker(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_accounts, diagnostic=None):
     deal = idx.deal
     msg = idx.by_id[latest.evidence_id]
     text = msg.text.lower()
@@ -419,6 +438,15 @@ def _decision_maker(idx: ContextIndex, s: Signals, trace, use, outlets, latest, 
         f'{name} ({title}, identitas inferensi yang perlu dikonfirmasi); sesuaikan proposal dengan prioritas operasional. '
         'Jawab jujur status fitur yang belum rilis dan jangan menjanjikan tanggal fitur tanpa keputusan tercatat.')
     trace.unknowns.append(f'Sikap dan kriteria {name} terhadap proposal belum tercatat di interaksi.')
+    if diagnostic is not None:
+        auth = [f for f in diagnostic.get('findings', []) if 'authority_contact_id' in f]
+        confirmed = [f for f in auth if f.get('authority_contact_id') == cid]
+        if confirmed:
+            trace.facts.append(f'Verifikasi kewenangan Bima ({confirmed[0].get("finding_id")}) menunjuk kandidat yang sama: {cid} '
+                               '(tetap inferred).')
+        elif auth:
+            trace.unknowns.append(f'Verifikasi kewenangan Bima tidak menunjuk {cid} secara unik; identitas pengambil keputusan '
+                                  'perlu dikonfirmasi sebelum dipakai.')
     return f'Pertemuan dengan {name} terlaksana, perannya terkonfirmasi, dan kriteria keputusan pengadaan tercatat.'
 
 
@@ -427,61 +455,206 @@ def _contact_label(idx: ContextIndex, cid: str) -> str:
     return f'{cid} {c.get("nama")} ({c.get("jabatan_saat_ini")})' if c else cid
 
 
-def _reference(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_accounts):
+def _words(text: str) -> set[str]:
+    return {w for w in re.findall(r'[a-z0-9&]+', (text or '').lower()) if len(w) >= 3}
+
+
+def _latest_complete_month(snapshot_date: str) -> str:
+    first = date.fromisoformat(snapshot_date).replace(day=1)
+    return (first - timedelta(days=1)).strftime('%Y-%m')
+
+
+def _context_usage(idx: ContextIndex, acc_id: str, reasons) -> list[dict]:
+    """Usage bulan lengkap terakhir untuk fitur yang menautkan kandidat (relasi feature_usage).
+
+    recorded / zero / missing dibedakan; nilai bulan lama tidak dipakai sebagai kondisi terbaru.
+    """
+    features = sorted({idx.by_id[e].get('feature_id') for kind, ids in reasons if kind == 'feature_usage'
+                       for e in ids if e in idx.by_id and idx.by_id[e].file == 'feature_usage_monthly.csv'
+                       and idx.by_id[e].get('account_id') == acc_id})
+    month = _latest_complete_month(idx.context.snapshot_date)
+    out = []
+    for feature in features:
+        rec = idx.find('feature_usage_monthly.csv', f'{month}|{acc_id}|{feature}')
+        raw = rec.get('pengguna_aktif') if rec else ''
+        value = int(raw) if raw.isdigit() else None
+        status = 'missing' if value is None else 'zero' if value == 0 else 'recorded'
+        out.append({'feature_id': feature, 'month': month, 'active_users': value, 'observation_status': status,
+                    'evidence_ids': [rec.evidence_id] if rec else []})
+    return out
+
+
+def _usage_status(value) -> str:
+    return 'missing' if value is None else 'zero' if value == 0 else 'recorded'
+
+
+def _reference_candidates(idx: ContextIndex, diagnostic: dict | None) -> tuple[list[dict], list[str]]:
+    """Kandidat dari related_account_* konteks; dicocokkan dengan verifikasi Bima bila diagnostic tersedia.
+
+    Urutan = urutan pemeriksaan oleh account manager, bukan penilaian kelayakan atau izin.
+    """
     deal = idx.deal
+    focus = idx.account(deal.account_id)
+    focus_words = _words(focus.get('industri')) if focus else set()
     related = idx.related_accounts()
-    shortlist, rejected = [], []
+    diag = {c.get('candidate_account_id'): c for c in (diagnostic or {}).get('reference_candidates', [])
+            if c.get('candidate_account_id')}
+    notes = []
+    if diagnostic is not None and diagnostic.get('reference_candidates') is not None:
+        customers = {a for a in related if idx.account(a) and idx.account(a).get('tipe') == 'pelanggan'}
+        only_ctx, only_diag = sorted(customers - set(diag)), sorted(set(diag) - set(related))
+        if only_ctx:
+            notes.append(f'Kandidat related_account {", ".join(only_ctx)} tidak ada pada verifikasi referensi Bima; '
+                         'diperlakukan sebagai belum diverifikasi.')
+        if only_diag:
+            notes.append(f'Verifikasi Bima memuat kandidat {", ".join(only_diag)} tanpa relasi related_account di konteks; '
+                         'tidak dipakai.')
+    out = []
     for acc_id, reasons in sorted(related.items()):
         acc = idx.account(acc_id)
         kinds = sorted({k for k, _ in reasons})
-        ev_ids = sorted({e for _, ids in reasons for e in ids})
-        row = {'account_id': acc_id, 'name': acc.get('nama') if acc else acc_id, 'reasons': kinds,
-               'evidence_ids': ev_ids, 'health': acc.get('health_score_dashboard') if acc else '',
-               'nps': acc.get('nps_terakhir') if acc else '', 'cautions': [], 'notes': []}
-        if not acc:
-            row['cautions'].append('baris akun tidak ada di konteks')
-        elif acc.get('tipe') != 'pelanggan':
-            row['cautions'].append(f'tipe {acc.get("tipe")}, bukan pelanggan')
-        elif acc.get('health_score_dashboard') != 'Hijau':
-            row['cautions'].append(f'health dashboard {acc.get("health_score_dashboard") or "kosong"}')
+        ev_ids = {e for _, ids in reasons for e in ids} | ({acc.evidence_id} if acc else set())
+        row = {'account_id': acc_id, 'name': acc.get('nama') if acc else acc_id,
+               'owner_id': acc.get('account_owner_id') if acc else None, 'relations': kinds,
+               'industry': acc.get('industri') if acc else None, 'outlets': acc.get('jumlah_outlet') if acc else None,
+               'health_dashboard': acc.get('health_score_dashboard') if acc else None,
+               'nps_last': acc.get('nps_terakhir') if acc else None,
+               'material_cautions': [], 'minor_cautions': [], 'notes': [],
+               'usage': _context_usage(idx, acc_id, reasons), 'overlap_paths': [],
+               'verified_by_bima': acc_id in diag if diagnostic is not None else None,
+               'suitability': None, 'reference_willingness': None, 'contact_consent': None}
+        if not acc or acc.get('tipe') != 'pelanggan':
+            row['material_cautions'].append('bukan akun pelanggan di CRM' if acc else 'baris akun tidak ada di konteks')
+        else:
+            health = acc.get('health_score_dashboard')
+            if health and health != 'Hijau':
+                row['minor_cautions'].append(f'health dashboard {health} (indikator CRM, bisa tidak mutakhir)')
+            if focus_words and not (focus_words & _words(acc.get('industri'))):
+                row['minor_cautions'].append(f'industri {acc.get("industri")} berbeda dari {focus.get("industri")}; '
+                                             'kemiripan perlu dicek')
+        tickets = [r for r in idx.rows('support_tickets.csv') if r.get('account_id') == acc_id and r.get('status') == 'Terbuka']
+        if tickets:
+            ev_ids |= {t.evidence_id for t in tickets}
+            bugs = sum(t.get('kategori') == 'bug' for t in tickets)
+            high = sum(t.get('prioritas') in ('Tinggi', 'Kritis') for t in tickets)
+            titles = sorted({t.get('judul') for t in tickets if t.get('judul')})
+            summary = (f'{len(tickets)} tiket terbuka ({bugs} bug, {high} prioritas Tinggi/Kritis; '
+                       f'{", ".join(t.source_id for t in tickets)}; judul: {"/".join(titles)})')
+            (row['material_cautions'] if bugs or high else row['minor_cautions']).append(summary)
         for d in idx.context.candidate_decisions:
-            if d.get('account_id') == acc_id and (is_open_commitment(d) or d.get('tipe') == 'eskalasi'):
-                row['cautions'].append(f'{d["decision_id"]} {d.get("tipe")}: {d.get("nilai") or d.get("alasan")} ({d.get("status_janji") or d.get("keputusan")})')
-        if 'work_overlap' in kinds:
+            if d.get('account_id') != acc_id:
+                continue
+            if is_open_commitment(d):
+                row['material_cautions'].append(
+                    f'{d["decision_id"]} {d.get("tipe")} masih terbuka ({d.get("status_janji") or d.get("keputusan")})')
+            elif d.get('tipe') == 'eskalasi':
+                row['notes'].append(f'riwayat eskalasi {d["decision_id"]}: {d.get("alasan") or d.get("nilai")} ({d.get("keputusan")})')
+            else:
+                continue
+            rec = idx.find('decision_log.csv', d.get('decision_id', ''))
+            if rec:
+                ev_ids.add(rec.evidence_id)
+        dc = diag.get(acc_id)
+        if dc:
+            bima_usage = {(u.get('feature_id'), u.get('month')): u for u in dc.get('feature_usage', [])}
+            for u in row['usage']:
+                b = bima_usage.get((u['feature_id'], u['month']))
+                if b is not None and b.get('active_users') != u['active_users']:
+                    notes.append(f'Usage {acc_id} {u["feature_id"]} {u["month"]} berbeda dari verifikasi Bima; nilai Bima dipakai.')
+                    u.update(active_users=b.get('active_users'), observation_status=_usage_status(b.get('active_users')),
+                             evidence_ids=list(b.get('evidence_ids', [])))
+            for path in dc.get('work_overlap_paths', []):
+                row['overlap_paths'].append({
+                    'focus_contact': (path.get('focus_contact') or {}).get('contact_id'),
+                    'candidate_contact': (path.get('candidate_contact') or {}).get('contact_id'),
+                    'organization': path.get('organization'), 'valid_from': path.get('valid_from'),
+                    'valid_to': path.get('valid_to'), 'acquaintance_confirmed': path.get('acquaintance_confirmed'),
+                    'evidence_ids': list(path.get('evidence_ids', []))})
+            for key in ('suitability', 'reference_willingness', 'contact_consent'):
+                row[key] = dc.get(key)
+        for u in row['usage']:
+            ev_ids |= set(u['evidence_ids'])
+            if u['observation_status'] == 'zero':
+                row['material_cautions'].append(f'0 pengguna aktif {u["feature_id"]} pada {u["month"]} (bulan lengkap terakhir)')
+            elif u['observation_status'] == 'missing':
+                row['minor_cautions'].append(f'usage {u["feature_id"]} {u["month"]} tidak tersedia (unknown, bukan nol)')
+        if 'work_overlap' in kinds and not row['overlap_paths']:
             people = sorted({idx.by_id[e].get('contact_id') for e in ev_ids
                              if e in idx.by_id and idx.by_id[e].file == 'contact_employment_history.csv'})
-            row['notes'].append('overlap masa kerja ' + ', '.join(_contact_label(idx, p) for p in people)
-                                + '; overlap tidak membuktikan saling kenal')
+            row['overlap_paths'].append({'focus_contact': None, 'candidate_contact': None, 'organization': None,
+                                         'contacts': people, 'acquaintance_confirmed': None, 'evidence_ids': []})
         row['weight'] = sum(REASON_WEIGHT.get(k, 1) for k in kinds)
-        (shortlist if not row['cautions'] else rejected).append(row)
-    shortlist.sort(key=lambda r: (-r['weight'], -(int(r['nps']) if str(r['nps']).isdigit() else -1), r['account_id']))
-    trace.reference_candidates = [{**r, 'status': 'shortlist'} for r in shortlist] + [{**r, 'status': 'ditolak'} for r in rejected]
-    if not related:
+        row['evidence_ids'] = sorted(ev_ids)
+        out.append(row)
+
+    def nps(r):
+        return int(r['nps_last']) if str(r['nps_last'] or '').isdigit() else -1
+
+    out.sort(key=lambda r: (len(r['material_cautions']), len(r['minor_cautions']), -r['weight'], -nps(r), r['account_id']))
+    first = {r['account_id'] for r in out if not r['material_cautions']}
+    first = {a for a in [r['account_id'] for r in out if r['account_id'] in first][:MAX_REFERENCE_SHORTLIST]}
+    for i, r in enumerate(out, 1):
+        r['check_order'] = i
+        r['status'] = ('cek_pertama' if r['account_id'] in first else
+                       'cek_dengan_catatan' if r['material_cautions'] else 'cadangan')
+    return out, notes
+
+
+def _reference(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_accounts, diagnostic=None):
+    deal = idx.deal
+    candidates, notes = _reference_candidates(idx, diagnostic)
+    trace.unknowns.extend(notes)
+    trace.reference_candidates = candidates
+    req = idx.by_id[latest.evidence_id]
+    use(req.evidence_id)
+    if not candidates:
         trace.unknowns.append('Konteks tidak memuat related_account_* untuk deal ini; kandidat referensi belum tersedia.')
-        trace.proposals.append(f'USULAN: {deal.owner_id} mencari pelanggan serupa yang bersedia menjadi referensi.')
-        return 'Panggilan referensi terjadwal dengan pelanggan serupa yang menyatakan bersedia.'
-    picked = shortlist[:MAX_REFERENCE_SHORTLIST]
-    for r in picked:
+        trace.proposals.append(f'USULAN: {deal.owner_id} mengklarifikasi kriteria referensi pada {req.source_id} lalu mencari '
+                               'pelanggan serupa yang bersedia; jangan menjanjikan referensi sebelum ada izin.')
+        return 'Kriteria referensi tervalidasi dan satu pelanggan serupa menyatakan bersedia dihubungi.'
+    for r in candidates:
+        usage = '; '.join(f'{u["feature_id"]} {u["month"]}: '
+                          + (f'{u["active_users"]} pengguna aktif' if u['observation_status'] != 'missing' else 'tidak tersedia')
+                          for u in r['usage'])
+        trace.facts.append(f'Kandidat {r["account_id"]} {r["name"]} (urutan cek {r["check_order"]}, {r["status"]}): '
+                           f'relasi {", ".join(r["relations"])}; {r["industry"]}, {r["outlets"]} outlet; '
+                           f'health dashboard {r["health_dashboard"] or "-"}, NPS {r["nps_last"] or "-"}'
+                           + (f'; usage {usage}' if usage else '') + '.')
         use(*r['evidence_ids'])
-        trace.facts.append(f'Kandidat {r["account_id"]} {r["name"]}: alasan {", ".join(r["reasons"])}; '
-                           f'health {r["health"] or "-"}, NPS {r["nps"] or "-"}.')
-        trace.interpretations.extend(f'{r["account_id"]}: {n}.' for n in r['notes'])
-    for r in shortlist[MAX_REFERENCE_SHORTLIST:]:
-        trace.interpretations.append(f'{r["account_id"]} {r["name"]} juga memenuhi syarat dasar tetapi di luar {MAX_REFERENCE_SHORTLIST} teratas.')
-    for r in rejected:
-        trace.interpretations.append(f'Kandidat {r["account_id"]} {r["name"]} ({", ".join(r["reasons"])}) tidak diusulkan: '
-                                     f'{"; ".join(r["cautions"])}.')
-        trace.interpretations.extend(f'{r["account_id"]}: {n}.' for n in r['notes'])
-    trace.interpretations.append('related_account_* adalah kandidat pencarian bersumber; kelayakan dan kesediaan menjadi referensi belum dikonfirmasi.')
-    if picked:
-        names = ', '.join(f'{r["name"]} ({r["account_id"]})' for r in picked)
-        trace.proposals.append(
-            f'USULAN: {deal.owner_id} meminta izin pemilik akun untuk menghubungi {names} sebagai calon referensi '
-            f'bagi {deal.account_name}; verifikasi kepuasan dan kesediaan sebelum mengenalkan.')
+        for c in r['material_cautions']:
+            trace.interpretations.append(f'{r["account_id"]} dicek belakangan: {c}.')
+        for c in r['minor_cautions']:
+            trace.interpretations.append(f'{r["account_id"]} catatan: {c}.')
+        for n in r['notes']:
+            trace.interpretations.append(f'{r["account_id"]}: {n}.')
+        for o in r['overlap_paths']:
+            people = [o['focus_contact'], o['candidate_contact']] if o.get('focus_contact') else o.get('contacts', [])
+            who = ' dan '.join(_contact_label(idx, c) for c in people if c)
+            span = f' di {o["organization"]} ({o["valid_from"]} s.d. {o["valid_to"] or "kini"})' if o.get('organization') else ''
+            trace.interpretations.append(f'{r["account_id"]}: overlap masa kerja {who}{span}; overlap tidak membuktikan saling '
+                                         'kenal (acquaintance belum dikonfirmasi).')
+            use(*o.get('evidence_ids', []))
+    trace.interpretations.append('Kandidat related_account_* adalah hasil pencarian bersumber; urutan cek bukan penilaian kelayakan. '
+                                 'Kesesuaian, kesediaan menjadi referensi dan izin kontak belum diketahui (null).')
+    trace.unknowns.append(f'Kesesuaian, kesediaan dan izin kontak kandidat referensi '
+                          f'{", ".join(r["account_id"] for r in candidates)} belum diketahui; kandidat bukan izin.')
+    first = [r for r in candidates if r['status'] == 'cek_pertama']
+    later = [r for r in candidates if r['status'] != 'cek_pertama']
+    if first:
+        who = ', '.join(f'{r["name"]} ({r["account_id"]}, AM {r["owner_id"] or "?"})' for r in first)
+        text = (f'USULAN: {deal.owner_id} mengonfirmasi kriteria "pengguna serupa" atas permintaan {req.source_id}, lalu meminta '
+                f'account manager memeriksa pengalaman terbaru dan menanyakan kesediaan serta izin kontak {who} sebelum '
+                f'perkenalan ke {deal.account_name}.')
+        if later:
+            text += ' Kandidat lain dicek belakangan karena catatan: ' + '; '.join(
+                f'{r["account_id"]} ({(r["material_cautions"] or r["minor_cautions"] or ["di luar urutan awal"])[0]})'
+                for r in later) + '.'
+        trace.proposals.append(text)
     else:
-        trace.unknowns.append('Semua kandidat related_account memiliki catatan kehati-hatian; tidak ada yang diusulkan otomatis.')
-        trace.proposals.append(f'USULAN: {deal.owner_id} meninjau kandidat yang ditolak bersama pemilik akun sebelum memilih referensi.')
-    return 'Panggilan referensi terjadwal dengan pelanggan serupa yang menyatakan bersedia.'
+        trace.unknowns.append('Semua kandidat related_account memiliki catatan material; tidak ada yang didahulukan otomatis.')
+        trace.proposals.append(f'USULAN: {deal.owner_id} meninjau catatan kandidat bersama account manager sebelum memilih '
+                               'calon referensi; jangan memperkenalkan tanpa izin.')
+    return 'Kriteria referensi tervalidasi dan minimal satu kandidat menyatakan bersedia serta mengizinkan kontak.'
 
 
 _PLAYBOOKS = {'harga': _price, 'pengambil_keputusan': _decision_maker, 'referensi': _reference}
