@@ -9,7 +9,9 @@ import type { GraphPath, Selection } from './ContextGraph';
 import { EvidenceDrawer, EvidenceInspector } from './EvidencePanel';
 import { EvidenceBrowser } from './EvidenceBrowser';
 import { Icon } from './Icon';
-import { activeAnalysis } from '../lib/activeAnalysis';
+import { activeAnalysis, graphOpenState } from '../lib/activeAnalysis';
+import type { GraphOpenRequest } from '../lib/activeAnalysis';
+import { contextRevision } from '../lib/analysis';
 import type { AnalysisStore } from '../lib/analysis';
 import type { GraphTarget } from '../lib/analysisView';
 import { createResource } from '../lib/resource';
@@ -25,7 +27,7 @@ import { useMedia } from '../lib/useMedia';
 
 type Tab = 'action' | 'reasons' | 'explore';
 type ExploreView = 'graph' | 'evidence' | 'method' | 'diagnostic' | 'technical';
-type GraphRequest = { target?: GraphTarget; paths?: GraphPath[]; sequence: number };
+type GraphRequest = GraphOpenRequest & { target?: GraphTarget; paths?: GraphPath[] };
 const noSubscribe = () => () => {};
 const TABS: { id: Tab; label: string; icon: 'target' | 'file' | 'graph' }[] = [
   { id: 'action', label: 'Next step', icon: 'target' },
@@ -72,11 +74,12 @@ export function DealWorkspace({ deal, api, fixture, snapshot, store = null, prio
 
   // One automatic analysis workflow per deal + snapshot (store-deduplicated; the backend caches and deduplicates too).
   // Rules from the priority ranking stay readable while it runs. Tabs, the evidence panel and the plan never start a request.
-  const analysisKey = snapshot ?? '';
-  const entry = useSyncExternalStore(store?.subscribe ?? noSubscribe, () => store && snapshot ? store.get(deal.deal_id, analysisKey) : null);
-  useEffect(() => { if (store && snapshot) store.ensure(deal.deal_id, snapshot); }, [store, deal.deal_id, snapshot]);
+  // Keyed by the loaded context revision: same-date source changes ask the backend again (ordinary cached lookup).
+  const revision = useMemo(() => baseContext ? contextRevision(baseContext) : null, [baseContext]);
+  const entry = useSyncExternalStore(store?.subscribe ?? noSubscribe, () => store && snapshot && revision ? store.get(deal.deal_id, snapshot, revision) : null);
+  useEffect(() => { if (store && snapshot && revision) store.ensure(deal.deal_id, snapshot, revision); }, [store, deal.deal_id, snapshot, revision]);
   const view = activeAnalysis({ dealId: deal.deal_id, priority: joined.validPriority, entry, service: !!store && !!snapshot });
-  const refreshAnalysis = () => { if (store && snapshot) store.refresh(deal.deal_id, snapshot); };
+  const refreshAnalysis = () => { if (store && snapshot && revision) store.refresh(deal.deal_id, snapshot, revision); };
 
   const wide = useMedia('(min-width: 1800px)');
   const [selection, setSelection] = useState<Selection>(null);
@@ -101,14 +104,15 @@ export function DealWorkspace({ deal, api, fixture, snapshot, store = null, prio
     setSelection(null);
     pendingFocus.current = trigger.current; trigger.current = null;
   }
-  function showGraph(request: Omit<GraphRequest, 'sequence'>) {
-    setGraphRequest(current => ({ ...request, sequence: (current?.sequence ?? 0) + 1 }));
+  function showGraph(request: Omit<GraphRequest, 'sequence' | 'version'>) {
+    setGraphRequest(current => ({ ...request, version: view.versionKey, sequence: (current?.sequence ?? 0) + 1 }));
     setTab('explore'); setExplore('graph');
     // On narrow screens the sheet would cover the map: close it and focus the map instead.
     if (request.target && wide) setSelection(request.target); else setSelection(null);
     pendingFocus.current = ids.graph;
   }
   const allPaths = view.paths as EvidencePath[];
+  const graph = graphOpenState(graphRequest, view);
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true); setContext(null); setContextError(null); setSelection(null); setGraphRequest(null);
@@ -159,8 +163,8 @@ export function DealWorkspace({ deal, api, fixture, snapshot, store = null, prio
           onEdge={id => showGraph({ target: { kind: 'edge', id } })} onShowPath={path => showGraph({ paths: [path] })}/>}
         {tab === 'explore' && <div className="tab-stack">
           <div className="subnav" role="group" aria-label="Data views">{exploreViews.map(item => <button key={item.id} aria-pressed={explore === item.id} onClick={() => setExplore(item.id)}>{item.label}</button>)}</div>
-          {explore === 'graph' && (context ? <section className="explore-panel" aria-labelledby={ids.graph}><div className="section-intro"><h3 id={ids.graph} tabIndex={-1}>Relationships</h3></div>
-            <ContextGraph key={graphRequest?.sequence ?? 0} initialFocus={graphRequest?.target} initialPaths={graphRequest ? graphRequest.paths : (allPaths.length ? allPaths : undefined)} context={context} selection={selection} onSelect={value => select(value, false)}/></section>
+          {explore === 'graph' && (context ? <section className="explore-panel" aria-labelledby={ids.graph}><div className="section-intro"><h3 id={ids.graph} tabIndex={-1}>Relationships</h3>{graph.rebased && <p className="note" role="status">The analysis was updated. Supporting paths now follow the analysis shown ({view.label}).</p>}</div>
+            <ContextGraph key={graph.key} initialFocus={graph.focus} initialPaths={graph.paths} context={context} selection={selection} onSelect={value => select(value, false)}/></section>
             : !loading && <p className="muted">Relationships will appear when deal data is available.</p>)}
           {explore === 'evidence' && <EvidenceBrowser records={context?.evidence ?? []} selection={selection} onSelect={value => select(value)}/>}
           {explore === 'method' && <section className="explore-panel">{joined.validPriority ? <PriorityFactors item={joined.validPriority} onEvidence={id => select({ kind: 'evidence', id })}/> : <p className="muted">Priority factors are not available for this deal.</p>}{methodology && <Methodology data={methodology}/>}</section>}

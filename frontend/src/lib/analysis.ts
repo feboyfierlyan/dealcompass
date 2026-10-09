@@ -46,8 +46,20 @@ export type AnalysisEntry = {
 };
 type Request = (dealId: string, refresh: boolean, signal: AbortSignal) => Promise<AnalysisEnvelope>;
 
+/** Revision of a loaded DealContext (FNV-1a, two seeds). Same-date source changes give a new revision. */
+export function contextRevision(context: unknown): string {
+  const text = JSON.stringify(context);
+  let a = 0x811c9dc5, b = 0x01000193 ^ text.length;
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i);
+    a = Math.imul(a ^ c, 0x01000193); b = Math.imul(b ^ c, 0x5bd1e995);
+  }
+  return (a >>> 0).toString(16).padStart(8, '0') + (b >>> 0).toString(16).padStart(8, '0');
+}
+
 /**
- * One analysis workflow per deal + snapshot for the life of the app. Re-rendering, switching tabs,
+ * One analysis workflow per deal + snapshot + loaded context revision for the life of the app.
+ * A changed context (even on the same snapshot date) is a new key: an ordinary backend lookup, never a forced refresh. Re-rendering, switching tabs,
  * opening the plan or returning to a deal reads the stored entry instead of sending a request.
  * Requests are not aborted on navigation: cancelling in the browser does not stop provider usage,
  * and the finished result is kept for when the user comes back. The backend deduplicates as well.
@@ -56,10 +68,10 @@ export function createAnalysisStore(request: Request) {
   const entries = new Map<string, AnalysisEntry>();
   const listeners = new Set<() => void>();
   let sent = 0;
-  const key = (dealId: string, snapshot: string) => `${dealId}|${snapshot}`;
+  const key = (dealId: string, snapshot: string, revision: string) => `${dealId}|${snapshot}|${revision}`;
   function set(k: string, next: AnalysisEntry) { entries.set(k, next); listeners.forEach(l => l()); }
-  async function start(dealId: string, snapshot: string, refresh: boolean) {
-    const k = key(dealId, snapshot), previous = entries.get(k)?.envelope ?? null;
+  async function start(dealId: string, snapshot: string, revision: string, refresh: boolean) {
+    const k = key(dealId, snapshot, revision), previous = entries.get(k)?.envelope ?? null;
     set(k, { status: previous ? 'ready' : 'running', envelope: previous, refreshing: !!previous, error: null });
     sent++;
     try {
@@ -72,15 +84,15 @@ export function createAnalysisStore(request: Request) {
     }
   }
   return {
-    get: (dealId: string, snapshot: string) => entries.get(key(dealId, snapshot)) ?? null,
+    get: (dealId: string, snapshot: string, revision: string) => entries.get(key(dealId, snapshot, revision)) ?? null,
     subscribe(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener); }; },
     /** First visit only. A failed entry is not retried automatically. */
-    ensure(dealId: string, snapshot: string) { if (!entries.has(key(dealId, snapshot))) void start(dealId, snapshot, false); },
+    ensure(dealId: string, snapshot: string, revision: string) { if (!entries.has(key(dealId, snapshot, revision))) void start(dealId, snapshot, revision, false); },
     /** Deliberate user request; ignored while a request for this deal is already running. */
-    refresh(dealId: string, snapshot: string) {
-      const e = entries.get(key(dealId, snapshot));
+    refresh(dealId: string, snapshot: string, revision: string) {
+      const e = entries.get(key(dealId, snapshot, revision));
       if (e && (e.status === 'running' || e.refreshing)) return;
-      void start(dealId, snapshot, true);
+      void start(dealId, snapshot, revision, true);
     },
     requestCount: () => sent,
   };

@@ -56,6 +56,19 @@ export function activeAnalysis({ dealId, priority, entry, service }: {
     status, label: statusLabel[status], refreshing, error, versionKey: validPriority ? `priority:${dealId}` : `none:${dealId}` };
 }
 
+export type GraphOpenRequest = { target?: { kind: 'node' | 'edge'; id: string }; paths?: EvidencePath[]; sequence: number; version: string };
+/**
+ * Graph state for the displayed analysis. The graph remounts when the analysis version changes, and supporting
+ * paths captured from an older version are replaced by the current version's paths. A deliberate node/edge focus
+ * is kept, without old supporting paths.
+ */
+export function graphOpenState(request: GraphOpenRequest | null, view: Pick<ActiveAnalysis, 'versionKey' | 'paths'>) {
+  const current = !request || request.version === view.versionKey;
+  const active = view.paths.length ? view.paths : undefined;
+  const paths = !request ? active : current ? request.paths : request.target ? undefined : active;
+  return { key: `${view.versionKey}#${request?.sequence ?? 0}`, focus: request?.target, paths, rebased: !!request && !current };
+}
+
 const time = (iso: string) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' }).format(new Date(iso)) + ' WIB';
 
 /** Plain provenance for the disclosure. A saved result is never described as newly generated. */

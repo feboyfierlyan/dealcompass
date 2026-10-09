@@ -6,6 +6,23 @@ Pelaksana tugas redesign: Ical, atas penugasan pengguna/Main; area frontend sebe
 Pelaksana: Ical atas penugasan pengguna. Branch `boy/ical-agent-workspace` (PR #32, dilanjutkan).
 Status **READY_FOR_REVIEW**; belum merged. Arah produk berubah: **Agent/chat dihapus**.
 
+### Revisi review Main (2026-10-10 04:50 WIB) — dua temuan P2 frontend
+- **Graph mengikuti versi analisis aktif.** `graphOpenState()` (`lib/activeAnalysis.ts`): `ContextGraph` di-key
+  `versionKey#sequence`, jadi remount saat rules → Jev atau setelah Refresh. Jalur yang ditangkap "Explore relationships"/
+  "View path in graph" dari versi lama diganti jalur versi aktif (catatan "The analysis was updated…"); fokus node/edge
+  yang dipilih sengaja tetap, tanpa jalur lama. Permintaan graph mencatat `version`.
+- **Analisis mengikuti revisi konteks.** Store di-key `deal|snapshot|contextRevision` (`contextRevision()` = hash FNV-1a
+  JSON konteks yang dimuat). Muat ulang konteks yang sama → tanpa request; konteks berubah pada tanggal snapshot sama →
+  satu lookup biasa ke backend (bukan `refresh=true`; backend memakai cache bila fingerprint-nya sama). Respons in-flight
+  revisi lama hanya masuk entri lama, tidak tampil di revisi baru. Analisis dimulai setelah konteks termuat.
+- Tes baru (analysis-store): revisi sama/berubah, respons revisi lama, graph rules→Jev / via Explore / setelah refresh /
+  fokus disengaja; guard statis diperbarui. Frontend **85/85** (modul 37 + compiled 48), build lulus, backend rules
+  lokal dari branch route terbaru (`c9e8873`).
+- Browser (MOCK Jev, MockTransport, delay 1,5 dtk): P01 tab graph dibuka saat "Checking context…" → saat Jev selesai
+  elemen graph diganti (remount) dan request halaman dibagi (`cache: shared`, tanpa workflow baru); P03 lewat
+  "Explore relationships" saat rules → catatan rebase muncul, 7 jalur versi Rules + Jev. Pada data mock, jalur Jev =
+  jalur rules untuk deal ini sehingga perbedaan isi dibuktikan di unit test, bukan di browser.
+
 - Dihapus: `AgentView.tsx`, `lib/agent.ts`, `tests/agent.test.mjs`, ikon bot/send/spark, gaya agent,
   `lib/analysisSession.ts` + `tests/session.test.mjs` (tombol "Analyze/Run again" dan versi ganda).
 - Shell: sidebar **Priorities** (halaman awal) · **Deals** (tabel tetap). Bug CSS PR #32 diperbaiki:
@@ -383,3 +400,4 @@ build dan pemeriksaan browser desktop; catatan riset Mobbin diperbarui. Belum me
 Implementasi awal Ical, lanjutan Main; riwayat BOY-04 tetap milik Boy.
 2026-10-10 02:50 WIB — Agent workspace READY_FOR_REVIEW (Ical, branch boy/ical-agent-workspace).
 2026-10-10 03:45 WIB — PR #32 diubah: Agent dihapus; analisis Rules + Jev otomatis per deal aktif READY_FOR_REVIEW (Ical). 82/82 frontend + build.
+2026-10-10 04:50 WIB — revisi review: graph ikut versi analisis, analisis ikut revisi konteks. 85/85 frontend + build.

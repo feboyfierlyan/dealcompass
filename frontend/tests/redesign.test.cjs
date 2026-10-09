@@ -137,11 +137,14 @@ test('STATIC guard: one automatic analysis per opened deal through the store; GE
   const read = file => fs.readFileSync(path.join(src, file), 'utf8');
   const workspace = read('components/DealWorkspace.tsx'), dashboard = read('Dashboard.tsx'), tabs = read('components/DealTabs.tsx'), store = read('lib/analysis.ts');
   assert.equal((workspace.match(/store\.ensure\(/g) ?? []).length, 1);
-  assert.match(workspace, /useEffect\(\(\) => \{ if \(store && snapshot\) store\.ensure\(deal\.deal_id, snapshot\); \}, \[store, deal\.deal_id, snapshot\]\)/);
+  assert.match(workspace, /useEffect\(\(\) => \{ if \(store && snapshot && revision\) store\.ensure\(deal\.deal_id, snapshot, revision\); \}, \[store, deal\.deal_id, snapshot, revision\]\)/);
+  assert.match(workspace, /contextRevision\(baseContext\)/, 'analysis is keyed by the loaded context revision');
+  assert.match(workspace, /<ContextGraph key=\{graph\.key\} initialFocus=\{graph\.focus\} initialPaths=\{graph\.paths\}/, 'graph follows the active analysis version');
+  assert.match(workspace, /version: view\.versionKey/, 'graph requests record the analysis version they were made for');
   assert.equal((workspace.match(/store\.refresh\(/g) ?? []).length, 1, 'refresh only from the explicit button handler');
   for (const file of [workspace, dashboard, tabs]) assert.ok(!/api\.analy[sz]e?\w*\(/.test(file), 'components never call the analysis endpoints directly');
   assert.equal((store.match(/request\(dealId, refresh/g) ?? []).length, 1);
-  assert.match(store, /ensure\(dealId: string, snapshot: string\) \{ if \(!entries\.has/);
+  assert.match(store, /ensure\(dealId: string, snapshot: string, revision: string\) \{ if \(!entries\.has/);
   assert.match(dashboard, /analysisStoreFor\(api\)/);
   assert.deepEqual(tabs.match(/[A-Za-z]+=\{(?:canRefresh \? )?onRefresh(?: : undefined)?\}/g), ['retry={canRefresh ? onRefresh : undefined}', 'onClick={onRefresh}']);
 });
