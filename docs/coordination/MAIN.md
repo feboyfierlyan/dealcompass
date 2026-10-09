@@ -5,12 +5,14 @@ Deadline: 10 Oktober 2026 09.00 WIB. CP2 20.00-22.00, CP3 08.00-09.00.
 
 ## Status produk
 
-PR Ical #15 sudah MERGED pada c7582a6: ranking rules P01-P05 tersedia sebagai fungsi
-internal. PR Boy #14 menunggu R9 (dua tes frontend), PR Bima #16 menunggu R8
-(validator menolak traversal graph yang sah). API ranking dan UI ranking belum siap.
-Review gabungan: 139/139 backend, evaluasi ranking 15/15, decision 34/35 (inti 34/34;
-E15 diketahui), build frontend lulus, frontend 32/34. HTTP priorities asli masih 503.
-[Review dan bukti](../reviews/2026-10-09-pr14-16.md). Jev live belum diuji.
+PR Boy #14 sudah MERGED b059bad; R9 VERIFIED. UI analisis rules, sumber ke graph,
+status request sesi dan 34/34 tes frontend tersedia di main. PR Ical #15 sudah
+MERGED c7582a6: ranking rules P01-P05 tersedia sebagai fungsi internal.
+PR #16 menunggu R8 (pelaksana sementara Ical); API ranking dan UI ranking belum siap.
+Review ulang Boy: build, 34/34 frontend, handoff dan CI lulus. Bukti gabungan lama
+139/139 backend, ranking 15/15 dan decision 34/35 (inti 34/34, E15 diketahui)
+berasal dari review PR14-16 sebelumnya, bukan tes ulang backend pada R9.
+[Review R9](../reviews/2026-10-09-boy-r9.md). Jev live belum diuji.
 Tidak ada komunikasi otomatis antar-chat AI.
 
 ## Checklist tugas
@@ -22,7 +24,7 @@ Tidak ada komunikasi otomatis antar-chat AI.
 | BIMA-01 | Bima | MERGED #6 | Ingest seluruh sumber, graph temporal dan konteks P02, API dan handoff |
 | ICAL-01/02 | Ical | MERGED #7; R6/R7 VERIFIED | Analisis rules P01-P05, policy gate, adapter Jev mock/replay dan evaluasi |
 | BIMA-02 | Bima | MERGED #10 | Metrik, diagnosis bersumber dan verifikasi identitas/referensi internal P01-P05 |
-| BOY-03 | Boy | BLOCKED R9, PR #14 | UI P02 smoke lulus; tes P03/P04 perlu mengikuti rekomendasi terbaru |
+| BOY-03 | Boy | MERGED #14; R9 VERIFIED | 34/34 tes frontend, build dan CI lulus; sumber ke graph dan status sesi |
 | MAIN-01 | Main | VERIFIED untuk smoke rules | HTTP dan browser P01-P05 menghasilkan analisis; persiapan demo final lanjut |
 | TEAM-02 | Semua | IN_PROGRESS | Engine ranking merged; integrasi API dan UI belum selesai |
 | ICAL-03 | Ical | MERGED #15 | Ranking rules, sumber/path dan referensi terbaru; evaluasi 15/15 |
@@ -44,7 +46,7 @@ ketika anggota hanya mengatakan selesai.
 | analyze_deal | Ical | MERGED #7 | R1-R3/R5/R6/R7 lulus; evaluasi inti 34/34 |
 | GET detail / POST analyze | Bima + Ical | 200 untuk P01-P05; mode rules teruji | Evidence IDs resolvable; HTTP dan browser sukses |
 | analyze_deal_initial / analyze_pipeline_initial | Bima | MERGED #10; fungsi internal | JSON strict dan setiap excerpt cocok sumber; belum endpoint |
-| frontend/src/main.tsx dan graphView.ts | Boy | MERGED #5; R4 VERIFIED | 20 tes frontend; UI nyata desktop/mobile P01-P05 |
+| Dashboard, AnalysisReport, analysisSession dan graphView | Boy | MERGED #14; R9 VERIFIED | 34/34 frontend; lima GET/POST/render nyata; uji browser historis terpisah |
 | rank_deals | Ical | MERGED #15 | P04/P01/P02/P03/P05; heuristik, bukan probabilitas closing |
 | GET initial-analysis / priorities | Bima | PR #16 belum merged | Diagnostic 200; priorities 503 R8 pada gabungan nyata |
 | scripts/check_handoff.py | Main | Implementasi awal | tests/test_handoff.py |
@@ -63,15 +65,15 @@ ketika anggota hanya mengatakan selesai.
 
 ## Tugas sekarang dan dependency
 
-- Boy: [revisi R9](../prompts/BOY-03-R9.md) di PR #14. Sinkronkan main terbaru;
-  perbaiki assertion P03/P04, jalankan ulang 34 tes/build dan smoke kedua deal.
+- Boy: BOY-03/R9 selesai dan PR #14 merged. Sinkronkan main; gunakan naskah demo
+  di frontend/TESTING.md. BOY-04 menunggu API R8 diverifikasi, jangan hardcode ranking.
 - Ical: pengguna mengalihkan R8 kepadamu. Ikuti [prompt takeover](../prompts/ICAL-R8-TAKEOVER.md)
   di branch bima/diagnostics-api / PR #16 dengan checkout sendiri. Scope sementara
   backend/api, tests/bima dan handoff BIMA.md; catat pelaksana Ical secara eksplisit.
   Ranking ICAL-03 sudah merged dan tidak perlu diubah untuk mengikuti mock API.
 - Bima: jangan mengerjakan R8 bersamaan selama takeover Ical. Kepemilikan modul
   tetap Bima; penugasan sementara ini tidak mengubah scope anggota secara umum.
-- Main: review ulang #14/#16 setelah revisi. BOY-04 baru ditugaskan setelah API
+- Main: R9 ditutup; review ulang #16 setelah revisi Ical. BOY-04 baru ditugaskan setelah API
   priorities asli 200 dan kontrak/provenance lulus. Jangan hardcode urutan ke UI.
 - Semua: WAJIB update handoff .md pada PR sendiri; maksimal READY_FOR_REVIEW.
   Boy meneruskan prompt; tidak ada pesan otomatis antar-chat. Status bisnis API
@@ -114,3 +116,5 @@ UI, ranking dan uji acceptance bisnis tetap belum selesai.
 dahulu. PR #16 tetap digunakan. Handoff BIMA.md wajib mencatat pelaksana Ical;
 status revisi belum diverifikasi. Boy tetap R9 di PR #14. Pengguna meneruskan
 prompt ke chat Claude Ical; penugasan tertulis bukan bukti chat itu sudah bekerja.
+
+2026-10-09 19:22 WIB: #14 merged b059bad, R9 VERIFIED. Main mengulang 34/34 frontend dan build pada c6c368e; CI lulus. Komponen UI tidak berubah pada delta R9; smoke browser Boy dilaporkan terpisah. R8 tetap ditangani Ical.
