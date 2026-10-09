@@ -1,0 +1,70 @@
+{
+  "_fixture": {
+    "label": "FIXTURE_ICAL_SEMENTARA",
+    "purpose": "Pengganti sementara build_deal_context (BIMA-01 belum siap). Bukan output graph Bima.",
+    "built_from": "Record asli dataset_kasirnusa; excerpt disalin verbatim dan diverifikasi tests/ical/test_fixture_provenance.py",
+    "author": "Ical (Claude)",
+    "created_wib": "2026-10-09"
+  },
+  "schema_version": "v1",
+  "snapshot_date": "2026-10-01",
+  "deal": {
+    "deal_id": "DL-002",
+    "account_id": "P02",
+    "account_name": "Teras Kafe Group",
+    "stage": "Demo",
+    "stage_age_days": 45,
+    "annual_value": 63000000,
+    "owner_id": "E07",
+    "rank": null,
+    "analysis_status": "not_analyzed"
+  },
+  "evidence": [
+    {"id": "EV-DL-002", "source_file": "dataset_kasirnusa/crm_deals.csv", "source_id": "DL-002", "date": "2026-08-17", "excerpt": "DL-002,P02,baru,Demo,2026-08-17,2026-07-25,E07,15,63000000,Terbuka,,KasirPro", "evidence_type": "direct"},
+    {"id": "EV-I0269", "source_file": "dataset_kasirnusa/interactions.jsonl", "source_id": "I0269", "date": "2026-07-30", "excerpt": "15 kafe di Malang dan Batu. Butuh POS dan stok bahan baku.", "evidence_type": "direct"},
+    {"id": "EV-I0296", "source_file": "dataset_kasirnusa/interactions.jsonl", "source_id": "I0296", "date": "2026-08-17", "excerpt": "Pak Teddy suka produknya tetapi menilai harga terlalu tinggi. KasirPro menawarkan harga sekitar 20% lebih murah.", "evidence_type": "direct"},
+    {"id": "EV-I0322", "source_file": "dataset_kasirnusa/interactions.jsonl", "source_id": "I0322", "date": "2026-09-05", "excerpt": "Pak Teddy, apakah ada pertanyaan lanjutan?", "evidence_type": "direct"},
+    {"id": "EV-I0348", "source_file": "dataset_kasirnusa/interactions.jsonl", "source_id": "I0348", "date": "2026-09-28", "excerpt": "Pak Andi, untuk menutup Teras Kafe saya usul diskon 20% agar menyamai KasirPro. Mohon keputusan.", "evidence_type": "direct"},
+    {"id": "EV-DL-006", "source_file": "dataset_kasirnusa/crm_deals.csv", "source_id": "DL-006", "date": "2025-03-14", "excerpt": "DL-006,C23,baru,Closed Lost,2025-03-14,2025-01-20,E07,6,25200000,Kalah,Harga,KasirPro", "evidence_type": "direct"},
+    {"id": "EV-DL-007", "source_file": "dataset_kasirnusa/crm_deals.csv", "source_id": "DL-007", "date": "2025-09-08", "excerpt": "DL-007,C23,baru,Closed Won,2025-09-08,2025-08-11,E07,6,25200000,Menang,,KasirPro", "evidence_type": "direct"},
+    {"id": "EV-D-2025-02", "source_file": "dataset_kasirnusa/decision_log.csv", "source_id": "D-2025-02", "date": "2025-03-04", "excerpt": "D-2025-02,2025-03-04,diskon,C23,DL-006,E07,E01,Ditolak,20%,Di atas batas 15%; menyamai harga kompetitor merusak harga pasar. Deal kemudian kalah karena harga.,,,", "evidence_type": "direct"},
+    {"id": "EV-D-2025-06", "source_file": "dataset_kasirnusa/decision_log.csv", "source_id": "D-2025-06", "date": "2025-08-12", "excerpt": "D-2025-06,2025-08-12,pengecualian,C23,DL-007,E07,E01,Disetujui,\"Paket Starter tanpa diskon, pilot 6 outlet\",\"Pendekatan alternatif setelah kalah Maret: mulai dari Starter, naik paket bila puas. Deal menang Sep 2025.\",,,", "evidence_type": "direct"},
+    {"id": "EV-K-C23", "source_file": "dataset_kasirnusa/contracts_billing.csv", "source_id": "K-C23", "date": "2025-09-08", "excerpt": "K-C23,C23,Starter,6,10,2025-09-08,2027-09-08,350000,0,25200000,0,", "evidence_type": "direct"},
+    {"id": "EV-E01", "source_file": "dataset_kasirnusa/employees.csv", "source_id": "E01", "date": null, "excerpt": "E01,Andi Wiratama,VP Sales,andi@kasirnusa.id", "evidence_type": "direct"}
+  ],
+  "graph": {
+    "nodes": [
+      {"id": "deal:DL-002", "label": "DL-002 Teras Kafe Group", "type": "deal"},
+      {"id": "account:P02", "label": "Teras Kafe Group", "type": "account"},
+      {"id": "contact:K076", "label": "Teddy Kurniawan (Pemilik)", "type": "contact"},
+      {"id": "employee:E07", "label": "Citra Ayuningtyas", "type": "employee"},
+      {"id": "employee:E01", "label": "Andi Wiratama (VP Sales)", "type": "employee"},
+      {"id": "competitor:KasirPro", "label": "KasirPro", "type": "competitor"},
+      {"id": "interaction:I0296", "label": "Demo Teras Kafe", "type": "interaction"},
+      {"id": "interaction:I0348", "label": "Permintaan diskon 20% Teras Kafe", "type": "interaction"},
+      {"id": "deal:DL-006", "label": "DL-006 Kafe Senja (Closed Lost)", "type": "deal"},
+      {"id": "deal:DL-007", "label": "DL-007 Kafe Senja (Closed Won)", "type": "deal"},
+      {"id": "decision:D-2025-02", "label": "D-2025-02 diskon 20% Ditolak", "type": "decision"},
+      {"id": "decision:D-2025-06", "label": "D-2025-06 Starter pilot 6 outlet", "type": "decision"}
+    ],
+    "edges": [
+      {"id": "e1", "source": "deal:DL-002", "target": "account:P02", "relation": "untuk_akun", "evidence_ids": ["EV-DL-002"], "evidence_type": "direct", "valid_from": "2026-07-25", "valid_to": null},
+      {"id": "e2", "source": "deal:DL-002", "target": "competitor:KasirPro", "relation": "bersaing_dengan", "evidence_ids": ["EV-DL-002", "EV-I0296"], "evidence_type": "direct", "valid_from": "2026-08-17", "valid_to": null},
+      {"id": "e3", "source": "interaction:I0296", "target": "deal:DL-002", "relation": "tentang", "evidence_ids": ["EV-I0296"], "evidence_type": "direct", "valid_from": "2026-08-17", "valid_to": null},
+      {"id": "e4", "source": "interaction:I0348", "target": "employee:E01", "relation": "meminta_keputusan", "evidence_ids": ["EV-I0348"], "evidence_type": "direct", "valid_from": "2026-09-28", "valid_to": null},
+      {"id": "e5", "source": "decision:D-2025-02", "target": "deal:DL-006", "relation": "untuk_deal", "evidence_ids": ["EV-D-2025-02"], "evidence_type": "direct", "valid_from": "2025-03-04", "valid_to": null},
+      {"id": "e6", "source": "decision:D-2025-06", "target": "deal:DL-007", "relation": "untuk_deal", "evidence_ids": ["EV-D-2025-06"], "evidence_type": "direct", "valid_from": "2025-08-12", "valid_to": null},
+      {"id": "e7", "source": "deal:DL-006", "target": "competitor:KasirPro", "relation": "bersaing_dengan", "evidence_ids": ["EV-DL-006"], "evidence_type": "direct", "valid_from": "2025-01-20", "valid_to": "2025-03-14"},
+      {"id": "e8", "source": "contact:K076", "target": "account:P02", "relation": "bekerja_di", "evidence_ids": ["EV-I0296"], "evidence_type": "inferred", "valid_from": null, "valid_to": null},
+      {"id": "e9", "source": "employee:E07", "target": "deal:DL-002", "relation": "pemilik_deal", "evidence_ids": ["EV-DL-002"], "evidence_type": "direct", "valid_from": "2026-07-25", "valid_to": null}
+    ]
+  },
+  "candidate_decisions": [
+    {"decision_id": "D-2025-02", "tanggal": "2025-03-04", "tipe": "diskon", "account_id": "C23", "deal_id": "DL-006", "diminta_oleh": "E07", "diputuskan_oleh": "E01", "keputusan": "Ditolak", "nilai": "20%", "alasan": "Di atas batas 15%; menyamai harga kompetitor merusak harga pasar. Deal kemudian kalah karena harga.", "bukti_interaction_id": "", "fitur_dijanjikan": "", "status_janji": ""},
+    {"decision_id": "D-2025-06", "tanggal": "2025-08-12", "tipe": "pengecualian", "account_id": "C23", "deal_id": "DL-007", "diminta_oleh": "E07", "diputuskan_oleh": "E01", "keputusan": "Disetujui", "nilai": "Paket Starter tanpa diskon, pilot 6 outlet", "alasan": "Pendekatan alternatif setelah kalah Maret: mulai dari Starter, naik paket bila puas. Deal menang Sep 2025.", "bukti_interaction_id": "", "fitur_dijanjikan": "", "status_janji": ""}
+  ],
+  "unknowns": [
+    "FIXTURE: konteks disusun manual oleh Ical dari record asli; belum diuji dengan graph Bima.",
+    "Belum ada balasan Pak Teddy atas I0322 di fixture ini; ketiadaan balasan belum diverifikasi lintas seluruh interaksi."
+  ]
+}

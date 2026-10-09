@@ -1,0 +1,699 @@
+{
+  "generated_wib": "2026-10-09 16:23 WIB",
+  "context_source": "FIXTURE_ICAL_SEMENTARA (record asli; bukan graph Bima)",
+  "jev": "Tidak ada panggilan live. Kasus Jev memakai transport mock.",
+  "summary": {
+    "cases": 21,
+    "passed": 20,
+    "core_cases": 20,
+    "core_passed": 20,
+    "known_limitations": [
+      "E12"
+    ],
+    "known_limitations_passed": [],
+    "invariants_all_true": true
+  },
+  "cases": [
+    {
+      "id": "E01",
+      "category": "P02 dasar",
+      "description": "P02: hambatan harga + permintaan diskon 20% (I0348), preseden D-2025-02/06.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "hambatan utama harga": true,
+        "approval VP Sales dibutuhkan": true,
+        "tidak menyatakan approval": true,
+        "preseden D-2025-02 & D-2025-06": true,
+        "Starter tidak menampung 15 outlet": true,
+        "pilot berlabel skenario": true,
+        "batas 15% bukan aturan universal": true,
+        "mode rules": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 1
+    },
+    {
+      "id": "E02",
+      "category": "request vs approval",
+      "description": "Ada keputusan sah: VP Sales (E01) menyetujui 20% untuk DL-002 (sintetis).",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "tidak ada approval tertunda": true,
+        "approval dikenali": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06",
+        "D-SIM-01"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E03",
+      "category": "request vs approval",
+      "description": "Persetujuan 20% oleh E07 (bukan VP Sales) tidak sah (sintetis).",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "approval VP masih dibutuhkan": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06",
+        "D-SIM-02"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E04",
+      "category": "request vs approval",
+      "description": "Persetujuan ada tetapi jabatan pemutus tak dapat diverifikasi (EV-E01 dihapus).",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "approval VP masih dibutuhkan": true,
+        "unknown jabatan pemutus": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06",
+        "D-SIM-03"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E05",
+      "category": "hitungan diskon",
+      "description": "Permintaan diskon 10% (batas, sintetis): tidak butuh VP Sales.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "tanpa approval VP": true,
+        "nilai Rp56.700.000": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E06",
+      "category": "hitungan diskon",
+      "description": "Permintaan diskon 11% (sintetis): melewati batas 10%.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "approval VP dibutuhkan": true,
+        "nilai Rp56.070.000, turun Rp6.930.000": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 11% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E07",
+      "category": "hitungan diskon",
+      "description": "P02 20%: Rp63.000.000 -> Rp50.400.000 (turun Rp12.600.000).",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "outlet 15": true,
+        "nilai diskon": true,
+        "paket terkecil Growth": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E08",
+      "category": "preseden tidak cocok",
+      "description": "D-2024-05 (janji_fitur C09, ditepati) ditambahkan ke P02: harus tidak dipakai.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "D-2024-05 tidak di precedent_ids": true,
+        "tercatat diperiksa": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E09",
+      "category": "bukti kurang",
+      "description": "P05: lead tanpa interaksi.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "status insufficient_evidence": true,
+        "tanpa preseden": true,
+        "unknown bukti kurang": true,
+        "tidak memakai C11": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "bukti_kurang",
+      "approvals_needed": [],
+      "precedent_ids": [],
+      "latency_ms": 0
+    },
+    {
+      "id": "E10",
+      "category": "ID tidak valid",
+      "description": "Edge merujuk evidence_id EV-NOPE yang tidak ada (sintetis).",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "issue dilaporkan": true,
+        "EV-NOPE tidak dikeluarkan": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 1
+    },
+    {
+      "id": "E11",
+      "category": "parafrase",
+      "description": "I0296 diparafrasekan: \"biayanya kemahalan dibanding tawaran pesaing\" (sintetis).",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "I0296 tetap harga": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E12",
+      "category": "parafrase",
+      "description": "Parafrase sulit: \"KasirPro lebih ramah di kantong\" (sintetis). Batas rules diketahui.",
+      "known_limitation": true,
+      "passed": false,
+      "checks": {
+        "I0296 terdeteksi harga": false
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E13",
+      "category": "Jev timeout",
+      "description": "Jev (mock) timeout -> fallback rules eksplisit.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "mode rules": true,
+        "unknown timeout": true,
+        "policy tetap": true,
+        "latensi tercatat": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E14",
+      "category": "Jev gagal",
+      "description": "Jev (mock) 401 -> fallback rules, tanpa membocorkan key.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "mode rules": true,
+        "unknown unauthorized": true,
+        "key tidak bocor": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 1
+    },
+    {
+      "id": "E15",
+      "category": "Jev mock",
+      "description": "Jev (mock) sukses -> engine_mode jev; policy tetap rules.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "mode jev": true,
+        "policy tetap": true,
+        "Score bukan probabilitas": true
+      },
+      "error": null,
+      "engine_mode": "jev",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 2
+    },
+    {
+      "id": "E16",
+      "category": "Jev mock",
+      "description": "Jev Noul (mock) menilai I0348 menyiratkan approval -> tetap bukan approval.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "approval VP masih dibutuhkan": true,
+        "unknown dicatat": true
+      },
+      "error": null,
+      "engine_mode": "jev",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 1
+    },
+    {
+      "id": "E17",
+      "category": "Jev gagal",
+      "description": "Jev (mock) memberi choice di luar criteria -> invalid_response, fallback rules.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "mode rules": true,
+        "unknown invalid": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E18",
+      "category": "replay",
+      "description": "Rekam respons Jev (mock) lalu putar ulang -> engine_mode replay, hasil sama.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "mode replay": true,
+        "aksi sama": true
+      },
+      "error": null,
+      "engine_mode": "replay",
+      "main_obstacle": "harga",
+      "approvals_needed": [
+        "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+      ],
+      "precedent_ids": [
+        "D-2025-02",
+        "D-2025-06"
+      ],
+      "latency_ms": 8
+    },
+    {
+      "id": "E19",
+      "category": "P01",
+      "description": "P01: pengambil keputusan baru (I0343) + riwayat K017 di C01 (FEAT-07 belum ditepati).",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "hambatan pengambil keputusan": true,
+        "menyebut Rina Hapsari": true,
+        "risiko FEAT-07 inferensi": true,
+        "tanpa approval diskon": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "pengambil_keputusan",
+      "approvals_needed": [],
+      "precedent_ids": [
+        "D-2025-11",
+        "D-2026-08"
+      ],
+      "latency_ms": 0
+    },
+    {
+      "id": "E20",
+      "category": "P04",
+      "description": "P04: minta referensi; overlap K028-K116 bukan bukti saling kenal.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "hambatan referensi": true,
+        "Saiyo Group diusulkan": true,
+        "overlap bukan bukti": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "referensi",
+      "approvals_needed": [],
+      "precedent_ids": [],
+      "latency_ms": 0
+    },
+    {
+      "id": "E21",
+      "category": "P03",
+      "description": "P03: minta referensi apotek.",
+      "known_limitation": false,
+      "passed": true,
+      "checks": {
+        "hambatan referensi": true,
+        "C09/C17 diusulkan": true
+      },
+      "error": null,
+      "engine_mode": "rules",
+      "main_obstacle": "referensi",
+      "approvals_needed": [],
+      "precedent_ids": [],
+      "latency_ms": 0
+    }
+  ],
+  "deals": [
+    {
+      "deal_id": "DL-001",
+      "analysis_status": "ready",
+      "main_obstacle": "pengambil_keputusan",
+      "invariants": {
+        "evidence_ids valid": true,
+        "precedent_ids dari candidate_decisions": true,
+        "action berlabel USULAN": true,
+        "tanpa probabilitas closing": true
+      },
+      "recommendation": {
+        "schema_version": "v1",
+        "deal_id": "DL-001",
+        "action": "USULAN: E06 meminta kontak teknis memperkenalkan dan menjadwalkan pertemuan langsung dengan Rina Hapsari (GM Operations); sesuaikan proposal dengan prioritas operasional. Jawab jujur status fitur yang belum rilis dan jangan menjanjikan tanggal fitur tanpa keputusan tercatat.",
+        "owner_id": "E06",
+        "milestone": "Pertemuan dengan Rina Hapsari (GM Operations) terlaksana dan kriteria keputusan pengadaan tercatat.",
+        "evidence_ids": [
+          "EV-DL-001",
+          "EV-I0343",
+          "EV-K017-HIST-P01",
+          "EV-K017-HIST-C01",
+          "EV-D-2025-11",
+          "EV-D-2026-08"
+        ],
+        "precedent_ids": [
+          "D-2025-11",
+          "D-2026-08"
+        ],
+        "precedent_comparison": [
+          "FAKTA | DL-001 Grup Ritel Mandala: stage Proposal sejak 2026-09-11 (20 hari per 2026-10-01); nilai potensi tahunan Rp252.000.000 (bukan pendapatan).",
+          "FAKTA | I0343 (2026-09-24): \"Mas Bagus, proposal sudah saya teruskan ke GM Operations yang baru bergabung awal September. Keputusan pengadaan sistem kasir ada di beliau, saya hanya menilai sisi teknis.\"",
+          "FAKTA | Rina Hapsari (GM Operations) sebelumnya di Kopi Lintas Nusantara (2021-03-01 s.d. 2026-08-15).",
+          "FAKTA | D-2025-11 (2025-11-28, diskon, akun C01): 15% -> Disetujui oleh E01; alasan: Pengecualian: akun strategis 42 outlet; komitmen integrasi akuntansi rilis Q3 2026",
+          "FAKTA | D-2025-11: janji fitur FEAT-07 berstatus 'Belum ditepati'.",
+          "INTERPRETASI | [sebagian] D-2025-11 masih terbuka (Belum ditepati); relevan sebagai risiko kepercayaan, bukan pola harga.",
+          "FAKTA | D-2026-08 (2026-07-14, eskalasi, akun C01): Kepastian jadwal FEAT-07 -> Menunggu oleh E09; alasan: Klien menanyakan jadwal integrasi; belum ada tanggal dari produk",
+          "INTERPRETASI | [sebagian] D-2026-08 masih terbuka (Menunggu); relevan sebagai risiko kepercayaan, bukan pola harga.",
+          "INTERPRETASI | Risiko kepercayaan: di Kopi Lintas Nusantara ada D-2025-11 (FEAT-07; Belum ditepati). Pengambil keputusan baru kemungkinan mengetahui pengalaman ini (inferensi, belum dikonfirmasi).",
+          "INTERPRETASI | Risiko kepercayaan: di Kopi Lintas Nusantara ada D-2026-08 (Kepastian jadwal FEAT-07; Menunggu). Pengambil keputusan baru kemungkinan mengetahui pengalaman ini (inferensi, belum dikonfirmasi)."
+        ],
+        "approvals_needed": [],
+        "unknowns": [
+          "FIXTURE: konteks disusun manual oleh Ical dari record asli; belum diuji dengan graph Bima.",
+          "Sikap GM Operations (K017) terhadap proposal belum tercatat di interaksi.",
+          "Sikap dan kriteria Rina Hapsari (GM Operations) terhadap proposal belum tercatat."
+        ],
+        "engine_mode": "rules"
+      }
+    },
+    {
+      "deal_id": "DL-002",
+      "analysis_status": "ready",
+      "main_obstacle": "harga",
+      "invariants": {
+        "evidence_ids valid": true,
+        "precedent_ids dari candidate_decisions": true,
+        "action berlabel USULAN": true,
+        "tanpa probabilitas closing": true
+      },
+      "recommendation": {
+        "schema_version": "v1",
+        "deal_id": "DL-002",
+        "action": "USULAN: Jangan menawarkan atau menjanjikan diskon 20% ke Teras Kafe Group sebelum VP Sales memutuskan dan mencatatnya. E07 membawa permintaan tersebut ke VP Sales bersama pembanding preseden di bawah. Siapkan opsi tanpa diskon untuk dibahas: 15 outlet paket Growth harga normal Rp63.000.000/tahun; bila preseden pilot relevan, pilot sebagian outlet hanya sebagai skenario usulan yang butuh persetujuan. Tanggapi keberatan harga dengan nilai produk berdasar kebutuhan yang tercatat, bukan menyamai harga kompetitor.",
+        "owner_id": "E07",
+        "milestone": "Keputusan VP Sales atas permintaan diskon tercatat di decision_log, lalu tanggapan tertulis pelanggan atas opsi harga yang disetujui.",
+        "evidence_ids": [
+          "EV-DL-002",
+          "EV-I0269",
+          "EV-I0296",
+          "EV-I0348",
+          "EV-D-2025-02",
+          "EV-DL-006",
+          "EV-D-2025-06",
+          "EV-DL-007"
+        ],
+        "precedent_ids": [
+          "D-2025-02",
+          "D-2025-06"
+        ],
+        "precedent_comparison": [
+          "FAKTA | DL-002 Teras Kafe Group: stage Demo sejak 2026-08-17 (45 hari per 2026-10-01); nilai potensi tahunan Rp63.000.000 (bukan pendapatan).",
+          "FAKTA | I0269 (2026-07-30): \"15 kafe di Malang dan Batu. Butuh POS dan stok bahan baku.\"",
+          "FAKTA | I0296 (2026-08-17): \"Pak Teddy suka produknya tetapi menilai harga terlalu tinggi. KasirPro menawarkan harga sekitar 20% lebih murah.\"",
+          "FAKTA | I0348 (2026-09-28): \"Pak Andi, untuk menutup Teras Kafe saya usul diskon 20% agar menyamai KasirPro. Mohon keputusan.\"",
+          "FAKTA | I0296 (2026-08-17): kompetitor disebut ~20% lebih murah (klaim pelanggan, belum diverifikasi).",
+          "FAKTA | I0348 (2026-09-28): PERMINTAAN diskon 20% (permintaan, bukan approval).",
+          "FAKTA | Hitungan: 15 outlet x Rp350.000 x 12 = Rp63.000.000; diskon 20% -> Rp50.400.000 (berkurang Rp12.600.000).",
+          "FAKTA | D-2025-02 (2025-03-04, diskon, akun C23): 20% -> Ditolak oleh E01; alasan: Di atas batas 15%; menyamai harga kompetitor merusak harga pasar. Deal kemudian kalah karena harga.",
+          "FAKTA | D-2025-02 diajukan oleh pemilik deal yang sama (E07).",
+          "FAKTA | Deal preseden DL-006 juga melawan KasirPro.",
+          "INTERPRETASI | [cocok] Permintaan 20% pada deal ini identik dengan D-2025-02 yang ditolak; preseden ini tidak mendukung asumsi bahwa permintaan sekarang akan disetujui; keputusan tetap wewenang VP Sales.",
+          "INTERPRETASI | [cocok] Alasan D-2025-02 menyebut batas 15%; ini catatan satu keputusan, bukan aturan universal. Aturan tertulis: diskon >10% butuh VP Sales.",
+          "FAKTA | D-2025-06 (2025-08-12, pengecualian, akun C23): Paket Starter tanpa diskon, pilot 6 outlet -> Disetujui oleh E01; alasan: Pendekatan alternatif setelah kalah Maret: mulai dari Starter, naik paket bila puas. Deal menang Sep 2025.",
+          "FAKTA | D-2025-06 diajukan oleh pemilik deal yang sama (E07).",
+          "FAKTA | Deal preseden DL-007 juga melawan KasirPro.",
+          "INTERPRETASI | [sebagian] Paket Starter (maks 10 outlet) TIDAK dapat langsung menampung 15 outlet deal ini. Meniru D-2025-06 berarti pilot sebagian outlet: usulan skenario, belum disetujui pelanggan maupun VP Sales.",
+          "INTERPRETASI | [sebagian] D-2025-06 adalah pengecualian yang diputuskan; satu keberhasilan lama bukan jaminan.",
+          "SKENARIO | Pilot maks 10 outlet paket Starter = Rp42.000.000/tahun; 5 outlet sisanya butuh paket Growth. Usulan, belum disetujui pelanggan/VP Sales."
+        ],
+        "approvals_needed": [
+          "VP Sales: putuskan dan catat di decision_log permintaan diskon 20% (I0348 (2026-09-28)); >10% wajib approval. Belum ada keputusan tercatat untuk DL-002."
+        ],
+        "unknowns": [
+          "FIXTURE: konteks disusun manual oleh Ical dari record asli; belum diuji dengan graph Bima.",
+          "Belum ada balasan Pak Teddy atas I0322 di fixture ini; ketiadaan balasan belum diverifikasi lintas seluruh interaksi."
+        ],
+        "engine_mode": "rules"
+      }
+    },
+    {
+      "deal_id": "DL-003",
+      "analysis_status": "ready",
+      "main_obstacle": "referensi",
+      "invariants": {
+        "evidence_ids valid": true,
+        "precedent_ids dari candidate_decisions": true,
+        "action berlabel USULAN": true,
+        "tanpa probabilitas closing": true
+      },
+      "recommendation": {
+        "schema_version": "v1",
+        "deal_id": "DL-003",
+        "action": "USULAN: E08 meminta izin pemilik akun pelanggan untuk menghubungkan Apotek Medika Farma, Apotek Bunda Sehat sebagai referensi bagi Klinik Pratama Medika, lalu jadwalkan panggilan referensi.",
+        "owner_id": "E08",
+        "milestone": "Panggilan referensi terjadwal dengan pelanggan serupa yang menyatakan bersedia.",
+        "evidence_ids": [
+          "EV-DL-003",
+          "EV-I0334",
+          "EV-C09",
+          "EV-C17"
+        ],
+        "precedent_ids": [],
+        "precedent_comparison": [
+          "FAKTA | DL-003 Klinik Pratama Medika: stage Discovery sejak 2026-09-21 (10 hari per 2026-10-01); nilai potensi tahunan Rp37.800.000 (bukan pendapatan).",
+          "FAKTA | I0334 (2026-09-21): \"Butuh modul apotek untuk 9 klinik. Bu Ratna minta referensi pelanggan apotek yang sudah memakai KasirNusa.\"",
+          "FAKTA | Kandidat referensi C09: C09,Apotek Medika Farma,pelanggan,Apotek,Jember,Growth,15,E03,K051,9,Hijau",
+          "FAKTA | Kandidat referensi C17: C17,Apotek Bunda Sehat,pelanggan,Apotek,Mojokerto,Starter,10,E05,K030,10,Hijau",
+          "INTERPRETASI | Kandidat referensi adalah inferensi kemiripan; kesediaan menjadi referensi belum dikonfirmasi."
+        ],
+        "approvals_needed": [],
+        "unknowns": [
+          "FIXTURE: konteks disusun manual oleh Ical dari record asli; belum diuji dengan graph Bima.",
+          "Pemakaian modul apotek (feature_usage_monthly) dan tiket C09/C17 belum diperiksa di fixture ini.",
+          "Tidak ada preseden relevan di candidate_decisions; perbandingan historis terbatas."
+        ],
+        "engine_mode": "rules"
+      }
+    },
+    {
+      "deal_id": "DL-004",
+      "analysis_status": "ready",
+      "main_obstacle": "referensi",
+      "invariants": {
+        "evidence_ids valid": true,
+        "precedent_ids dari candidate_decisions": true,
+        "action berlabel USULAN": true,
+        "tanpa probabilitas closing": true
+      },
+      "recommendation": {
+        "schema_version": "v1",
+        "deal_id": "DL-004",
+        "action": "USULAN: E06 meminta izin pemilik akun pelanggan untuk menghubungkan Saiyo Group sebagai referensi bagi Nirwana Hotel & Resto, lalu jadwalkan panggilan referensi.",
+        "owner_id": "E06",
+        "milestone": "Panggilan referensi terjadwal dengan pelanggan serupa yang menyatakan bersedia.",
+        "evidence_ids": [
+          "EV-DL-004",
+          "EV-I0335",
+          "EV-C06",
+          "EV-OVERLAP-K028-K116"
+        ],
+        "precedent_ids": [],
+        "precedent_comparison": [
+          "FAKTA | DL-004 Nirwana Hotel & Resto: stage Negosiasi sejak 2026-09-01 (30 hari per 2026-10-01); nilai potensi tahunan Rp147.000.000 (bukan pendapatan).",
+          "FAKTA | I0335 (2026-09-22): \"Pak Bagus, Direktur Utama kami minta rekomendasi dari pengguna yang mirip dengan kami sebelum tanda tangan. Kami tunda dulu sampai ada referensi.\"",
+          "FAKTA | Kandidat referensi C06: C06,Saiyo Group,pelanggan,Resto Padang,Surabaya,Enterprise,30,E04,K116,9,Hijau",
+          "INTERPRETASI | Hartono Gunawan (Direktur Utama) dan Budi Santoso (CFO Saiyo Group) pernah bekerja di organisasi yang sama (2015-02-01 s.d. 2019-11-30); overlap kerja tidak membuktikan saling kenal.",
+          "INTERPRETASI | Kandidat referensi adalah inferensi kemiripan; kesediaan menjadi referensi belum dikonfirmasi."
+        ],
+        "approvals_needed": [],
+        "unknowns": [
+          "FIXTURE: konteks disusun manual oleh Ical dari record asli; belum diuji dengan graph Bima.",
+          "Apakah K028 dan K116 saling kenal tidak tercatat; overlap kerja hanya inferensi.",
+          "Kesediaan Saiyo Group menjadi referensi belum ditanyakan.",
+          "Tidak ada preseden relevan di candidate_decisions; perbandingan historis terbatas."
+        ],
+        "engine_mode": "rules"
+      }
+    },
+    {
+      "deal_id": "DL-005",
+      "analysis_status": "insufficient_evidence",
+      "main_obstacle": "bukti_kurang",
+      "invariants": {
+        "evidence_ids valid": true,
+        "precedent_ids dari candidate_decisions": true,
+        "action berlabel USULAN": true,
+        "tanpa probabilitas closing": true
+      },
+      "recommendation": {
+        "schema_version": "v1",
+        "deal_id": "DL-005",
+        "action": "USULAN: E07 menjadwalkan discovery dengan PT Distribusi Sumber Rejeki untuk mengidentifikasi pengambil keputusan, kebutuhan, jumlah outlet dan anggaran sebelum menawarkan harga atau paket.",
+        "owner_id": "E07",
+        "milestone": "Catatan discovery pertama berisi pengambil keputusan, kebutuhan dan jadwal pengadaan.",
+        "evidence_ids": [
+          "EV-DL-005"
+        ],
+        "precedent_ids": [],
+        "precedent_comparison": [
+          "FAKTA | DL-005 PT Distribusi Sumber Rejeki: stage Lead sejak 2026-09-26 (5 hari per 2026-10-01); nilai potensi tahunan Rp168.000.000 (bukan pendapatan)."
+        ],
+        "approvals_needed": [],
+        "unknowns": [
+          "FIXTURE: konteks disusun manual oleh Ical dari record asli; belum diuji dengan graph Bima.",
+          "Tidak ada interaksi P05 di interactions.jsonl; kontak dan champion belum tercatat.",
+          "Kemiripan nama dengan C11 Swalayan Sumber Rejeki (Ritel, Sidoarjo) tidak membuktikan hubungan entitas.",
+          "Bukti interaksi tidak cukup untuk menyimpulkan hambatan; bukan berarti tidak ada risiko.",
+          "Tidak ada preseden relevan di candidate_decisions; perbandingan historis terbatas."
+        ],
+        "engine_mode": "rules"
+      }
+    }
+  ]
+}
