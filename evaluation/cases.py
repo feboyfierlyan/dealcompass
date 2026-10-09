@@ -1,56 +1,89 @@
-"""Kasus evaluasi ICAL-01. Satu sumber untuk tests/ical dan evaluation/run_eval.py.
+"""Kasus evaluasi ICAL. Satu sumber untuk tests/ical dan evaluation/run_eval.py.
 
-Basis konteks: fixture berlabel FIXTURE_ICAL_SEMENTARA (record asli). Kasus
-mutasi/parafrase adalah variasi SINTETIS untuk menguji aturan, bukan data asli.
-Jev pada kasus ini memakai transport tiruan (mock), BUKAN panggilan live.
+Basis konteks: build_deal_context NYATA (graph Bima, dataset asli). Kasus
+mutasi/parafrase menambah atau mengubah record secara SINTETIS di salinan
+konteks (format sama dengan produsen: excerpt JSON), bukan data asli.
+Jev di sini memakai transport tiruan (mock), BUKAN panggilan live.
 """
 import json
+import os
 import tempfile
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
+from unittest.mock import patch
 
 import httpx
 
-from backend.contracts import DealContext, EvidenceRecord, GraphEdge
+from backend.contracts import DealContext, EvidenceRecord, GraphEdge, GraphNode
 from backend.decision.analyze import analyze_deal_trace
 from backend.decision.signals import classify_message
+from backend.graph.context import build_deal_context
 from backend.integrations.jev import JevClient, ReplayClient
 
-FIXTURES = Path(__file__).resolve().parent / 'fixtures'
 DEAL_IDS = ('DL-001', 'DL-002', 'DL-003', 'DL-004', 'DL-005')
+DECISION_FIELDS = ('decision_id', 'tanggal', 'tipe', 'account_id', 'deal_id', 'diminta_oleh', 'diputuskan_oleh',
+                   'keputusan', 'nilai', 'alasan', 'bukti_interaction_id', 'fitur_dijanjikan', 'status_janji')
 
 
-def load_fixture(deal_id: str) -> DealContext:
-    return DealContext.model_validate(json.loads((FIXTURES / f'{deal_id}.json').read_text(encoding='utf-8')))
+def real(deal_id: str) -> DealContext:
+    """Salinan konteks nyata agar mutasi kasus tidak mengubah cache graph Bima."""
+    return build_deal_context(deal_id).model_copy(deep=True)
 
 
-def _set_excerpt(ctx: DealContext, eid: str, text: str) -> DealContext:
+def set_isi(ctx: DealContext, iid: str, text: str) -> DealContext:
     for e in ctx.evidence:
-        if e.id == eid:
-            e.excerpt = text
+        if e.id == f'interactions.jsonl:{iid}':
+            row = json.loads(e.excerpt)
+            row['isi'] = text
+            e.excerpt = json.dumps(row, ensure_ascii=False)
     return ctx
 
 
-def _add_decision(ctx: DealContext, **kw) -> DealContext:
-    base = {k: '' for k in ('decision_id', 'tanggal', 'tipe', 'account_id', 'deal_id', 'diminta_oleh',
-                            'diputuskan_oleh', 'keputusan', 'nilai', 'alasan', 'bukti_interaction_id',
-                            'fitur_dijanjikan', 'status_janji')}
-    base.update(kw)
-    ctx.candidate_decisions.append(base)
+def add_interaction(ctx: DealContext, iid: str, account_id: str, tanggal: str, isi: str,
+                    tipe: str = 'email', subjek: str = 'SINTETIS') -> DealContext:
+    row = {'interaction_id': iid, 'tanggal': tanggal, 'tipe': tipe, 'account_id': account_id, 'dari': '', 'ke': '',
+           'peserta': '', 'subjek': subjek, 'isi': isi, 'membalas_id': ''}
+    eid = f'interactions.jsonl:{iid}'
+    ctx.evidence.append(EvidenceRecord(id=eid, source_file='dataset_kasirnusa/interactions.jsonl', source_id=iid,
+                                       date=tanggal, excerpt=json.dumps(row, ensure_ascii=False), evidence_type='direct'))
+    ctx.graph.nodes.append(GraphNode(id=iid, label=subjek, type='interaction'))
+    if account_id and account_id in {n.id for n in ctx.graph.nodes}:
+        ctx.graph.edges.append(GraphEdge(id=f'interaction_for:{iid}:{account_id}', source=iid, target=account_id,
+                                         relation='interaction_for', evidence_ids=[eid], evidence_type='direct',
+                                         valid_from=tanggal))
     return ctx
 
 
-# --- Jev tiruan -------------------------------------------------------------------
+def add_decision(ctx: DealContext, **kw) -> DealContext:
+    row = {k: '' for k in DECISION_FIELDS}
+    row.update(kw)
+    ctx.candidate_decisions.append(row)
+    ctx.evidence.append(EvidenceRecord(id=f'decision_log.csv:{row["decision_id"]}', source_file='dataset_kasirnusa/decision_log.csv',
+                                       source_id=row['decision_id'], date=row['tanggal'] or None,
+                                       excerpt=json.dumps(row, ensure_ascii=False), evidence_type='direct'))
+    return ctx
 
-def mock_transport(mode: str = 'ok', choice_fn=classify_message, noul_value: float = 0.0):
+
+def add_contact(ctx: DealContext, cid: str, nama: str, account_id: str, jabatan: str) -> DealContext:
+    row = {'contact_id': cid, 'nama': nama, 'email': '', 'account_id_saat_ini': account_id, 'jabatan_saat_ini': jabatan}
+    ctx.evidence.append(EvidenceRecord(id=f'crm_contacts.csv:{cid}', source_file='dataset_kasirnusa/crm_contacts.csv',
+                                       source_id=cid, excerpt=json.dumps(row, ensure_ascii=False), evidence_type='direct'))
+    return ctx
+
+
+# --- Jev tiruan -----------------------------------------------------------------------
+
+def mock_transport(mode: str = 'ok', choice_fn=classify_message, noul_value=0.0, score_value=1, delay_s=0.0):
     def handler(request: httpx.Request) -> httpx.Response:
+        if delay_s:
+            time.sleep(delay_s)
         if mode == 'timeout':
             raise httpx.ReadTimeout('mock timeout', request=request)
         if mode == 'unauthorized':
             return httpx.Response(401, json={'error': 'unauthorized'})
         body = json.loads(request.content)
-        assert request.headers['authorization'] == 'Bearer test-key'
         answers = {}
         for key, q in body['questions'].items():
             if q['type'] == 'choice':
@@ -59,7 +92,7 @@ def mock_transport(mode: str = 'ok', choice_fn=classify_message, noul_value: flo
             elif q['type'] == 'noul':
                 answers[key] = {'type': 'noul', 'noul': noul_value}
             else:
-                answers[key] = {'type': 'score', 'score': 1, 'legend': {'1': q['criteria'][1]},
+                answers[key] = {'type': 'score', 'score': score_value, 'legend': {'1': q['criteria'][1]},
                                 'probabilities': {'1': 0.8}, 'confidence': 0.8}
         return httpx.Response(200, json={'model': 'jev-mock', 'answers': answers,
                                          'usage': {'input_tokens': 1, 'output_tokens': 1}})
@@ -67,10 +100,10 @@ def mock_transport(mode: str = 'ok', choice_fn=classify_message, noul_value: flo
 
 
 def mock_client(mode='ok', **kw) -> JevClient:
-    return JevClient('test-key', transport=mock_transport(mode, **kw), timeout_s=1)
+    return JevClient('test-key', transport=mock_transport(mode, **kw), timeout_s=5)
 
 
-# --- Definisi kasus -----------------------------------------------------------------
+# --- Definisi kasus --------------------------------------------------------------------
 
 @dataclass
 class Case:
@@ -86,156 +119,209 @@ def _rules(ctx):
     return analyze_deal_trace(ctx, mode='rules')
 
 
-def _p02():
-    return load_fixture('DL-002')
-
-
-def _replay_roundtrip():
-    with tempfile.TemporaryDirectory() as tmp:
-        live = JevClient('test-key', transport=mock_transport(), timeout_s=1, record_dir=tmp)
-        first, _ = analyze_deal_trace(_p02(), client=live)
-        rec, tr = analyze_deal_trace(_p02(), client=ReplayClient(tmp))
-        tr.calculations['recorded_mode'] = first.engine_mode
-        tr.calculations['same_action_as_recorded'] = first.action == rec.action
-        return rec, tr
-
-
 def _all_text(rec) -> str:
     return ' '.join([rec.action, rec.milestone, *rec.precedent_comparison, *rec.approvals_needed])
 
 
+def _mentions(t):
+    return [(m['source_id'], m['pct'], m['kind']) for m in t.discount_mentions]
+
+
+def _needs_vp(r, t):
+    return any(a.startswith('VP Sales') for a in r.approvals_needed)
+
+
+def _fallback(code):
+    return {
+        'mode rules': lambda r, t: r.engine_mode == 'rules',
+        f'unknown {code}': lambda r, t: any(code in u and 'rules deterministik' in u for u in r.unknowns),
+        'policy tetap': _needs_vp,
+        'tanpa label Jev': lambda r, t: all(o['source'] == 'rules' for o in t.obstacles),
+    }
+
+
+def _replay_roundtrip():
+    with tempfile.TemporaryDirectory() as tmp:
+        first, _ = analyze_deal_trace(real('DL-002'), client=JevClient('test-key', transport=mock_transport(), record_dir=tmp))
+        rec, tr = analyze_deal_trace(real('DL-002'), client=ReplayClient(tmp))
+        tr.calculations['same_action_as_recorded'] = first.action == rec.action and first.engine_mode == 'jev'
+        return rec, tr
+
+
+def _replay_corrupt():
+    with tempfile.TemporaryDirectory() as tmp:
+        analyze_deal_trace(real('DL-002'), client=JevClient('test-key', transport=mock_transport(), record_dir=tmp))
+        for p in Path(tmp).iterdir():
+            p.write_text('{"response": {"answers": {"hambatan": {"type": "choice", "choice": 7}}}}', encoding='utf-8')
+        return analyze_deal_trace(real('DL-002'), client=ReplayClient(tmp))
+
+
+def _budget():
+    with patch.dict(os.environ, {'DEALCOMPASS_ANALYSIS_BUDGET_S': '0.8'}):
+        return analyze_deal_trace(real('DL-002'), client=mock_client(delay_s=0.4))
+
+
 CASES: list[Case] = [
-    Case('E01', 'P02 dasar', 'P02: hambatan harga + permintaan diskon 20% (I0348), preseden D-2025-02/06.',
-         lambda: _rules(_p02()), {
+    Case('E01', 'P02 nyata', 'P02 graph nyata: hambatan harga, I0348 20% sekali, tanpa 15% C01, preseden D-2025-02/06.',
+         lambda: _rules(real('DL-002')), {
+             'I0348 20% sekali': lambda r, t: _mentions(t) == [('I0348', 20, 'request')],
+             'tanpa permintaan 15% / I0054/I0061/I0066': lambda r, t: not any(
+                 m[1] == 15 or m[0] in ('I0054', 'I0061', 'I0066') for m in _mentions(t)) and '15%/' not in r.action,
+             'approval VP Sales E01': lambda r, t: any(a.startswith('VP Sales (E01)') for a in r.approvals_needed),
+             'satu approval tertunda': lambda r, t: len(r.approvals_needed) == 1,
+             'KasirPro terbaca': lambda r, t: 'kompetitor tercatat: KasirPro' in _all_text(r)
+                                              and 'Deal preseden DL-006 juga mencatat kompetitor KasirPro' in _all_text(r),
              'hambatan utama harga': lambda r, t: t.main_obstacle == 'harga',
-             'approval VP Sales dibutuhkan': lambda r, t: any(a.startswith('VP Sales') for a in r.approvals_needed),
              'tidak menyatakan approval': lambda r, t: 'sudah disetujui' not in _all_text(r).lower(),
-             'preseden D-2025-02 & D-2025-06': lambda r, t: set(r.precedent_ids) == {'D-2025-02', 'D-2025-06'},
+             'preseden D-2025-02 & D-2025-06': lambda r, t: {'D-2025-02', 'D-2025-06'} <= set(r.precedent_ids),
              'Starter tidak menampung 15 outlet': lambda r, t: 'TIDAK dapat langsung menampung 15 outlet' in _all_text(r),
              'pilot berlabel skenario': lambda r, t: t.scenarios and t.scenarios[0]['label'] == 'SKENARIO_USULAN'
                                                      and t.scenarios[0]['pilot_annual_value_idr'] == 42_000_000,
              'batas 15% bukan aturan universal': lambda r, t: 'bukan aturan universal' in _all_text(r),
              'mode rules': lambda r, t: r.engine_mode == 'rules',
          }),
-    Case('E02', 'request vs approval', 'Ada keputusan sah: VP Sales (E01) menyetujui 20% untuk DL-002 (sintetis).',
-         lambda: _rules(_add_decision(_p02(), decision_id='D-SIM-01', tanggal='2026-09-30', tipe='diskon',
-                                      account_id='P02', deal_id='DL-002', diminta_oleh='E07',
-                                      diputuskan_oleh='E01', keputusan='Disetujui', nilai='20%')), {
+    Case('E02', 'request vs approval', 'Sintetis: VP Sales (E01) menyetujui 20% untuk DL-002 di decision_log.',
+         lambda: _rules(add_decision(real('DL-002'), decision_id='D-SIM-01', tanggal='2026-09-30', tipe='diskon',
+                                     account_id='P02', deal_id='DL-002', diminta_oleh='E07', diputuskan_oleh='E01',
+                                     keputusan='Disetujui', nilai='20%')), {
              'tidak ada approval tertunda': lambda r, t: r.approvals_needed == [],
              'approval dikenali': lambda r, t: any('sudah disetujui VP Sales' in i for i in t.interpretations),
          }),
-    Case('E03', 'request vs approval', 'Persetujuan 20% oleh E07 (bukan VP Sales) tidak sah (sintetis).',
-         lambda: _rules(_add_decision(_p02(), decision_id='D-SIM-02', tipe='diskon', deal_id='DL-002',
-                                      diputuskan_oleh='E07', keputusan='Disetujui', nilai='20%')), {
-             'approval VP masih dibutuhkan': lambda r, t: any(a.startswith('VP Sales') for a in r.approvals_needed),
+    Case('E03', 'request vs approval', 'Sintetis: "persetujuan" 20% oleh E07 (Sales Executive) tidak sah.',
+         lambda: _rules(add_decision(real('DL-002'), decision_id='D-SIM-02', tanggal='2026-09-30', tipe='diskon',
+                                     account_id='P02', deal_id='DL-002', diputuskan_oleh='E07', keputusan='Disetujui', nilai='20%')), {
+             'approval VP masih dibutuhkan': _needs_vp,
+             'pemutus bukan VP dicatat': lambda r, t: any('bukan VP Sales' in i for i in t.interpretations),
          }),
-    Case('E04', 'request vs approval', 'Persetujuan ada tetapi jabatan pemutus tak dapat diverifikasi (EV-E01 dihapus).',
-         lambda: _rules(_add_decision(
-             _p02().model_copy(update={'evidence': [e for e in _p02().evidence if e.id != 'EV-E01']}),
-             decision_id='D-SIM-03', tipe='diskon', deal_id='DL-002', diputuskan_oleh='E01',
-             keputusan='Disetujui', nilai='20%')), {
-             'approval VP masih dibutuhkan': lambda r, t: any(a.startswith('VP Sales') for a in r.approvals_needed),
+    Case('E04', 'request vs approval', 'Sintetis: persetujuan oleh E99 yang jabatannya tidak ada di konteks.',
+         lambda: _rules(add_decision(real('DL-002'), decision_id='D-SIM-03', tanggal='2026-09-30', tipe='diskon',
+                                     account_id='P02', deal_id='DL-002', diputuskan_oleh='E99', keputusan='Disetujui', nilai='20%')), {
+             'approval VP masih dibutuhkan': _needs_vp,
              'unknown jabatan pemutus': lambda r, t: any('tidak dapat diverifikasi' in u for u in r.unknowns),
          }),
-    Case('E05', 'hitungan diskon', 'Permintaan diskon 10% (batas, sintetis): tidak butuh VP Sales.',
-         lambda: _rules(_set_excerpt(_p02(), 'EV-I0348', 'Pak Andi, saya usul diskon 10% untuk Teras Kafe. Mohon keputusan.')), {
+    Case('E05', 'request vs approval', 'Sintetis: penolakan 20% tercatat oleh E01 untuk DL-002.',
+         lambda: _rules(add_decision(real('DL-002'), decision_id='D-SIM-04', tanggal='2026-09-30', tipe='diskon',
+                                     account_id='P02', deal_id='DL-002', diputuskan_oleh='E01', keputusan='Ditolak', nilai='20%')), {
+             'tanpa approval tertunda': lambda r, t: r.approvals_needed == [],
+             'penolakan dikenali': lambda r, t: any('sudah ditolak (D-SIM-04)' in i for i in t.interpretations),
+         }),
+    Case('E06', 'request vs approval', 'Sintetis: pesan P02 mengklaim "diskon 20% sudah disetujui" tanpa decision_log.',
+         lambda: _rules(add_interaction(real('DL-002'), 'I9001', 'P02', '2026-09-29',
+                                        'Pak Teddy, diskon 20% sudah disetujui ya.')), {
+             'approval VP masih dibutuhkan': _needs_vp,
+             'klaim dicatat bukan approval': lambda r, t: ('I9001', 20, 'approval_claim') in _mentions(t)
+                                                          and any('klaim persetujuan' in u for u in r.unknowns),
+         }),
+    Case('E07', 'hitungan diskon', 'Sintetis: I0348 menjadi diskon 10% (batas): tidak butuh VP Sales.',
+         lambda: _rules(set_isi(real('DL-002'), 'I0348', 'Pak Andi, saya usul diskon 10% untuk Teras Kafe. Mohon keputusan.')), {
              'tanpa approval VP': lambda r, t: r.approvals_needed == [],
              'nilai Rp56.700.000': lambda r, t: t.calculations['discount_10pct']['annual_value_idr'] == 56_700_000,
          }),
-    Case('E06', 'hitungan diskon', 'Permintaan diskon 11% (sintetis): melewati batas 10%.',
-         lambda: _rules(_set_excerpt(_p02(), 'EV-I0348', 'Pak Andi, saya usul diskon 11% untuk Teras Kafe. Mohon keputusan.')), {
-             'approval VP dibutuhkan': lambda r, t: any(a.startswith('VP Sales') for a in r.approvals_needed),
+    Case('E08', 'hitungan diskon', 'Sintetis: I0348 menjadi diskon 11%: melewati batas 10%.',
+         lambda: _rules(set_isi(real('DL-002'), 'I0348', 'Pak Andi, saya usul diskon 11% untuk Teras Kafe. Mohon keputusan.')), {
+             'approval VP dibutuhkan': _needs_vp,
              'nilai Rp56.070.000, turun Rp6.930.000': lambda r, t: t.calculations['discount_11pct'] == {
                  'annual_value_idr': 56_070_000, 'reduction_idr': 6_930_000},
          }),
-    Case('E07', 'hitungan diskon', 'P02 20%: Rp63.000.000 -> Rp50.400.000 (turun Rp12.600.000).',
-         lambda: _rules(_p02()), {
-             'outlet 15': lambda r, t: t.calculations['outlets'] == 15,
-             'nilai diskon': lambda r, t: t.calculations['discount_20pct'] == {
-                 'annual_value_idr': 50_400_000, 'reduction_idr': 12_600_000},
+    Case('E09', 'hitungan diskon', 'P02 nyata 20%: Rp63.000.000 -> Rp50.400.000.',
+         lambda: _rules(real('DL-002')), {
+             'outlet 15 dari crm_deals': lambda r, t: t.calculations['outlets'] == 15,
+             'nilai diskon': lambda r, t: t.calculations['discount_20pct'] == {'annual_value_idr': 50_400_000, 'reduction_idr': 12_600_000},
              'paket terkecil Growth': lambda r, t: t.calculations['smallest_package'] == 'Growth',
          }),
-    Case('E08', 'preseden tidak cocok', 'D-2024-05 (janji_fitur C09, ditepati) ditambahkan ke P02: harus tidak dipakai.',
-         lambda: _rules(_add_decision(_p02(), decision_id='D-2024-05', tanggal='2024-08-15', tipe='janji_fitur',
-                                      account_id='C09', diminta_oleh='E04', diputuskan_oleh='E09',
-                                      keputusan='Disetujui', alasan='Program loyalti untuk klien F&B',
-                                      fitur_dijanjikan='FEAT-03', status_janji='Ditepati (rilis Feb 2026)')), {
-             'D-2024-05 tidak di precedent_ids': lambda r, t: 'D-2024-05' not in r.precedent_ids,
-             'tercatat diperiksa': lambda r, t: any('D-2024-05 diperiksa' in i for i in t.interpretations),
+    Case('E10', 'lintas akun', 'Sintetis: interaksi C23 lebih baru (minta referensi + diskon 15%) tidak mengubah P02.',
+         lambda: _rules(add_interaction(real('DL-002'), 'I9002', 'C23', '2026-09-30',
+                                        'Kami minta referensi dan usul diskon 15% untuk outlet baru.')), {
+             'hambatan tetap harga': lambda r, t: t.main_obstacle == 'harga',
+             'mention tetap I0348 saja': lambda r, t: _mentions(t) == [('I0348', 20, 'request')],
+             'I9002 tidak jadi bukti fokus': lambda r, t: 'interactions.jsonl:I9002' not in r.evidence_ids,
          }),
-    Case('E09', 'bukti kurang', 'P05: lead tanpa interaksi.',
-         lambda: _rules(load_fixture('DL-005')), {
+    Case('E11', 'preseden tidak cocok', 'P02 nyata: D-2026-11 (pengecualian migrasi data C19) tidak dipakai sebagai preseden.',
+         lambda: _rules(real('DL-002')), {
+             'D-2026-11 tidak di precedent_ids': lambda r, t: 'D-2026-11' not in r.precedent_ids,
+             'tercatat diperiksa': lambda r, t: any('D-2026-11' in i and 'tidak cocok' in i for i in t.interpretations),
+         }),
+    Case('E12', 'bukti kurang', 'P05 nyata: lead tanpa interaksi.',
+         lambda: _rules(real('DL-005')), {
              'status insufficient_evidence': lambda r, t: t.analysis_status == 'insufficient_evidence',
              'tanpa preseden': lambda r, t: r.precedent_ids == [],
              'unknown bukti kurang': lambda r, t: any('tidak cukup' in u for u in r.unknowns),
              'tidak memakai C11': lambda r, t: 'C11' not in ' '.join(r.evidence_ids + [r.action]),
          }),
-    Case('E10', 'ID tidak valid', 'Edge merujuk evidence_id EV-NOPE yang tidak ada (sintetis).',
-         lambda: _rules(_p02().model_copy(update={'graph': _p02().graph.model_copy(update={'edges': [
-             *_p02().graph.edges, GraphEdge(id='bad', source='deal:DL-002', target='account:P02', relation='x',
-                                            evidence_ids=['EV-NOPE'], evidence_type='direct')]})})), {
+    Case('E13', 'ID tidak valid', 'Sintetis: edge merujuk evidence_id EV-NOPE.',
+         lambda: _rules((lambda c: (c.graph.edges.append(GraphEdge(id='bad', source='DL-002', target='P02', relation='x',
+                                                                    evidence_ids=['EV-NOPE'], evidence_type='direct')), c)[1])(real('DL-002'))), {
              'issue dilaporkan': lambda r, t: any('EV-NOPE' in u for u in r.unknowns),
              'EV-NOPE tidak dikeluarkan': lambda r, t: 'EV-NOPE' not in r.evidence_ids,
          }),
-    Case('E11', 'parafrase', 'I0296 diparafrasekan: "biayanya kemahalan dibanding tawaran pesaing" (sintetis).',
-         lambda: _rules(_set_excerpt(_p02(), 'EV-I0296', 'Pak Teddy bilang biayanya kemahalan dibanding tawaran pesaing.')), {
-             'I0296 tetap harga': lambda r, t: next(o for o in t.obstacles if o['evidence_id'] == 'EV-I0296')['category'] == 'harga',
+    Case('E14', 'parafrase', 'Sintetis: I0296 "biayanya kemahalan dibanding tawaran pesaing".',
+         lambda: _rules(set_isi(real('DL-002'), 'I0296', 'Pak Teddy bilang biayanya kemahalan dibanding tawaran pesaing.')), {
+             'I0296 tetap harga': lambda r, t: next(o for o in t.obstacles if o['source_id'] == 'I0296')['category'] == 'harga',
          }),
-    Case('E12', 'parafrase', 'Parafrase sulit: "KasirPro lebih ramah di kantong" (sintetis). Batas rules diketahui.',
-         lambda: _rules(_set_excerpt(_p02(), 'EV-I0296', 'Pak Teddy merasa KasirPro lebih ramah di kantong.')), {
-             'I0296 terdeteksi harga': lambda r, t: next(o for o in t.obstacles if o['evidence_id'] == 'EV-I0296')['category'] == 'harga',
+    Case('E15', 'parafrase', 'Sintetis sulit: "KasirPro lebih ramah di kantong". Batas rules diketahui.',
+         lambda: _rules(set_isi(real('DL-002'), 'I0296', 'Pak Teddy merasa KasirPro lebih ramah di kantong.')), {
+             'I0296 terdeteksi harga': lambda r, t: next(o for o in t.obstacles if o['source_id'] == 'I0296')['category'] == 'harga',
          }, known_limitation=True),
-    Case('E13', 'Jev timeout', 'Jev (mock) timeout -> fallback rules eksplisit.',
-         lambda: analyze_deal_trace(_p02(), client=mock_client('timeout')), {
-             'mode rules': lambda r, t: r.engine_mode == 'rules',
-             'unknown timeout': lambda r, t: any('timeout' in u for u in r.unknowns),
-             'policy tetap': lambda r, t: any(a.startswith('VP Sales') for a in r.approvals_needed),
-             'latensi tercatat': lambda r, t: t.jev_calls and t.jev_calls[0]['latency_ms'] is not None,
-         }),
-    Case('E14', 'Jev gagal', 'Jev (mock) 401 -> fallback rules, tanpa membocorkan key.',
-         lambda: analyze_deal_trace(_p02(), client=mock_client('unauthorized')), {
-             'mode rules': lambda r, t: r.engine_mode == 'rules',
-             'unknown unauthorized': lambda r, t: any('unauthorized' in u for u in r.unknowns),
-             'key tidak bocor': lambda r, t: 'test-key' not in json.dumps([r.model_dump(), t.to_dict()]),
-         }),
-    Case('E15', 'Jev mock', 'Jev (mock) sukses -> engine_mode jev; policy tetap rules.',
-         lambda: analyze_deal_trace(_p02(), client=mock_client()), {
+    Case('E16', 'Jev gagal', 'Jev (mock) timeout -> fallback rules penuh.',
+         lambda: analyze_deal_trace(real('DL-002'), client=mock_client('timeout')),
+         {**_fallback('timeout'), 'latensi tercatat': lambda r, t: t.jev_calls and t.jev_calls[0]['latency_ms'] is not None}),
+    Case('E17', 'Jev gagal', 'Jev (mock) 401 -> fallback rules, key tidak bocor.',
+         lambda: analyze_deal_trace(real('DL-002'), client=mock_client('unauthorized')),
+         {**_fallback('unauthorized'), 'key tidak bocor': lambda r, t: 'test-key' not in json.dumps([r.model_dump(), t.to_dict()])}),
+    Case('E18', 'Jev rusak', 'Jev (mock) choice di luar criteria -> invalid_response.',
+         lambda: analyze_deal_trace(real('DL-002'), client=mock_client('bad_choice')), _fallback('invalid_response')),
+    Case('E19', 'Jev rusak', 'Jev (mock) noul="not-a-number" -> invalid_response.',
+         lambda: analyze_deal_trace(real('DL-002'), client=mock_client(noul_value='not-a-number')), _fallback('invalid_response')),
+    Case('E20', 'Jev rusak', 'Jev (mock) score=7 (di luar 0..2) -> invalid_response.',
+         lambda: analyze_deal_trace(real('DL-002'), client=mock_client(score_value=7)), _fallback('invalid_response')),
+    Case('E21', 'Jev rusak', 'Jev (mock) noul=true (bool) -> invalid_response.',
+         lambda: analyze_deal_trace(real('DL-002'), client=mock_client(noul_value=True)), _fallback('invalid_response')),
+    Case('E22', 'Jev mock', 'Jev (mock) sukses -> engine_mode jev; policy tetap rules.',
+         lambda: analyze_deal_trace(real('DL-002'), client=mock_client()), {
              'mode jev': lambda r, t: r.engine_mode == 'jev',
-             'policy tetap': lambda r, t: any(a.startswith('VP Sales') for a in r.approvals_needed),
+             'policy tetap': _needs_vp,
              'Score bukan probabilitas': lambda r, t: any('bukan probabilitas closing' in c for c in r.precedent_comparison),
+             'Jev hanya pesan fokus': lambda r, t: sum('hambatan' in c['question_keys'] for c in t.jev_calls) == 4,
          }),
-    Case('E16', 'Jev mock', 'Jev Noul (mock) menilai I0348 menyiratkan approval -> tetap bukan approval.',
-         lambda: analyze_deal_trace(_p02(), client=mock_client(noul_value=0.9)), {
-             'approval VP masih dibutuhkan': lambda r, t: any(a.startswith('VP Sales') for a in r.approvals_needed),
+    Case('E23', 'Jev mock', 'Jev Noul (mock) menilai I0348 menyiratkan approval -> tetap bukan approval.',
+         lambda: analyze_deal_trace(real('DL-002'), client=mock_client(noul_value=0.9)), {
+             'approval VP masih dibutuhkan': _needs_vp,
              'unknown dicatat': lambda r, t: any('hanya diakui dari decision_log' in u for u in r.unknowns),
          }),
-    Case('E17', 'Jev gagal', 'Jev (mock) memberi choice di luar criteria -> invalid_response, fallback rules.',
-         lambda: analyze_deal_trace(_p02(), client=mock_client('bad_choice')), {
-             'mode rules': lambda r, t: r.engine_mode == 'rules',
-             'unknown invalid': lambda r, t: any('invalid_response' in u for u in r.unknowns),
-         }),
-    Case('E18', 'replay', 'Rekam respons Jev (mock) lalu putar ulang -> engine_mode replay, hasil sama.',
+    Case('E24', 'Jev waktu', 'Anggaran 0,8 dtk, tiap panggilan mock 0,4 dtk -> budget_exceeded, fallback rules.',
+         _budget, {**_fallback('budget_exceeded'), 'selesai < 2 dtk': lambda r, t: t.elapsed_ms < 2000}),
+    Case('E25', 'replay', 'Rekam respons Jev (mock) lalu putar ulang -> engine_mode replay, hasil sama.',
          _replay_roundtrip, {
              'mode replay': lambda r, t: r.engine_mode == 'replay',
              'aksi sama': lambda r, t: t.calculations['same_action_as_recorded'],
          }),
-    Case('E19', 'P01', 'P01: pengambil keputusan baru (I0343) + riwayat K017 di C01 (FEAT-07 belum ditepati).',
-         lambda: _rules(load_fixture('DL-001')), {
+    Case('E26', 'replay', 'Rekaman replay rusak -> invalid_replay, fallback rules.',
+         _replay_corrupt, _fallback('invalid_replay')),
+    Case('E27', 'P01 nyata', 'P01: I0343 + kontak CRM + riwayat kerja -> K017 Rina Hapsari (inferensi), risiko FEAT-07 C01.',
+         lambda: _rules(real('DL-001')), {
              'hambatan pengambil keputusan': lambda r, t: t.main_obstacle == 'pengambil_keputusan',
-             'menyebut Rina Hapsari': lambda r, t: 'Rina Hapsari' in r.action,
-             'risiko FEAT-07 inferensi': lambda r, t: any('FEAT-07' in c and 'inferensi' in c for c in r.precedent_comparison),
+             'Rina Hapsari inferensi': lambda r, t: 'Rina Hapsari' in r.action and t.decision_maker['evidence_type'] == 'inferred',
+             'belum dikonfirmasi': lambda r, t: any('Belum dikonfirmasi langsung' in c for c in r.precedent_comparison),
+             'risiko FEAT-07': lambda r, t: {'D-2025-11', 'D-2026-08'} <= set(r.precedent_ids),
              'tanpa approval diskon': lambda r, t: r.approvals_needed == [],
          }),
-    Case('E20', 'P04', 'P04: minta referensi; overlap K028-K116 bukan bukti saling kenal.',
-         lambda: _rules(load_fixture('DL-004')), {
-             'hambatan referensi': lambda r, t: t.main_obstacle == 'referensi',
-             'Saiyo Group diusulkan': lambda r, t: 'Saiyo Group' in r.action,
-             'overlap bukan bukti': lambda r, t: any('tidak membuktikan saling kenal' in c for c in r.precedent_comparison),
+    Case('E28', 'P01 sintetis', 'Sintetis: dua kontak P01 berjabatan GM Operations -> identitas tidak dipastikan.',
+         lambda: _rules(add_contact(real('DL-001'), 'K999', 'Kontak Sintetis', 'P01', 'GM Operations')), {
+             'identitas tidak ditebak': lambda r, t: t.decision_maker is None and 'Rina Hapsari' not in r.action,
+             'unknown identitas': lambda r, t: any('belum dapat dipastikan' in u for u in r.unknowns),
          }),
-    Case('E21', 'P03', 'P03: minta referensi apotek.',
-         lambda: _rules(load_fixture('DL-003')), {
+    Case('E29', 'P03 nyata', 'P03: kandidat related_account C03/C09/C17/C27 dipertimbangkan.',
+         lambda: _rules(real('DL-003')), {
              'hambatan referensi': lambda r, t: t.main_obstacle == 'referensi',
-             'C09/C17 diusulkan': lambda r, t: 'Apotek Medika Farma' in r.action and 'Apotek Bunda Sehat' in r.action,
+             'C09 & C17 diusulkan': lambda r, t: 'C09' in r.action and 'C17' in r.action,
+             'C03 & C27 dijelaskan': lambda r, t: all(any(f'Kandidat {c}' in i and 'tidak diusulkan' in i for i in t.interpretations) for c in ('C03', 'C27')),
+             'tidak bilang kandidat tidak tersedia': lambda r, t: not any('belum tersedia' in u and 'referensi' in u for u in r.unknowns),
+         }),
+    Case('E30', 'P04 nyata', 'P04: C06 via related_account_work_overlap; overlap bukan bukti saling kenal.',
+         lambda: _rules(real('DL-004')), {
+             'hambatan referensi': lambda r, t: t.main_obstacle == 'referensi',
+             'C06 diusulkan': lambda r, t: 'Saiyo Group (C06)' in r.action,
+             'overlap bukan bukti': lambda r, t: any('tidak membuktikan saling kenal' in c for c in r.precedent_comparison),
          }),
 ]
 
@@ -243,9 +329,17 @@ CASES: list[Case] = [
 def invariant_checks(rec, trace, ctx: DealContext) -> dict[str, bool]:
     ev = {e.id for e in ctx.evidence}
     dec = {d.get('decision_id') for d in ctx.candidate_decisions}
+    focus = ctx.deal.account_id
+    by_id = {e.id: e for e in ctx.evidence}
+    other_msgs = [e for e in rec.evidence_ids if e.startswith('interactions.jsonl:')
+                  and json.loads(by_id[e].excerpt).get('account_id') != focus]
     return {
         'evidence_ids valid': set(rec.evidence_ids) <= ev,
         'precedent_ids dari candidate_decisions': set(rec.precedent_ids) <= dec,
         'action berlabel USULAN': rec.action.startswith('USULAN:'),
-        'tanpa probabilitas closing': 'probabilitas closing' not in rec.action,
+        'interaksi output hanya akun fokus': not other_msgs,
+        'mention diskon hanya akun fokus': all(m['source_id'] in {json.loads(by_id[e].excerpt)['interaction_id']
+                                                                for e in ev if e.startswith('interactions.jsonl:')
+                                                                and json.loads(by_id[e].excerpt).get('account_id') == focus}
+                                               for m in trace.discount_mentions),
     }

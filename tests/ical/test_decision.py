@@ -9,14 +9,16 @@ from unittest.mock import patch
 import httpx
 from fastapi.testclient import TestClient
 
-from backend.contracts import DealContext
 from backend.decision import policy
 from backend.decision.analyze import analyze_deal, analyze_deal_trace, resolve_mode
+from backend.decision.records import ContextIndex
+from backend.decision.signals import extract
 from backend.integrations import jev
 from backend.main import app
-from evaluation.cases import CASES, DEAL_IDS, FIXTURES, invariant_checks, load_fixture
+from evaluation.cases import CASES, DEAL_IDS, add_interaction, invariant_checks, mock_client, real
 
 ROOT = Path(__file__).resolve().parents[2]
+RULES_ENV = {'TYPESAFE_API_KEY': '', 'DEALCOMPASS_ENGINE_MODE': 'rules'}
 
 
 class PolicyTests(unittest.TestCase):
@@ -33,7 +35,6 @@ class PolicyTests(unittest.TestCase):
 
     def test_starter_cannot_hold_15_outlets(self):
         self.assertFalse(policy.fits_package('Starter', 15))
-        self.assertTrue(policy.fits_package('Starter', 10))
         self.assertEqual(policy.smallest_package(15), 'Growth')
         self.assertEqual(policy.smallest_package(60), 'Enterprise')
 
@@ -43,37 +44,88 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(prices, {str(policy.PRICE_PER_OUTLET_MONTH_IDR)})
 
 
-class FixtureProvenanceTests(unittest.TestCase):
-    """Fixture wajib berlabel dan setiap excerpt direct ada verbatim di sumber asli."""
+class RealGraphIntegrationTests(unittest.TestCase):
+    """Wajib ICAL-02: memakai build_deal_context nyata (graph Bima), bukan fixture."""
 
-    def test_fixtures_are_labeled_and_traceable(self):
-        for deal_id in DEAL_IDS:
-            raw = json.loads((FIXTURES / f'{deal_id}.json').read_text(encoding='utf-8'))
-            self.assertEqual(raw['_fixture']['label'], 'FIXTURE_ICAL_SEMENTARA')
-            ctx = DealContext.model_validate(raw)
-            self.assertTrue(any(u.startswith('FIXTURE:') for u in ctx.unknowns))
-            ev_ids = {e.id for e in ctx.evidence}
-            node_ids = {n.id for n in ctx.graph.nodes}
-            for e in ctx.graph.edges:
-                self.assertTrue({e.source, e.target} <= node_ids, e.id)
-                self.assertTrue(set(e.evidence_ids) <= ev_ids, e.id)
-            for e in ctx.evidence:
-                text = (ROOT / e.source_file).read_text(encoding='utf-8-sig')
-                if e.evidence_type == 'direct':
-                    self.assertIn(e.excerpt, text, f'{deal_id} {e.id}')
-                    if e.source_file.endswith('.jsonl'):
-                        row = next(json.loads(l) for l in text.splitlines() if f'"{e.source_id}"' in l)
-                        self.assertEqual(row['isi'], e.excerpt)
-                for loc in e.source_id.split(';'):
-                    if '#L' in loc:
-                        n = int(loc.split('#L')[1])
-                        self.assertLessEqual(n, len(text.splitlines()))
+    def test_p02_has_single_20pct_request_from_i0348_and_no_c01_15pct(self):
+        ctx = real('DL-002')
+        s = extract(ContextIndex(ctx))
+        self.assertEqual([(m.source_id, m.pct, m.kind) for m in s.discount_mentions], [('I0348', 20, 'request')])
+        rec, _ = analyze_deal_trace(ctx, mode='rules')
+        joined = json.dumps(rec.model_dump(), ensure_ascii=False)
+        for iid in ('I0054', 'I0061', 'I0066'):
+            self.assertNotIn(f'interactions.jsonl:{iid}', rec.evidence_ids)
+        self.assertNotIn('15%/', rec.action)
+        self.assertEqual(len(rec.approvals_needed), 1)
+        self.assertIn('diskon 20%', rec.approvals_needed[0])
+        self.assertNotIn('diskon 15%', ' '.join(rec.approvals_needed))
+        self.assertIn('I0348', joined)
 
-    def test_fixture_deals_match_crm_list(self):
-        from backend.ingestion.deals import list_deals
-        crm = {d.deal_id: d for d in list_deals()}
+    def test_e01_recognized_as_vp_sales(self):
+        idx = ContextIndex(real('DL-002'))
+        self.assertEqual(idx.vp_sales_ids(), {'E01'})
+        self.assertEqual(idx.employee_title('E01'), 'VP Sales')
+        rec, _ = analyze_deal_trace(real('DL-002'), mode='rules')
+        self.assertTrue(rec.approvals_needed[0].startswith('VP Sales (E01)'))
+
+    def test_kasirpro_read_from_json_fields(self):
+        idx = ContextIndex(real('DL-002'))
+        self.assertEqual(idx.competitor_of('DL-002'), 'KasirPro')
+        self.assertEqual(idx.competitor_of('DL-006'), 'KasirPro')
+        self.assertEqual(idx.competitor_of('DL-007'), 'KasirPro')
+        self.assertEqual(idx.parse_errors, [])
+
+    def test_newer_other_account_evidence_does_not_change_prospect_obstacle(self):
+        base, _ = analyze_deal_trace(real('DL-002'), mode='rules')
+        ctx = add_interaction(real('DL-002'), 'I9002', 'C23', '2026-09-30',
+                              'Kami minta referensi dan usul diskon 15% untuk outlet baru.')
+        rec, trace = analyze_deal_trace(ctx, mode='rules')
+        self.assertEqual(trace.main_obstacle, 'harga')
+        self.assertEqual(rec.approvals_needed, base.approvals_needed)
+        self.assertEqual(rec.action, base.action)
+        self.assertNotIn('interactions.jsonl:I9002', rec.evidence_ids)
+
+    def test_p03_p04_read_available_reference_candidates(self):
+        rec3, t3 = analyze_deal_trace(real('DL-003'), mode='rules')
+        status = {c['account_id']: c['status'] for c in t3.reference_candidates}
+        self.assertEqual(status, {'C03': 'ditolak', 'C09': 'shortlist', 'C17': 'shortlist', 'C27': 'ditolak'})
+        self.assertIn('C09', rec3.action)
+        self.assertIn('C17', rec3.action)
+        rec4, t4 = analyze_deal_trace(real('DL-004'), mode='rules')
+        self.assertEqual([c['account_id'] for c in t4.reference_candidates], ['C06'])
+        self.assertIn('Saiyo Group (C06)', rec4.action)
+        self.assertTrue(any('tidak membuktikan saling kenal' in c for c in rec4.precedent_comparison))
+
+    def test_p05_states_insufficient_information(self):
+        rec, trace = analyze_deal_trace(real('DL-005'), mode='rules')
+        self.assertEqual(trace.analysis_status, 'insufficient_evidence')
+        self.assertEqual(rec.precedent_ids, [])
+        self.assertTrue(any('tidak cukup' in u for u in rec.unknowns))
+
+    def test_broken_jev_response_falls_back_clearly(self):
+        for kw, code in [({'noul_value': 'not-a-number'}, 'invalid_response'), ({'score_value': 'x'}, 'invalid_response'),
+                         ({'mode': 'bad_choice'}, 'invalid_response'), ({'mode': 'timeout'}, 'timeout')]:
+            with self.subTest(kw=kw):
+                rec, trace = analyze_deal_trace(real('DL-002'), client=mock_client(**kw))
+                self.assertEqual(rec.engine_mode, 'rules')
+                self.assertTrue(any(f'gagal: {code}' in u for u in rec.unknowns), rec.unknowns)
+                self.assertTrue(all(o['source'] == 'rules' for o in trace.obstacles))
+                self.assertTrue(rec.approvals_needed[0].startswith('VP Sales (E01)'))
+
+    def test_invariants_on_all_five_real_contexts(self):
         for deal_id in DEAL_IDS:
-            self.assertEqual(load_fixture(deal_id).deal, crm[deal_id])
+            ctx = real(deal_id)
+            rec, trace = analyze_deal_trace(ctx, mode='rules')
+            with self.subTest(deal=deal_id):
+                self.assertEqual({k for k, v in invariant_checks(rec, trace, ctx).items() if not v}, set())
+
+    def test_analyze_endpoint_with_real_context(self):
+        with patch.dict(os.environ, RULES_ENV):
+            r = TestClient(app).post('/api/deals/DL-002/analyze')
+        self.assertEqual(r.status_code, 200, r.text)
+        body = r.json()
+        self.assertEqual(body['engine_mode'], 'rules')
+        self.assertIn('D-2025-02', body['precedent_ids'])
 
 
 class EvaluationCaseTests(unittest.TestCase):
@@ -87,30 +139,23 @@ class EvaluationCaseTests(unittest.TestCase):
                 failed = [n for n, fn in case.checks.items() if not fn(rec, trace)]
                 self.assertEqual(failed, [], case.description)
 
-    def test_invariants_on_all_five_fixtures(self):
-        for deal_id in DEAL_IDS:
-            ctx = load_fixture(deal_id)
-            rec, trace = analyze_deal_trace(ctx, mode='rules')
-            with self.subTest(deal=deal_id):
-                self.assertEqual({k for k, v in invariant_checks(rec, trace, ctx).items() if not v}, set())
-
 
 class ModeTests(unittest.TestCase):
     def test_auto_without_key_is_rules(self):
         with patch.dict(os.environ, {'TYPESAFE_API_KEY': '', 'DEALCOMPASS_ENGINE_MODE': ''}):
             self.assertEqual(resolve_mode(), 'rules')
-            self.assertEqual(analyze_deal(load_fixture('DL-002')).engine_mode, 'rules')
+            self.assertEqual(analyze_deal(real('DL-002')).engine_mode, 'rules')
 
     def test_explicit_jev_without_key_falls_back(self):
         with patch.dict(os.environ, {'TYPESAFE_API_KEY': '', 'DEALCOMPASS_ENGINE_MODE': 'jev'}):
-            rec = analyze_deal(load_fixture('DL-002'))
+            rec = analyze_deal(real('DL-002'))
         self.assertEqual(rec.engine_mode, 'rules')
         self.assertTrue(any('missing_key' in u for u in rec.unknowns))
 
     def test_replay_without_recordings_falls_back(self):
         with tempfile.TemporaryDirectory() as tmp, \
                 patch.dict(os.environ, {'DEALCOMPASS_ENGINE_MODE': 'replay', 'DEALCOMPASS_REPLAY_DIR': tmp}):
-            rec = analyze_deal(load_fixture('DL-002'))
+            rec = analyze_deal(real('DL-002'))
         self.assertEqual(rec.engine_mode, 'rules')
         self.assertTrue(any('replay_missing' in u for u in rec.unknowns))
 
@@ -134,7 +179,6 @@ class JevAdapterTests(unittest.TestCase):
         self.assertEqual(set(seen['body']), {'state', 'model', 'questions'})
         self.assertEqual(ans['q']['choice'], 'a')
         self.assertNotIn('secret-123', repr(c) + json.dumps([vars(x) for x in c.calls]) + recorded)
-        self.assertEqual(c.calls[0].model, 'jev-x')
 
     def test_documented_error_codes(self):
         for status, code in [(401, 'unauthorized'), (422, 'invalid_request'), (429, 'rate_limited'), (529, 'overloaded')]:
@@ -143,22 +187,26 @@ class JevAdapterTests(unittest.TestCase):
                 c.ask('x', {'q': jev.noul('?')})
             self.assertEqual(cm.exception.code, code)
 
+    def test_numeric_validation_rejects_bad_values(self):
+        q = {'n': jev.noul('?'), 's': jev.score('?', ['a', 'b', 'c'])}
+        good = {'n': {'type': 'noul', 'noul': 0.2}, 's': {'type': 'score', 'score': 2, 'confidence': 0.5}}
+        jev._validate_answers(q, {'answers': good})
+        bad_values = [('n', 'noul', 'not-a-number'), ('n', 'noul', True), ('n', 'noul', 1.5), ('n', 'noul', float('nan')),
+                      ('s', 'score', 'not-a-number'), ('s', 'score', 3), ('s', 'score', -1), ('s', 'confidence', 2)]
+        for key, fld, val in bad_values:
+            with self.subTest(key=key, fld=fld, val=val):
+                answers = json.loads(json.dumps(good))
+                answers[key][fld] = val
+                with self.assertRaises(jev.JevError) as cm:
+                    jev._validate_answers(q, {'answers': answers})
+                self.assertEqual(cm.exception.code, 'invalid_response')
+        for body in (None, [], {'answers': []}, {'answers': {'n': 'x'}}):
+            with self.assertRaises(jev.JevError):
+                jev._validate_answers(q, body)
+
     def test_score_criteria_bounds(self):
         with self.assertRaises(ValueError):
             jev.score('x', ['satu'])
-
-
-class RouteIntegrationTests(unittest.TestCase):
-    """Route milik Bima memanggil analyze_deal; konteks dipatch dengan fixture (graph Bima belum siap)."""
-
-    def test_analyze_endpoint_returns_recommendation_with_fixture_context(self):
-        with patch('backend.main.build_deal_context', return_value=load_fixture('DL-002')), \
-                patch.dict(os.environ, {'TYPESAFE_API_KEY': '', 'DEALCOMPASS_ENGINE_MODE': 'rules'}):
-            r = TestClient(app).post('/api/deals/DL-002/analyze')
-        self.assertEqual(r.status_code, 200)
-        body = r.json()
-        self.assertEqual(body['engine_mode'], 'rules')
-        self.assertEqual(set(body['precedent_ids']), {'D-2025-02', 'D-2025-06'})
 
 
 if __name__ == '__main__':

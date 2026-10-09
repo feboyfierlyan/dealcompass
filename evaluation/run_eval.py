@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from backend.decision.analyze import analyze_deal_trace
-from evaluation.cases import CASES, DEAL_IDS, invariant_checks, load_fixture
+from evaluation.cases import CASES, DEAL_IDS, invariant_checks, real
 
 RESULTS = Path(__file__).resolve().parent / 'results'
 WIB = timezone(timedelta(hours=7))
@@ -40,7 +40,7 @@ def run() -> dict:
         })
     deals = []
     for deal_id in DEAL_IDS:
-        ctx = load_fixture(deal_id)
+        ctx = real(deal_id)
         rec, trace = analyze_deal_trace(ctx, mode='rules')
         deals.append({'deal_id': deal_id, 'analysis_status': trace.analysis_status,
                       'main_obstacle': trace.main_obstacle, 'invariants': invariant_checks(rec, trace, ctx),
@@ -48,7 +48,7 @@ def run() -> dict:
     core = [r for r in rows if not r['known_limitation']]
     return {
         'generated_wib': datetime.now(WIB).strftime('%Y-%m-%d %H:%M WIB'),
-        'context_source': 'FIXTURE_ICAL_SEMENTARA (record asli; bukan graph Bima)',
+        'context_source': 'build_deal_context nyata (graph Bima, dataset asli); mutasi kasus sintetis berlabel',
         'jev': 'Tidak ada panggilan live. Kasus Jev memakai transport mock.',
         'summary': {
             'cases': len(rows), 'passed': sum(r['passed'] for r in rows),
@@ -68,14 +68,14 @@ def to_markdown(res: dict) -> str:
            f"Kasus: {s['passed']}/{s['cases']} lulus; inti {s['core_passed']}/{s['core_cases']}; "
            f"batas diketahui: {', '.join(s['known_limitations']) or '-'} "
            f"(lulus: {', '.join(s['known_limitations_passed']) or 'tidak ada'}). "
-           f"Invarian lima fixture: {'semua benar' if s['invariants_all_true'] else 'ADA YANG GAGAL'}.", '',
+           f"Invarian lima deal nyata: {'semua benar' if s['invariants_all_true'] else 'ADA YANG GAGAL'}.", '',
            '| ID | Kategori | Lulus | Mode | Hambatan | Pemeriksaan gagal |', '|---|---|---|---|---|---|']
     for r in res['cases']:
         failed = ', '.join(k for k, v in r['checks'].items() if not v) or (r['error'] or '-')
         flag = ' (batas diketahui)' if r['known_limitation'] else ''
         out.append(f"| {r['id']} | {r['category']}{flag} | {'ya' if r['passed'] else 'TIDAK'} | "
                    f"{r['engine_mode']} | {r['main_obstacle']} | {failed} |")
-    out += ['', '## Lima deal (mode rules, fixture)', '', '| Deal | Status | Hambatan | Preseden | Approval |', '|---|---|---|---|---|']
+    out += ['', '## Lima deal (mode rules, graph nyata)', '', '| Deal | Status | Hambatan | Preseden | Approval |', '|---|---|---|---|---|']
     for d in res['deals']:
         rec = d['recommendation']
         out.append(f"| {d['deal_id']} | {d['analysis_status']} | {d['main_obstacle']} | "

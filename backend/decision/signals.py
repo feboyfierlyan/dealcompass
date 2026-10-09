@@ -1,11 +1,12 @@
-"""Ekstraksi sinyal deterministik dari DealContext (mode rules).
+"""Ekstraksi sinyal deterministik (mode rules) untuk akun/deal FOKUS saja.
 
-Sinyal adalah interpretasi atas bukti; setiap sinyal menyimpan evidence_id asal.
+Bukti akun lain hanya dipakai untuk preseden/pembandingan (precedents.py),
+tidak pernah menjadi hambatan, permintaan, atau approval deal fokus.
 """
 import re
 from dataclasses import dataclass, field
 
-from backend.contracts import DealContext, EvidenceRecord
+from backend.decision.records import ContextIndex
 
 # Kategori hambatan satu pesan; dipakai juga sebagai criteria Choice Jev.
 OBSTACLES: dict[str, str] = {
@@ -19,52 +20,54 @@ OBSTACLES: dict[str, str] = {
 
 _DISCOUNT_RE = re.compile(r'(?:diskon|potongan(?:\s+harga)?)\s*(\d{1,3})\s*%', re.I)
 _GAP_RE = re.compile(r'(\d{1,3})\s*%\s*lebih\s+murah', re.I)
+_REJECT_RE = re.compile(r'\b(?:ditolak|tidak\s+disetujui|menolak)\b', re.I)
+_APPROVE_RE = re.compile(r'\b(?:disetujui|menyetujui|sudah\s+setuju|approved?)\b', re.I)
 _PRICE_WORDS = ('terlalu tinggi', 'terlalu mahal', 'kemahalan', 'lebih murah', 'anggaran', 'budget', 'potongan harga')
 _DM_WORDS = ('keputusan pengadaan', 'ada di beliau', 'baru bergabung', 'hanya menilai sisi teknis', 'pengambil keputusan')
 _REF_WORDS = ('referensi', 'rekomendasi dari pengguna', 'testimoni')
 _NEED_WORDS = ('butuh', 'membutuhkan', 'perlu ')
 _OK_WORDS = ('berjalan baik', 'positif', 'suka produk', 'terima kasih')
 
-INTERACTION_FILE = 'interactions.jsonl'
-DECISION_FILE = 'decision_log.csv'
-EMPLOYEE_FILE = 'employees.csv'
-
 
 @dataclass
 class MessageObstacle:
     evidence_id: str
+    source_id: str
+    date: str
     category: str
     source: str  # rules | jev | replay
-    note: str = ''
 
 
 @dataclass
-class DiscountRequest:
+class DiscountMention:
     evidence_id: str
+    source_id: str
     pct: int
-    date: str | None
+    date: str
+    kind: str  # request | approval_claim | rejection_claim (klaim di pesan, bukan keputusan tercatat)
 
 
 @dataclass
-class DiscountApproval:
+class DiscountDecision:
     decision_id: str
     pct: int | None
     decided_by: str
-    keputusan: str
-    approver_is_vp: bool | None  # None = jabatan pemutus tidak dapat diverifikasi dari konteks
+    keputusan: str  # Disetujui | Ditolak | Menunggu
+    approver_title: str | None  # None = jabatan pemutus tidak ada di konteks
 
 
 @dataclass
 class Signals:
     obstacles: list[MessageObstacle] = field(default_factory=list)
-    discount_requests: list[DiscountRequest] = field(default_factory=list)
+    discount_mentions: list[DiscountMention] = field(default_factory=list)
     competitor_gaps: list[tuple[str, int]] = field(default_factory=list)
-    competitors: list[str] = field(default_factory=list)
-    discount_decisions: list[DiscountApproval] = field(default_factory=list)
+    competitor: str = ''
+    discount_decisions: list[DiscountDecision] = field(default_factory=list)
+    vp_sales_ids: set[str] = field(default_factory=set)
 
-
-def is_interaction(ev: EvidenceRecord) -> bool:
-    return ev.source_file.endswith(INTERACTION_FILE)
+    @property
+    def discount_requests(self) -> list[DiscountMention]:
+        return [m for m in self.discount_mentions if m.kind == 'request']
 
 
 def classify_message(text: str) -> str:
@@ -82,34 +85,35 @@ def classify_message(text: str) -> str:
     return 'bukti_kurang'
 
 
+def mention_kind(text: str) -> str:
+    if _REJECT_RE.search(text):
+        return 'rejection_claim'
+    if _APPROVE_RE.search(text):
+        return 'approval_claim'
+    return 'request'
+
+
 def parse_pct(value: str) -> int | None:
     m = re.fullmatch(r'\s*(\d{1,3})\s*%\s*', value or '')
     return int(m.group(1)) if m else None
 
 
-def vp_sales_ids(context: DealContext) -> set[str]:
-    """ID karyawan berjabatan VP Sales menurut bukti employees.csv di konteks."""
-    return {ev.source_id for ev in context.evidence
-            if ev.source_file.endswith(EMPLOYEE_FILE) and ',VP Sales,' in ev.excerpt}
-
-
-def extract(context: DealContext) -> Signals:
-    s = Signals()
-    s.competitors = sorted({n.label for n in context.graph.nodes if n.type.lower() in ('competitor', 'kompetitor')})
-    for ev in context.evidence:
-        if not is_interaction(ev):
-            continue
-        s.obstacles.append(MessageObstacle(ev.id, classify_message(ev.excerpt), 'rules'))
-        for m in _DISCOUNT_RE.finditer(ev.excerpt):
-            s.discount_requests.append(DiscountRequest(ev.id, int(m.group(1)), ev.date))
-        for m in _GAP_RE.finditer(ev.excerpt):
-            s.competitor_gaps.append((ev.id, int(m.group(1))))
-    vps = vp_sales_ids(context)
-    for d in context.candidate_decisions:
-        if d.get('deal_id') == context.deal.deal_id and d.get('tipe') == 'diskon':
+def extract(idx: ContextIndex) -> Signals:
+    s = Signals(competitor=idx.competitor_of(idx.deal.deal_id), vp_sales_ids=idx.vp_sales_ids())
+    seen: set[tuple[str, int]] = set()
+    for r in idx.focus_interactions():
+        text = r.text
+        s.obstacles.append(MessageObstacle(r.evidence_id, r.source_id, r.get('tanggal'), classify_message(text), 'rules'))
+        for m in _DISCOUNT_RE.finditer(text):
+            key = (r.source_id, int(m.group(1)))
+            if key not in seen:  # satu pesan + persentase = satu mention
+                seen.add(key)
+                s.discount_mentions.append(DiscountMention(r.evidence_id, r.source_id, key[1], r.get('tanggal'), mention_kind(text)))
+        for m in _GAP_RE.finditer(text):
+            s.competitor_gaps.append((r.evidence_id, int(m.group(1))))
+    for d in idx.focus_decisions():
+        if d.get('tipe') == 'diskon':
             by = d.get('diputuskan_oleh', '')
-            s.discount_decisions.append(DiscountApproval(
-                decision_id=d.get('decision_id', ''), pct=parse_pct(d.get('nilai', '')),
-                decided_by=by, keputusan=d.get('keputusan', ''),
-                approver_is_vp=(by in vps) if vps else None))
+            s.discount_decisions.append(DiscountDecision(
+                d.get('decision_id', ''), parse_pct(d.get('nilai', '')), by, d.get('keputusan', ''), idx.employee_title(by)))
     return s

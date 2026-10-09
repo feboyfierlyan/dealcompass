@@ -13,6 +13,7 @@ Integrasi live BELUM diuji: tidak ada TYPESAFE_API_KEY saat implementasi.
 """
 import hashlib
 import json
+import math
 import os
 import time
 from dataclasses import dataclass, field
@@ -62,16 +63,43 @@ def request_key(state, questions: dict) -> str:
     return hashlib.sha256(raw.encode('utf-8')).hexdigest()[:16]
 
 
-def _validate_answers(questions: dict, data: dict) -> dict:
+def _finite(value, lo=None, hi=None) -> bool:
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        return False
+    return (lo is None or value >= lo) and (hi is None or value <= hi)
+
+
+def _bad(key: str, why: str):
+    raise JevError('invalid_response', f'{key}: {why}')
+
+
+def _validate_answers(questions: dict, data) -> dict:
+    """Validasi ketat bentuk respons (docs api.md). Gagal -> JevError('invalid_response')."""
+    if not isinstance(data, dict):
+        _bad('body', 'bukan object')
     answers = data.get('answers')
     if not isinstance(answers, dict):
-        raise JevError('invalid_response', 'answers tidak ada')
+        _bad('answers', 'tidak ada / bukan object')
     for key, q in questions.items():
         a = answers.get(key)
-        if not isinstance(a, dict) or a.get('type') != q['type'] or q['type'] not in a:
-            raise JevError('invalid_response', f'jawaban {key} tidak sesuai tipe {q["type"]}')
-        if q['type'] == 'choice' and a['choice'] not in q['criteria']:
-            raise JevError('invalid_response', f'choice {key} di luar criteria')
+        if not isinstance(a, dict) or a.get('type') != q['type']:
+            _bad(key, f'tipe bukan {q["type"]}')
+        if q['type'] == 'noul':
+            if not _finite(a.get('noul'), 0, 1):
+                _bad(key, 'noul harus angka finite 0..1')
+        elif q['type'] == 'choice':
+            if not isinstance(a.get('choice'), str) or a['choice'] not in q['criteria']:
+                _bad(key, 'choice di luar criteria')
+        elif q['type'] == 'score':
+            if not _finite(a.get('score'), 0, len(q['criteria']) - 1):
+                _bad(key, f'score harus angka finite 0..{len(q["criteria"]) - 1}')
+            if 'legend' in a and not isinstance(a['legend'], dict):
+                _bad(key, 'legend bukan object')
+        if 'confidence' in a and not _finite(a['confidence'], 0, 1):
+            _bad(key, 'confidence harus angka finite 0..1')
+        probs = a.get('probabilities')
+        if probs is not None and (not isinstance(probs, dict) or not all(_finite(v, 0, 1) for v in probs.values())):
+            _bad(key, 'probabilities tidak valid')
     return answers
 
 
@@ -94,12 +122,13 @@ class JevClient:
     def __repr__(self):
         return f'JevClient(model={self.model!r}, base_url={self.base_url!r})'
 
-    def ask(self, state, questions: dict) -> dict:
+    def ask(self, state, questions: dict, timeout_s: float | None = None) -> dict:
         call = JevCall(list(questions), self.mode)
         self.calls.append(call)
         start = time.perf_counter()
+        timeout = self.timeout_s if timeout_s is None else min(self.timeout_s, timeout_s)
         try:
-            with httpx.Client(transport=self._transport, timeout=self.timeout_s) as client:
+            with httpx.Client(transport=self._transport, timeout=timeout) as client:
                 r = client.post(f'{self.base_url}/systemone',
                                 headers={'Authorization': f'Bearer {self._key}', 'Content-Type': 'application/json'},
                                 json={'state': state, 'model': self.model, 'questions': questions})
@@ -147,18 +176,26 @@ class ReplayClient:
         self.model = None
         self.calls: list[JevCall] = []
 
-    def ask(self, state, questions: dict) -> dict:
+    def ask(self, state, questions: dict, timeout_s: float | None = None) -> dict:
         call = JevCall(list(questions), self.mode)
         self.calls.append(call)
         path = self.dir / f'{request_key(state, questions)}.json'
         if not path.is_file():
             call.error = 'replay_missing'
             raise JevError('replay_missing', path.name)
-        data = json.loads(path.read_text(encoding='utf-8'))['response']
+        try:
+            data = json.loads(path.read_text(encoding='utf-8'))['response']
+            answers = _validate_answers(questions, data)
+        except (ValueError, KeyError, TypeError) as e:
+            call.error = 'invalid_replay'
+            raise JevError('invalid_replay', path.name) from e
+        except JevError as e:
+            call.error = 'invalid_replay'
+            raise JevError('invalid_replay', str(e)) from e
         call.model = self.model = data.get('model')
         call.usage = data.get('usage') or {}
         call.latency_ms = 0
-        return _validate_answers(questions, data)
+        return answers
 
 
 def client_from_env(mode: str):

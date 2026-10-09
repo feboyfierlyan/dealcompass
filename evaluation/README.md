@@ -7,14 +7,15 @@ Bandingkan CRM-only, graph + rules, graph + Jev saat implementasi siap.
 
 ## Isi
 
-- `fixtures/DL-00{1..5}.json`: DealContext sementara berlabel
-  `FIXTURE_ICAL_SEMENTARA`, disusun dari record asli. Excerpt `direct`
-  diverifikasi verbatim terhadap dataset oleh `tests/ical/test_decision.py`.
-  Bukan output graph Bima; wajib diganti/diuji ulang dengan `build_deal_context`.
-- `cases.py`: 21 kasus (label manusia = pemeriksaan per kasus). Kasus mutasi dan
-  parafrase adalah variasi sintetis, bukan record baru. Kasus Jev memakai mock.
-- `run_eval.py`: menjalankan kasus + invarian lima fixture dan menulis
+- `cases.py`: 30 kasus (label manusia = pemeriksaan per kasus) di atas
+  `build_deal_context` nyata (graph Bima, dataset asli). Kasus mutasi/parafrase
+  menambah/mengubah record SINTETIS pada salinan konteks dengan format produsen
+  (excerpt JSON). Kasus Jev memakai transport mock, bukan panggilan live.
+- `run_eval.py`: menjalankan kasus + invarian lima deal nyata dan menulis
   `results/latest.json` dan `results/latest.md`.
+
+Fixture tulisan tangan ICAL-01 dihapus pada ICAL-02 karena berbeda dari
+representasi produsen (review R2/R3).
 
 ```bash
 python -m evaluation.run_eval
@@ -22,7 +23,7 @@ python -m evaluation.run_eval
 
 ## Status
 
-Hasil terakhir ada di `results/latest.md` (graph + rules pada fixture).
-Belum ada pembanding CRM-only, belum ada holdout terpisah, dan belum ada
-panggilan Jev live; hasil ini tidak boleh dilaporkan sebagai akurasi Jev.
-E12 adalah batas aturan yang diketahui (parafrase tanpa kata kunci harga).
+Hasil terakhir: `results/latest.md` (graph nyata + rules). Belum ada pembanding
+CRM-only, belum ada holdout terpisah, dan belum ada panggilan Jev live; hasil
+ini tidak boleh dilaporkan sebagai akurasi Jev. E15 adalah batas aturan yang
+diketahui (parafrase tanpa kata kunci harga).
