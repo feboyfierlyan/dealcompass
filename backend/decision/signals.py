@@ -50,7 +50,8 @@ class DiscountMention:
 @dataclass
 class DiscountDecision:
     decision_id: str
-    pct: int | None
+    pct: int | None  # None = nilai kosong/tidak terbaca -> unknown, tidak pernah approval
+    raw_value: str
     decided_by: str
     keputusan: str  # Disetujui | Ditolak | Menunggu
     approver_title: str | None  # None = jabatan pemutus tidak ada di konteks
@@ -63,6 +64,7 @@ class Signals:
     competitor_gaps: list[tuple[str, int]] = field(default_factory=list)
     competitor: str = ''
     discount_decisions: list[DiscountDecision] = field(default_factory=list)
+    out_of_scope_decisions: list[tuple[dict, str]] = field(default_factory=list)
     vp_sales_ids: set[str] = field(default_factory=set)
 
     @property
@@ -111,9 +113,12 @@ def extract(idx: ContextIndex) -> Signals:
                 s.discount_mentions.append(DiscountMention(r.evidence_id, r.source_id, key[1], r.get('tanggal'), mention_kind(text)))
         for m in _GAP_RE.finditer(text):
             s.competitor_gaps.append((r.evidence_id, int(m.group(1))))
-    for d in idx.focus_decisions():
+    scoped, other = idx.focus_decisions()
+    for d in scoped:
         if d.get('tipe') == 'diskon':
             by = d.get('diputuskan_oleh', '')
             s.discount_decisions.append(DiscountDecision(
-                d.get('decision_id', ''), parse_pct(d.get('nilai', '')), by, d.get('keputusan', ''), idx.employee_title(by)))
+                d.get('decision_id', ''), parse_pct(d.get('nilai', '')), d.get('nilai', ''), by,
+                d.get('keputusan', ''), idx.employee_title(by)))
+    s.out_of_scope_decisions = [(d, why) for d, why in other if d.get('tipe') == 'diskon']
     return s

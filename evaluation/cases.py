@@ -140,6 +140,16 @@ def _fallback(code):
     }
 
 
+def _approve(deal_id='DL-002', nilai='20%'):
+    return add_decision(real('DL-002'), decision_id='D-SIM-R6', tanggal='2026-09-30', tipe='diskon', account_id='P02',
+                        deal_id=deal_id, diminta_oleh='E07', diputuskan_oleh='E01', keputusan='Disetujui', nilai=nilai,
+                        alasan='SINTETIS REVIEW R6/R7')
+
+
+def _not_approved(r, t):
+    return not any('sudah disetujui' in i for i in t.interpretations)
+
+
 def _replay_roundtrip():
     with tempfile.TemporaryDirectory() as tmp:
         first, _ = analyze_deal_trace(real('DL-002'), client=JevClient('test-key', transport=mock_transport(), record_dir=tmp))
@@ -211,6 +221,36 @@ CASES: list[Case] = [
              'approval VP masih dibutuhkan': _needs_vp,
              'klaim dicatat bukan approval': lambda r, t: ('I9001', 20, 'approval_claim') in _mentions(t)
                                                           and any('klaim persetujuan' in u for u in r.unknowns),
+         }),
+    Case('E31', 'R6 cakupan approval', 'Sintetis: E01 menyetujui 20% untuk deal lain (DL-OLD) di akun P02 -> tidak berlaku untuk DL-002.',
+         lambda: _rules(_approve(deal_id='DL-OLD')), {
+             'approval VP masih dibutuhkan': _needs_vp,
+             'tidak diklaim disetujui': _not_approved,
+             'dinyatakan tidak berlaku otomatis': lambda r, t: any('D-SIM-R6' in i and 'tidak berlaku otomatis' in i for i in t.interpretations),
+         }),
+    Case('E32', 'R6 cakupan approval', 'Sintetis: E01 menyetujui 20% di level akun P02 tanpa deal_id -> cakupan tidak terbukti.',
+         lambda: _rules(_approve(deal_id='')), {
+             'approval VP masih dibutuhkan': _needs_vp,
+             'tidak diklaim disetujui': _not_approved,
+             'cakupan tidak terbukti': lambda r, t: any('tanpa deal_id' in f for f in t.facts),
+         }),
+    Case('E33', 'R7 persentase', 'Sintetis: E01 menyetujui DL-002 dengan nilai kosong -> unknown, bukan approval.',
+         lambda: _rules(_approve(nilai='')), {
+             'approval VP masih dibutuhkan': _needs_vp,
+             'tidak diklaim disetujui': _not_approved,
+             'unknown persentase': lambda r, t: any('D-SIM-R6' in u and 'tidak terbaca' in u for u in r.unknowns),
+         }),
+    Case('E34', 'R7 persentase', 'Sintetis: E01 menyetujui DL-002 dengan nilai malformed "dua puluh persen" -> unknown.',
+         lambda: _rules(_approve(nilai='dua puluh persen')), {
+             'approval VP masih dibutuhkan': _needs_vp,
+             'tidak diklaim disetujui': _not_approved,
+             'unknown persentase': lambda r, t: any('dua puluh persen' in u for u in r.unknowns),
+         }),
+    Case('E35', 'R7 persentase', 'Sintetis: E01 menyetujui 15% untuk DL-002 sedangkan permintaan 20% -> tidak mencakup.',
+         lambda: _rules(_approve(nilai='15%')), {
+             'approval VP masih dibutuhkan': _needs_vp,
+             'tidak diklaim disetujui': _not_approved,
+             'dinyatakan tidak mencakup': lambda r, t: any('tidak mencakup 20%' in i for i in t.interpretations),
          }),
     Case('E07', 'hitungan diskon', 'Sintetis: I0348 menjadi diskon 10% (batas): tidak butuh VP Sales.',
          lambda: _rules(set_isi(real('DL-002'), 'I0348', 'Pak Andi, saya usul diskon 10% untuk Teras Kafe. Mohon keputusan.')), {

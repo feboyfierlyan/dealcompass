@@ -15,7 +15,7 @@ from backend.decision.records import ContextIndex
 from backend.decision.signals import extract
 from backend.integrations import jev
 from backend.main import app
-from evaluation.cases import CASES, DEAL_IDS, add_interaction, invariant_checks, mock_client, real
+from evaluation.cases import CASES, DEAL_IDS, add_decision, add_interaction, invariant_checks, mock_client, real
 
 ROOT = Path(__file__).resolve().parents[2]
 RULES_ENV = {'TYPESAFE_API_KEY': '', 'DEALCOMPASS_ENGINE_MODE': 'rules'}
@@ -111,6 +111,33 @@ class RealGraphIntegrationTests(unittest.TestCase):
                 self.assertTrue(any(f'gagal: {code}' in u for u in rec.unknowns), rec.unknowns)
                 self.assertTrue(all(o['source'] == 'rules' for o in trace.obstacles))
                 self.assertTrue(rec.approvals_needed[0].startswith('VP Sales (E01)'))
+
+    def _approval(self, deal_id='DL-002', account_id='P02', nilai='20%'):
+        ctx = add_decision(real('DL-002'), decision_id='D-REG', tanggal='2026-09-30', tipe='diskon', account_id=account_id,
+                           deal_id=deal_id, diminta_oleh='E07', diputuskan_oleh='E01', keputusan='Disetujui', nilai=nilai)
+        return analyze_deal_trace(ctx, mode='rules')
+
+    def test_valid_vp_approval_for_focus_deal_is_recognized(self):
+        rec, trace = self._approval()
+        self.assertEqual(rec.approvals_needed, [])
+        self.assertTrue(any('DL-002 sudah disetujui VP Sales' in i and 'D-REG' in i for i in trace.interpretations))
+
+    def test_r6_approval_for_other_deal_or_account_level_does_not_apply(self):
+        for deal_id, account_id in [('DL-OLD', 'P02'), ('', 'P02'), ('DL-002', 'C23')]:
+            with self.subTest(deal_id=deal_id, account_id=account_id):
+                rec, trace = self._approval(deal_id=deal_id, account_id=account_id)
+                self.assertEqual(len(rec.approvals_needed), 1)
+                self.assertTrue(rec.approvals_needed[0].startswith('VP Sales (E01)'))
+                self.assertFalse(any('sudah disetujui' in i for i in trace.interpretations))
+
+    def test_r7_empty_or_malformed_percentage_is_unknown_not_approval(self):
+        for nilai in ('', 'dua puluh persen', '20', '15%'):
+            with self.subTest(nilai=nilai):
+                rec, trace = self._approval(nilai=nilai)
+                self.assertEqual(len(rec.approvals_needed), 1)
+                self.assertFalse(any('sudah disetujui' in i for i in trace.interpretations))
+                if nilai != '15%':
+                    self.assertTrue(any('D-REG' in u and 'tidak terbaca' in u for u in rec.unknowns))
 
     def test_invariants_on_all_five_real_contexts(self):
         for deal_id in DEAL_IDS:

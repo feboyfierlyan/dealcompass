@@ -71,9 +71,26 @@ class ContextIndex:
         out = [r for r in self.rows('interactions.jsonl') if r.get('account_id') == acc]
         return sorted(out, key=lambda r: (r.get('tanggal'), r.source_id))
 
-    def focus_decisions(self) -> list[dict]:
-        return [d for d in self.context.candidate_decisions
-                if d.get('deal_id') == self.deal.deal_id or d.get('account_id') == self.deal.account_id]
+    def focus_decisions(self) -> tuple[list[dict], list[tuple[dict, str]]]:
+        """(keputusan yang eksplisit untuk deal fokus, [(keputusan akun fokus di luar cakupan, alasan)]).
+
+        Hanya deal_id eksplisit = deal fokus (dan account_id kosong/sama) yang berlaku
+        pada deal fokus. Keputusan akun yang sama untuk deal lain atau tanpa deal_id
+        tidak berlaku otomatis; tetap boleh dipakai sebagai preseden.
+        """
+        deal_id, acc = self.deal.deal_id, self.deal.account_id
+        scoped, other = [], []
+        for d in self.context.candidate_decisions:
+            d_deal, d_acc = d.get('deal_id', ''), d.get('account_id', '')
+            if d_deal == deal_id and d_acc in ('', acc):
+                scoped.append(d)
+            elif d_deal == deal_id:
+                other.append((d, f'deal_id {deal_id} tetapi account_id {d_acc} bukan {acc}; data tidak konsisten'))
+            elif d_acc == acc and d_deal:
+                other.append((d, f'untuk deal lain ({d_deal}), bukan {deal_id}'))
+            elif d_acc == acc:
+                other.append((d, f'level akun tanpa deal_id; cakupan ke {deal_id} tidak terbukti'))
+        return scoped, other
 
     def deal_record(self, deal_id: str | None = None) -> Record | None:
         return self.find('crm_deals.csv', deal_id or self.deal.deal_id)

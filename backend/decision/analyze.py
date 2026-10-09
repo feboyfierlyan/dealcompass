@@ -292,8 +292,20 @@ def _price(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_acc
         emp = idx.find('employees.csv', d.decided_by)
         if emp:
             use(emp.evidence_id)
-        trace.facts.append(f'{d.decision_id}: keputusan diskon {d.pct}% untuk {deal.deal_id} = {d.keputusan} oleh '
-                           f'{d.decided_by} ({d.approver_title or "jabatan tidak ada di konteks"}).')
+        nilai = f'{d.pct}%' if d.pct is not None else f'nilai tidak terbaca ({d.raw_value!r})'
+        trace.facts.append(f'{d.decision_id} (deal_id {deal.deal_id} di decision_log): keputusan diskon {nilai} = '
+                           f'{d.keputusan} oleh {d.decided_by} ({d.approver_title or "jabatan tidak ada di konteks"}).')
+        if d.pct is None:
+            trace.unknowns.append(f'{d.decision_id}: persentase diskon kosong/tidak terbaca ({d.raw_value!r}); '
+                                  'tidak dianggap approval maupun penolakan untuk persentase mana pun.')
+    for d, why in s.out_of_scope_decisions:
+        rec = idx.find('decision_log.csv', d.get('decision_id', ''))
+        if rec:
+            use(rec.evidence_id)
+        trace.facts.append(f'{d.get("decision_id")}: keputusan diskon {d.get("nilai") or "-"} {d.get("keputusan")} '
+                           f'di akun {d.get("account_id")} {why}.')
+        trace.interpretations.append(f'{d.get("decision_id")} tidak berlaku otomatis untuk {deal.deal_id}; '
+                                     'hanya boleh menjadi preseden.')
     pending = []
     for pct in sorted({m.pct for m in s.discount_requests}):
         src = next(m for m in s.discount_requests if m.pct == pct)
@@ -304,19 +316,24 @@ def _price(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_acc
                 f'Hitungan: {outlets} outlet x {policy.rupiah(policy.PRICE_PER_OUTLET_MONTH_IDR)} x 12 = '
                 f'{policy.rupiah(policy.annual_value_idr(outlets))}; diskon {pct}% -> {policy.rupiah(net)} '
                 f'(berkurang {policy.rupiah(policy.annual_value_idr(outlets) - net)}).')
-        same = [d for d in s.discount_decisions if d.pct is None or d.pct >= pct]
-        approved = [d for d in same if d.keputusan == 'Disetujui' and d.approver_title == 'VP Sales']
-        rejected = [d for d in same if d.keputusan == 'Ditolak']
-        for d in same:
-            if d.keputusan == 'Disetujui' and d.approver_title is None:
+        known = [d for d in s.discount_decisions if d.pct is not None]  # R7: nilai kosong tidak pernah mencakup
+        approved = [d for d in known if d.keputusan == 'Disetujui' and d.approver_title == 'VP Sales' and d.pct >= pct]
+        rejected = [d for d in known if d.keputusan == 'Ditolak' and d.pct == pct]
+        for d in known:
+            if d.keputusan != 'Disetujui':
+                continue
+            if d.approver_title is None:
                 trace.unknowns.append(f'Jabatan pemutus {d.decision_id} ({d.decided_by}) tidak dapat diverifikasi dari konteks.')
-            elif d.keputusan == 'Disetujui' and d.approver_title != 'VP Sales':
+            elif d.approver_title != 'VP Sales':
                 trace.interpretations.append(f'{d.decision_id} diputuskan {d.decided_by} ({d.approver_title}), bukan VP Sales; '
                                              f'tidak sah untuk diskon >{policy.DISCOUNT_APPROVAL_THRESHOLD_PCT}%.')
+            elif d.pct < pct:
+                trace.interpretations.append(f'{d.decision_id} menyetujui {d.pct}%, lebih kecil dari permintaan {pct}%; '
+                                             f'tidak mencakup {pct}%.')
         if not policy.requires_vp_approval(pct):
             trace.interpretations.append(f'Diskon {pct}% tidak melebihi {policy.DISCOUNT_APPROVAL_THRESHOLD_PCT}%; aturan approval VP Sales tidak berlaku.')
         elif approved:
-            trace.interpretations.append(f'Diskon {pct}% sudah disetujui VP Sales dan tercatat ({approved[0].decision_id}).')
+            trace.interpretations.append(f'Diskon {pct}% untuk {deal.deal_id} sudah disetujui VP Sales dan tercatat ({approved[0].decision_id}).')
         elif rejected:
             trace.interpretations.append(f'Diskon {pct}% untuk {deal.deal_id} sudah ditolak ({rejected[0].decision_id}); jangan ditawarkan.')
         else:
@@ -325,7 +342,7 @@ def _price(idx: ContextIndex, s: Signals, trace, use, outlets, latest, trust_acc
             trace.approvals_needed.append(
                 f'{policy.DISCOUNT_APPROVER_ROLE} ({who}): putuskan dan catat di decision_log permintaan diskon {pct}% '
                 f'({src.source_id}, {src.date}); >{policy.DISCOUNT_APPROVAL_THRESHOLD_PCT}% wajib approval. '
-                f'Belum ada keputusan tercatat untuk {deal.deal_id}.')
+                f'Belum ada keputusan sah yang tercatat untuk {deal.deal_id}.')
     if vp:
         use(*(idx.find('employees.csv', e).evidence_id for e in sorted(vp)))
 

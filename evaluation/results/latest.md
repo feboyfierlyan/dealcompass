@@ -1,8 +1,8 @@
-# Hasil evaluasi ICAL-01 (2026-10-09 17:24 WIB)
+# Hasil evaluasi ICAL-01 (2026-10-09 17:47 WIB)
 
 Sumber konteks: build_deal_context nyata (graph Bima, dataset asli); mutasi kasus sintetis berlabel. Jev: Tidak ada panggilan live. Kasus Jev memakai transport mock.
 
-Kasus: 29/30 lulus; inti 29/29; batas diketahui: E15 (lulus: tidak ada). Invarian lima deal nyata: semua benar.
+Kasus: 34/35 lulus; inti 34/34; batas diketahui: E15 (lulus: tidak ada). Invarian lima deal nyata: semua benar.
 
 | ID | Kategori | Lulus | Mode | Hambatan | Pemeriksaan gagal |
 |---|---|---|---|---|---|
@@ -12,6 +12,11 @@ Kasus: 29/30 lulus; inti 29/29; batas diketahui: E15 (lulus: tidak ada). Invaria
 | E04 | request vs approval | ya | rules | harga | - |
 | E05 | request vs approval | ya | rules | harga | - |
 | E06 | request vs approval | ya | rules | harga | - |
+| E31 | R6 cakupan approval | ya | rules | harga | - |
+| E32 | R6 cakupan approval | ya | rules | harga | - |
+| E33 | R7 persentase | ya | rules | harga | - |
+| E34 | R7 persentase | ya | rules | harga | - |
+| E35 | R7 persentase | ya | rules | harga | - |
 | E07 | hitungan diskon | ya | rules | harga | - |
 | E08 | hitungan diskon | ya | rules | harga | - |
 | E09 | hitungan diskon | ya | rules | harga | - |
