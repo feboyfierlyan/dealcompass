@@ -13,6 +13,7 @@ import { Methodology } from './components/Phase3Panels';
 import { compactRupiah, effectiveSelection, priorityKindLabel } from './lib/present';
 import { useMedia } from './lib/useMedia';
 import './style.css';
+import './mixpanel.css';
 
 export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) {
   const [data, setData] = useState<DealList | null>(null);
@@ -78,11 +79,13 @@ export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) 
 
   return <main id="main-content" className={`layout ${detailOnly ? 'show-detail' : ''} ${listOnly ? 'show-list' : ''}`}>
     <div className="workflow-guide" hidden={detailOnly}>
-      <div><span className="eyebrow">DEAL ACCELERATION</span><h1>Dari prioritas ke tindak lanjut.</h1></div>
+      <div><span className="eyebrow">DEAL ACCELERATION</span><h1>Fokus pada langkah berikutnya.</h1></div>
       <button className="text-button small" aria-expanded={showGuide} onClick={() => setShowGuide(value => !value)}>{showGuide ? 'Tutup panduan' : 'Cara menggunakan'}<Icon name="info" size={16}/></button>
       {showGuide && <ol className="guide-steps"><li><span>1</span><div><strong>Pilih deal</strong><p>Mulai dari urutan teratas di kiri.</p></div></li><li><span>2</span><div><strong>Pahami langkahnya</strong><p>Cek target dan hal yang perlu dipastikan.</p></div></li><li><span>3</span><div><strong>Siapkan tindak lanjut</strong><p>Periksa rencana, lalu salin untuk digunakan.</p></div></li></ol>}
     </div>
     <section className="queue" aria-labelledby="queue-title" hidden={detailOnly}>
+      <div className="queue-workspace"><span className="workspace-avatar">KN</span><div><strong>KasirNusa</strong><span>Ruang kerja sales</span></div><Icon name="compass" size={17}/></div>
+      <div className="queue-section-label"><Icon name="grid" size={15}/>PIPELINE · P01–P05</div>
       <div className="queue-head">
         <h2 id="queue-title">Deal prioritas <span className="count">{deals.length || '—'}</span></h2>
         <p>Urutan yang perlu perhatian sales.</p>

@@ -28,7 +28,7 @@ export function ContextGraph({ context, selection, onSelect, initialFocus, initi
   const [edgeKind, setEdgeKind] = useState<'all' | 'direct' | 'inferred'>('all');
   const [zoom, setZoom] = useState(1);
   const [width, setWidth] = useState(620);
-  const [notice, setNotice] = useState(() => initialPaths?.length ? `Menampilkan ${initialPaths.length} jalur data yang mendukung saran (${pathNodes(index, initialPaths).ids.length} titik). Garis jingga tebal = relasi pada jalur tersebut.${pathNodes(index, initialPaths).truncated ? ' Jalur dibatasi 24 titik; gunakan pencarian untuk bagian lain.' : ''}` : initialFocus ? focusTarget(index, initialFocus).truncated ? 'Jalur panjang dibatasi 24 titik; ujung sumber tetap ditampilkan. Gunakan pencarian untuk bagian lain.' : 'Fokus dari sumber terpilih. Hanya titik dan relasi yang ada di data; jalur bukan bukti izin atau rekomendasi.' : '');
+  const [notice, setNotice] = useState(() => initialPaths?.length ? `Menampilkan ${initialPaths.length} jalur data yang mendukung saran (${pathNodes(index, initialPaths).ids.length} titik). Garis ungu tebal = relasi pada jalur tersebut.${pathNodes(index, initialPaths).truncated ? ' Jalur dibatasi 24 titik; gunakan pencarian untuk bagian lain.' : ''}` : initialFocus ? focusTarget(index, initialFocus).truncated ? 'Jalur panjang dibatasi 24 titik; ujung sumber tetap ditampilkan. Gunakan pencarian untuk bagian lain.' : 'Fokus dari sumber terpilih. Hanya titik dan relasi yang ada di data; jalur bukan bukti izin atau rekomendasi.' : '');
   const canvas = useRef<HTMLDivElement>(null);
   const marker = `arrow-${useId().replace(/:/g, '')}`;
   useEffect(() => {

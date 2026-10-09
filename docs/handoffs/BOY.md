@@ -40,6 +40,24 @@ diklaim ulang di sini; run awal di bawah milik Ical; run lanjutan Main ditandai 
 - [x] 77 frontend tests, build; browser desktop, modal keyboard dua arah, sumber → graph.
 - [ ] Usability sales manusia dan clipboard lintas aplikasi oleh pengguna belum diverifikasi.
 
+### Iterasi visual Mixpanel — Main/Codex, 10 Oktober 00:57 WIB
+
+- [x] Riset Mobbin MCP: 4 screen Mixpanel + 3 preview flow; observasi dan keputusan dalam
+  `frontend/UX_MIXPANEL_RESEARCH.md`, termasuk batas relevansi flow yang dikembalikan.
+- [x] Sidebar workspace terang, aksen ungu, tiga kartu ringkasan API, grid tindakan + bukti.
+- [x] `frontend/src/mixpanel.css`: token/frame/cards/graph/drawer/dialog/interaksi desktop.
+- [x] `Dashboard`, `DealWorkspace`, `ActionOverview`, `main`: hierarki visual dan metadata;
+  `ContextGraph`: legenda ungu selaras warna; tidak ada perubahan path/edge/scoring/API.
+- [x] 77/77 tes frontend diulang, build PASS, browser 1440×900 dan 1280×720 tanpa overflow
+  horizontal; kelima deal diperiksa, sumber I0335 → graph fokus, dialog keyboard/P02 gate.
+- [x] Screenshot `frontend/tests/screenshots/mixpanel-*.png`; panduan uji diperbarui.
+- [ ] Uji kegunaan manusia, audit aksesibilitas penuh dan Jev live belum dilakukan.
+
+Iterasi ini mengikuti feedback terbaru pengguna untuk inspirasi Mixpanel. Ringkasan tiga
+metrik dikembalikan sebagai kartu ringkas; masalah utama tetap diselesaikan dengan judul
+langkah, owner, target, syarat dan satu CTA. Halaman dapat scroll vertikal; tidak mengklaim
+seluruh informasi/CTA muat tanpa scroll di semua ukuran. Status READY_FOR_REVIEW; PR #29.
+
 ### Masalah UX utama dan perbaikannya
 
 1. Prioritas tertutup hero, tiga metrik dan kotak ranking; detail deal di bawah lipatan →
@@ -266,6 +284,6 @@ Catatan pelanjut: pertahankan pendingFocus + useEffect, POST hanya melalui analy
 provenance dan semua gate bisnis. Jangan mengganti saran dengan ringkasan yang membuang syarat.
 
 ## Update WIB
-2026-10-10 00:08 WIB — alur sales desktop final READY_FOR_REVIEW pada PR #29. 77/77 frontend,
+2026-10-10 00:57 WIB — iterasi Mixpanel desktop READY_FOR_REVIEW pada PR #29. 77/77 frontend,
 build, uji browser terarah; riset Mobbin dan handoff diperbarui. Belum merged/deployed.
 Implementasi awal Ical, lanjutan Main; riwayat BOY-04 tetap milik Boy.

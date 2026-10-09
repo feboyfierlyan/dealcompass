@@ -140,14 +140,18 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
         <div className="detail-meta">
           {priority ? <span className="rank-pill">Prioritas {priority.rank}{rankTotal ? ` dari ${rankTotal}` : ''}</span> : <span className="rank-pill quiet">{rankingState === 'loading' ? 'Prioritas sedang disusun' : 'Prioritas belum tersedia'}</span>}
           {priority?.priority_kind === 'discovery' && <span className="kind discovery">{priorityKindLabel.discovery}</span>}
-          <span>Tahap {shownDeal.stage} · {shownDeal.stage_age_days} hari</span>
-          <span>Potensi {rupiah(shownDeal.annual_value)} per tahun</span>
+          <span>Data per {snapshot ? dateLabel(snapshot) : 'tanggal belum tersedia'}</span>
         </div>
       </header>
       <div className="tabs" role="tablist" aria-label="Detail deal">{TABS.map((item, index) => <button key={item.id} id={`${ids.panel}-tab-${item.id}`} role="tab" aria-controls={tab === item.id ? `${ids.panel}-${item.id}` : undefined} aria-selected={tab === item.id} tabIndex={tab === item.id ? 0 : -1}
         onClick={() => setTab(item.id)} onKeyDown={e => { const next = nextTabIndex(e.key, index, TABS.length); if (next === null) return; e.preventDefault(); setTab(TABS[next].id); document.getElementById(`${ids.panel}-tab-${TABS[next].id}`)?.focus(); }}><Icon name={item.icon} size={17}/>{item.label}</button>)}</div>
       </div>
       <div className="tab-panel" role="tabpanel" id={`${ids.panel}-${tab}`} aria-labelledby={`${ids.panel}-tab-${tab}`} tabIndex={-1} aria-busy={loading}>
+        {tab === 'action' && <dl className="deal-metrics" aria-label="Ringkasan deal">
+          <div><dt><Icon name="flag" size={15}/>Tahap deal</dt><dd>{shownDeal.stage}</dd><span>Posisi saat ini di pipeline</span></div>
+          <div><dt><Icon name="clock" size={15}/>Waktu di tahap ini</dt><dd>{shownDeal.stage_age_days}<small>hari</small></dd><span>Hingga snapshot data</span></div>
+          <div><dt><Icon name="target" size={15}/>Potensi tahunan</dt><dd>{rupiah(shownDeal.annual_value)}</dd><span>Nilai deal, belum pendapatan</span></div>
+        </dl>}
         {loading && <div className="loading-line" role="status"><span className="spinner"/>Memuat data deal…</div>}
         {contextError && <ErrorNotice error={contextError} retry={() => setRefresh(v => v + 1)} subject="Data deal"/>}
         {joined.priorityError && <div className="notice error" role="alert"><Icon name="alert" size={18}/><div><strong>Prioritas tidak dapat dihubungkan ke data deal</strong><p>{joined.priorityError.message}</p></div></div>}

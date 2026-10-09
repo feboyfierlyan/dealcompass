@@ -233,3 +233,21 @@ iframe diverifikasi dari DOM). Modal laptop 656 px tinggi dan footer terlihat.
 Screenshot final prefiks `sales-flow-` di tests/screenshots. Clipboard OS belum terverifikasi
 melalui API baca clipboard alat (string kosong); status writeText sukses terlihat dan isi
 export diuji utuh. Tidak mengklaim mobile, human usability, atau Jev live.
+
+## Iterasi Mixpanel desktop — 2026-10-10 00:57 WIB
+
+Seluruh 77 tes dan build di atas diulang PASS. Tinjau `UX_MIXPANEL_RESEARCH.md` untuk
+referensi Mobbin, keputusan per komponen dan batas verifikasi. Pada 1440×900 dan 1280×720:
+1. Muat 5174: P04 default; lima deal tersusun sesuai API. Kartu tahap/usia/nilai tepat.
+2. P01: identitas pengambil keputusan tetap dugaan. P03/P04: izin referensi belum diketahui.
+3. P02: siapkan rencana; teks larangan diskon 20% dan kebutuhan keputusan/log VP Sales utuh.
+4. P05: discovery, bukan bebas risiko; tidak ada skor/probabilitas rekaan.
+5. P04: peta awal 6 titik/9 relasi; Enter node I0335 → sumber → tampilkan di peta menghasilkan
+   3 titik/2 relasi asli. Dashed/inferred dan arah asli tetap.
+6. Modal rencana laptop: top32/bottom688; Tab dari Salin ke Tutup; Escape menutup.
+7. Dokumen tidak overflow horizontal. Screenshot full-page merekam halaman yang dapat scroll.
+
+Bukti gambar: `tests/screenshots/mixpanel-overview-1440.png`, `mixpanel-overview-1280.png`,
+`mixpanel-graph-1440.png`, `mixpanel-plan-p02-1280.png`. Animasi opacity diganti transform
+untuk menghindari konten transparan pada tab background. Clipboard OS tidak diuji ulang;
+uji kegunaan manusia, audit a11y penuh, mobile dan Jev live belum diklaim.
