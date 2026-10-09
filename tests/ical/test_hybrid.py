@@ -91,6 +91,7 @@ class HybridAnalysisTests(unittest.TestCase):
         ctx = real('DL-002')
         self.assertTrue(set(rec['evidence_ids']) <= {e.id for e in ctx.evidence})
         self.assertTrue(meta['evidence_paths'])
+        self.assertEqual(meta['gate'], 'approval VP Sales tertunda')
         for p in meta['evidence_paths']:
             self.assertTrue(path_is_valid(ctx.graph, p))
         self.assertNotIn('test-key-not-a-cache-key', json.dumps(out))
@@ -236,6 +237,18 @@ class HybridAnalysisTests(unittest.TestCase):
             out = self.run_deal(service)
         self.assertEqual((out['analysis']['outcome'], out['analysis']['engine_mode'], out['recommendation']['engine_mode']),
                          ('jev_applied', 'replay', 'replay'))
+
+    def test_gate_matches_ranking_factor_for_rules_results(self):
+        from backend.api.phase3 import pipeline_priorities
+        with patch.dict(os.environ, {'DEALCOMPASS_ENGINE_MODE': 'rules'}):
+            ranking = {i['deal_id']: i for i in pipeline_priorities()['items']}
+            service = AnalysisService(AnalysisCache(None))
+            for deal_id, item in ranking.items():
+                with self.subTest(deal=deal_id):
+                    out = self.run_deal(service, deal_id)
+                    gate = next(f['value'] for f in item['factors'] if f['name'] == 'gate_approval_izin')
+                    self.assertEqual(out['analysis']['gate'], gate)
+                    self.assertEqual(out['recommendation'], item['recommendation'])
 
     def test_deals_are_isolated_by_key(self):
         service = self.service(Counter(), path=None)

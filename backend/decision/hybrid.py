@@ -64,6 +64,7 @@ class AnalysisMeta(BaseModel):
     generated_at: str
     provider_requests: int = Field(ge=0)
     model: str | None = None
+    gate: str
     evidence_paths: list[EvidencePathOut] = Field(default_factory=list)
     path_limitations: list[str] = Field(default_factory=list)
 
@@ -124,6 +125,20 @@ def _model(calls: list[dict]) -> str | None:
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec='seconds')
+
+
+def gate_summary(trace) -> str:
+    """Gate sebelum tindakan dari trace aktif; teks sama dengan faktor ranking gate_approval_izin."""
+    gates = []
+    if trace.approvals_needed:
+        gates.append('approval VP Sales tertunda')
+    if trace.reference_candidates:
+        gates.append('kesediaan/izin kandidat referensi belum ada')
+    if trace.decision_maker:
+        gates.append('identitas pengambil keputusan masih inferred')
+    if trace.analysis_status != 'ready':
+        gates.append('discovery belum dilakukan')
+    return '; '.join(gates) or 'tidak ada gate tercatat'
 
 
 def evidence_paths(context: DealContext, trace) -> tuple[list[dict], list[str]]:
@@ -336,7 +351,8 @@ class AnalysisService:
 
     def _envelope(self, context, rec, trace, meta) -> dict:
         paths, missing = evidence_paths(context, trace)
-        meta = {**meta, 'analysis_status': trace.analysis_status, 'evidence_paths': paths, 'path_limitations': missing}
+        meta = {**meta, 'analysis_status': trace.analysis_status, 'gate': gate_summary(trace),
+                'evidence_paths': paths, 'path_limitations': missing}
         meta.setdefault('model', None)
         envelope = AnalysisEnvelope(deal_id=context.deal.deal_id, snapshot_date=context.snapshot_date,
                                     recommendation=rec, analysis=AnalysisMeta.model_validate(meta))
