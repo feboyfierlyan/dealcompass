@@ -16,7 +16,7 @@ Jangan menukar keduanya pada path endpoint.
 Setelah PR #7 dan #10 merged, health, daftar deal, detail graph dan POST analyze
 tersedia di main. Main memverifikasi analyze 200 untuk P01-P05 dalam mode rules.
 ID tidak dikenal memberi 404; analyzer yang tidak tersedia tetap dapat memberi 501.
-Fungsi diagnostic BIMA-02 masih internal; belum ada endpoint initial-analysis.
+Diagnostic BIMA-02 tersedia melalui endpoint initial-analysis setelah #16 merged.
 analysis_status daftar belum dipetakan ke hasil analisis dan rank masih null.
 Error berbentuk `{detail: {code, message}}`. Jangan mengembalikan 200 berisi
 analisis palsu ketika mesin belum tersedia. Gangguan layanan berikutnya harus
@@ -96,6 +96,16 @@ Struktur v1 tetap. Produsen konteks kanonis adalah implementasi Bima di main:
 
 Lihat docs/reviews/2026-10-09-pr5-7.md untuk reproduksi dan acceptance perbaikan.
 
-## Fase 3: engine merged, API belum siap
+## Fase 3: engine dan API siap, UI belum terintegrasi
 
-Kontrak tambahan ada di [PHASE3_CONTRACT.md](PHASE3_CONTRACT.md). rank_deals Ical sudah merged melalui #15, tetapi endpoint tambahan #16 belum merged: priorities asli masih 503 akibat R8 pada review gabungan. Endpoint lama tetap berlaku dan rank daftar tetap null. Boy baru mengintegrasikan API baru setelah Main memverifikasi perbaikan. Lihat [review](../reviews/2026-10-09-pr14-16.md).
+Kontrak tambahan ada di [PHASE3_CONTRACT.md](PHASE3_CONTRACT.md). Engine #15 dan
+API #16 sudah merged/verified. Main membuktikan priorities, pipeline diagnostic
+serta diagnostic kelima deal asli200; unknown deal404. Endpoint tambahan:
+
+- GET /api/pipeline/priorities: ranking rules, alasan/faktor/rekomendasi/sumber/path.
+- GET /api/pipeline/initial-analysis: diagnostic lima deal + statistical_assessment.
+- GET /api/deals/{deal_id}/initial-analysis: diagnostic satu deal.
+
+Endpoint lama tetap; rank/status daftar lama tidak diubah. BOY-04 menggabungkan
+priorities berdasarkan deal_id/snapshot untuk UI. Rank bukan probabilitas closing;
+ready bukan approval. Lihat [review final R8](../reviews/2026-10-09-ical-r8.md).
