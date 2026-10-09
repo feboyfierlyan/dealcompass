@@ -35,7 +35,7 @@ class DealApiTests(unittest.TestCase):
                 self.assertEqual(response.json()['detail']['code'], 'DEAL_NOT_FOUND')
 
     def test_unavailable_analysis_is_501_not_a_fabricated_recommendation(self):
-        with patch('backend.main.analyze_deal', side_effect=NotImplementedError('Decision engine belum tersedia')):
+        with patch('backend.main.analyze_deal_envelope', side_effect=NotImplementedError('Decision engine belum tersedia')):
             response = self.client.post('/api/deals/DL-002/analyze')
         self.assertEqual(response.status_code, 501)
         self.assertEqual(response.json()['detail']['code'], 'NOT_IMPLEMENTED')
