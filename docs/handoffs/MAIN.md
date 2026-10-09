@@ -1,31 +1,31 @@
 # Handoff MAIN
 
 ## Task dan status
-MAIN-01 IN_PROGRESS. Review tiga PR selesai untuk SHA yang dicatat; BIMA-01 MERGED #6. BOY-01 dan ICAL-01 perlu revisi. Aplikasi akhir belum selesai.
+MAIN-01 IN_PROGRESS. BOY-01/02 MERGED #5, R4 VERIFIED. BIMA-01 MERGED #6. ICAL-02 terakhir NEEDS_REVISION R6/R7; integrasi akhir belum selesai.
 
 ## Branch dan commit
-integrator/team-review-notes dari main 73fb045 (merge Bima). Review gabungan terpisah memakai Boy 2a8d988, Bima c5e8820, Ical 9557c83.
+integrator/boy-r2-review-notes dari main 3b8cc872b421d193ba56937201a7c9c3739d6015. Kode Boy direview b95d7ed; sinkron main menghasilkan 4c82ea4 tanpa perubahan frontend/handoff Boy; CI final lulus sebelum merge.
 
 ## File dan fungsi
-Review tersimpan di docs/reviews/2026-10-09-pr5-7.md; checklist, kontrak semantik dan keputusan diperbarui. Tidak mengubah kode anggota pada PR catatan ini.
+Review docs/reviews/2026-10-09-pr5-r2.md; checklist docs/coordination/MAIN.md dan handoff Main. Graph index/scope/search/path/expand/layout serta EvidencePanel/Browser diverifikasi. Catatan PR ini tidak mengubah kode anggota.
 
 ## Kontrak dan dependency
-Schema v1 tetap. Excerpt row JSON dan vocabulary graph Bima menjadi acuan. Sinyal prospek dipisah dari preseden lintas akun. Environment review terpisah memakai dependency repo; NetworkX 3.7. Tidak ada dependency baru di manifest.
+Schema v1, dependency dan dataset tidak berubah. Graph subset eksplisit, akses ke seluruh bukti tetap tersedia. Rank null tetap belum tersedia.
 
 ## Cara menjalankan
-README untuk main. Untuk mereproduksi bug, gabungkan ketiga SHA pada checkout terpisah lalu jalankan contoh di dokumen review, tes repo dan frontend/TESTING.md. Jangan mengganti hasil nyata dengan fixture.
+Ikuti frontend/TESTING.md. Review memakai backend lokal port 8126 dan Vite 5177 dengan override proxy runtime, tanpa mengubah file konfigurasi. Server review dihentikan dan viewport browser direset setelah uji.
 
 ## Pengujian aktual
-Gabungan: 42 unittest backend/handoff lulus; 5 tes kontrak + 7 tes transport frontend lulus; production build lulus. Kelima konteks dianalisis rules menggunakan data asli. Browser memverifikasi P02 menampilkan diskon lintas akun dan graph 1305 node yang tidak terbaca. R5 divalidasi dengan respons numerik string yang keliru diterima adapter. CI masing-masing PR sukses pada SHA review.
+20/20 tes frontend, 27/27 backend/handoff, build produksi, ownership/handoff dan diff check lulus. Browser P01-P05 desktop 1440x1000/mobile 390x844: label 13px, tidak ada overflow halaman. P02 7/1305 node, 9/2895 relasi; bukti I0348/I0296, preseden D-2025-06, filter dan pagination diverifikasi. Analyze 501 ditampilkan eksplisit. CI final PR #5 verify sukses.
 
 ## Fixture dan keterbatasan
-Jev live tidak diuji. Evaluasi penuh 20/21 adalah laporan penulis Ical; Main menjalankan kasus inti yang masuk unittest. Ranking belum tersedia. Pada main, kode Boy/Ical belum merged, analyze masih 501. Gabungan lokal bukan deployment resmi.
+Uji graph dan browser memakai API dataset nyata, bukan fixture. Jev live, ranking dan panel analisis Ical belum terintegrasi di main. Klik edge preseden diverifikasi lewat keyboard Enter; tidak mengklaim pengujian seluruh kurva dengan pointer.
 
 ## Blocker
-R1 kontaminasi bukti antarakun; R2 format JSON vs CSV; R3 nama/arah relasi; R4 graph tidak terbaca; R5 validasi respons Jev. Detail, baris kode, reproduksi dan acceptance ada pada review.
+Tidak ada blocker BOY-02 yang ditemukan pada cakupan review. R6/R7 Ical tetap menghalangi integrasi analisis berdasarkan review terakhir; status review lain tidak diubah tanpa bukti baru.
 
 ## Tugas berikutnya
-BOY-02, ICAL-02, BIMA-02 tercatat di MAIN.md. Boy meneruskan instruksi ke chat anggota. Main review ulang setelah revisi dan mengelola ranking/analysis_status berikutnya.
+BOY-03 siapkan checklist demo sekarang, lalu uji panel analisis kelima deal setelah Ical merged. Main review revisi Ical dan pekerjaan Bima berikutnya, kemudian koordinasikan ranking. Detail assignment di MAIN.md.
 
 ## Update WIB
-2026-10-09 17:10 WIB
+2026-10-09 17:53 WIB
