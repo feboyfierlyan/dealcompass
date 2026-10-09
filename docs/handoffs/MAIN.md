@@ -1,31 +1,55 @@
 # Handoff MAIN
 
 ## Task dan status
-Penugasan ICAL-03/BIMA-03 siap. Kontrak fase 3 disepakati Main; implementasi ranking/API baru masih TODO. BOY-03 tetap berjalan independen. Review #7/#10 sebelumnya tetap berlaku.
+Penugasan R8 dialihkan ke Ical atas permintaan pengguna. PR #16 tetap terbuka;
+perbaikan belum diverifikasi. Ical #15 sudah merged, Boy #14 tetap R9.
+Ini perubahan penugasan, bukan klaim endpoint ranking sudah berhasil.
 
 ## Branch dan commit
-integrator/assign-ranking-diagnostics dari main 36c0312. Tidak ada PR anggota terbuka pada pemeriksaan awal tugas ini. Branch pekerjaan baru Ical/Bima ditulis pada prompt, belum dibuat oleh Main.
+integrator/reassign-r8-ical dari main 806f24e. PR #16 masih OPEN, head 9454e87
+pada pemeriksaan penugasan. Tidak mengubah branch kode milik anggota.
 
 ## File dan fungsi
-PHASE3_CONTRACT.md menetapkan rank_deals dan wire contract tiga endpoint diagnostic/priorities. Prompt ICAL-03.md dan BIMA-03.md siap diteruskan. MAIN.md/API_CONTRACT.md mencatat status spec, bukan endpoint live. Tidak ada kode aplikasi berubah.
+MAIN.md mencatat pelaksana sementara Ical. ICAL-R8-TAKEOVER.md memberi instruksi
+checkout, perbaikan, acceptance dan atribusi handoff. BIMA-03-R8.md mengarahkan
+ke penugasan baru. Handoff Main ini diperbarui. Tidak ada kode aplikasi berubah.
 
 ## Kontrak dan dependency
-Tambahan API v1 direncanakan dengan snapshot 2026-10-01. Model respons baru Bima di backend/api/phase3_models.py diizinkan sesuai kontrak; tipe bersama lama tidak berubah. Ranking rules deterministik milik Ical; Bima hanya transport/validasi. Tidak ada dependency baru.
+Klarifikasi Main: evidence path boleh menelusuri kedua arah, tetapi pasangan node
+harus memakai edge asli dengan source/target/relation/provenance tetap. Kontrak
+awal ambigu mengenai traversal; Ical sekarang ditugaskan memperbaiki validator
+modul Bima. Handoff BIMA.md wajib menyebut pelaksana Ical; ownership CI berbasis
+branch tetap berlaku, tanpa perubahan/pelemahan CI.
+Tidak ada dependency baru atau perubahan API lama.
 
 ## Cara menjalankan
-Baca docs/prompts/ICAL-03.md atau BIMA-03.md dari main terbaru pada checkout anggota masing-masing. Buat branch/PR baru. Kedua prompt merujuk kontrak fase 3 yang sama. Fungsi/endpoint baru belum dapat dijalankan sebelum implementasi.
+Teruskan ICAL-R8-TAKEOVER.md ke chat Claude Ical. Ical sync main pada checkout
+sendiri dari branch bima/diagnostics-api dan lanjutkan PR #16. Bima tidak mengerjakan
+R8 bersamaan. Boy tetap menjalankan BOY-03-R9.md di PR #14.
 
 ## Pengujian aktual
-Perubahan hanya dokumentasi. check_handoff --all, validasi diff/ownership Main dan git diff --check dijalankan sebelum penyerahan; CI menjadi gate merge. Tidak mengklaim tes ranking/endpoint baru sudah berjalan. Bukti 99 tes gabungan historis ada pada review final #7/#10.
+Penugasan ini hanya dokumentasi: handoff dan diff checks; CI sebagai gate merge.
+Bukti review sebelumnya (bukan tes ulang pada penugasan ini): 139/139 unittest; eval decision 34/35 (inti 34/34, E15 known limitation),
+ranking 15/15; frontend build lulus, 32/34 tes lulus (P03/P04 regex lama gagal).
+HTTP priorities asli 503. Diagnostic pipeline/DL-002 200. Browser P02 analisis →
+sumber I0348 → graph 3 node/2 edge berhasil. Handoff/diff checks dijalankan untuk
+PR dokumentasi; CI tetap gate merge. Rincian/perintah ada di dokumen review.
 
 ## Fixture dan keterbatasan
-Bima memakai mock berlabel untuk contract test sampai ranking Ical merged; wajib smoke nyata setelah integrasi. Jev live tidak menjadi dependency ranking; status credential tidak diasumsikan. Output ranking akan berupa heuristik, belum tervalidasi closing historis.
+Ranking rules, bukan probabilitas closing. Jev live belum diuji. Tes lifecycle dan
+transport frontend memakai mock; tes graph/analisis memakai HTTP asli. Probe arah
+validator hanya di memori untuk diagnosis, tidak menjadi kode fix. Review ini
+tidak mengulang seluruh pemeriksaan mobile/manual Boy.
 
 ## Blocker
-Tidak ada blocker penugasan. Diagnostic dapat dibangun sekarang. Integrasi priorities bergantung implementasi Ical; sebelum tersedia harus 501, bukan dummy ranking. Kontrak lama tidak berubah sepihak dan Boy belum diberi klaim endpoint baru live.
+R8: validator path Bima menolak 12 traversal sah, sehingga endpoint asli 503.
+R9: assertion teks frontend P03/P04 belum kompatibel rekomendasi terbaru Ical.
+UI ranking/diagnostic menunggu kedua PR diverifikasi; jangan hardcode ranking.
 
 ## Tugas berikutnya
-Pengguna meneruskan prompt ke Ical/Bima. Main review metode, bukti/path dan API, kemudian koordinasikan UI BOY-04. Boy lanjut BOY-03 sekarang. Setiap PR anggota wajib handoff sendiri, status maksimal READY_FOR_REVIEW.
+Pengguna meneruskan prompt takeover kepada Ical. Ical mengerjakan R8 dan update
+handoff BIMA.md dengan atribusi jujur; Boy menyelesaikan R9. Main review ulang
+kedua PR setelah revisi. Tidak ada pesan otomatis ke chat AI Ical.
 
 ## Update WIB
-2026-10-09 18:11 WIB
+2026-10-09 19:09 WIB

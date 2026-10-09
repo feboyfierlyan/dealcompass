@@ -96,6 +96,6 @@ Struktur v1 tetap. Produsen konteks kanonis adalah implementasi Bima di main:
 
 Lihat docs/reviews/2026-10-09-pr5-7.md untuk reproduksi dan acceptance perbaikan.
 
-## Penugasan fase 3 (belum terimplementasi)
+## Fase 3: engine merged, API belum siap
 
-Main menetapkan kontrak tambahan ranking/diagnostic di [PHASE3_CONTRACT.md](PHASE3_CONTRACT.md) untuk ICAL-03/BIMA-03. Endpoint lama di atas tetap berlaku. Dokumen penugasan bukan klaim endpoint baru sudah tersedia; Boy baru mengintegrasikan setelah Main review.
+Kontrak tambahan ada di [PHASE3_CONTRACT.md](PHASE3_CONTRACT.md). rank_deals Ical sudah merged melalui #15, tetapi endpoint tambahan #16 belum merged: priorities asli masih 503 akibat R8 pada review gabungan. Endpoint lama tetap berlaku dan rank daftar tetap null. Boy baru mengintegrasikan API baru setelah Main memverifikasi perbaikan. Lihat [review](../reviews/2026-10-09-pr14-16.md).

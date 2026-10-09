@@ -353,14 +353,19 @@ CASES: list[Case] = [
     Case('E29', 'P03 nyata', 'P03: kandidat related_account C03/C09/C17/C27 dipertimbangkan.',
          lambda: _rules(real('DL-003')), {
              'hambatan referensi': lambda r, t: t.main_obstacle == 'referensi',
-             'C09 & C17 diusulkan': lambda r, t: 'C09' in r.action and 'C17' in r.action,
-             'C03 & C27 dijelaskan': lambda r, t: all(any(f'Kandidat {c}' in i and 'tidak diusulkan' in i for i in t.interpretations) for c in ('C03', 'C27')),
+             'C09 & C17 dicek pertama': lambda r, t: 'C09' in r.action and 'C17' in r.action,
+             'C03 dicek belakangan dengan alasan tiket': lambda r, t: any(i.startswith('C03 dicek belakangan') and 'tiket terbuka' in i
+                                                                         for i in t.interpretations),
+             'C27 tidak ditolak karena health saja': lambda r, t: next(c for c in t.reference_candidates
+                                                                    if c['account_id'] == 'C27')['status'] == 'cek_pertama',
+             'izin/kesediaan unknown': lambda r, t: any('kandidat bukan izin' in u for u in r.unknowns),
              'tidak bilang kandidat tidak tersedia': lambda r, t: not any('belum tersedia' in u and 'referensi' in u for u in r.unknowns),
          }),
     Case('E30', 'P04 nyata', 'P04: C06 via related_account_work_overlap; overlap bukan bukti saling kenal.',
          lambda: _rules(real('DL-004')), {
              'hambatan referensi': lambda r, t: t.main_obstacle == 'referensi',
-             'C06 diusulkan': lambda r, t: 'Saiyo Group (C06)' in r.action,
+             'C06 dicek dengan izin': lambda r, t: 'Saiyo Group (C06' in r.action and 'izin kontak' in r.action,
+             'industri berbeda dicatat': lambda r, t: any('C06 catatan: industri' in i for i in t.interpretations),
              'overlap bukan bukti': lambda r, t: any('tidak membuktikan saling kenal' in c for c in r.precedent_comparison),
          }),
 ]
