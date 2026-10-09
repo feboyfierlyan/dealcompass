@@ -14,6 +14,7 @@ Riwayat: ICAL-01/02 merged #7; ICAL-03 merged #15; revisi R8 pada #16 merged 858
 
 ## Branch dan commit
 Branch `ical/evidence-demo-pack` dari `origin/main` `be628d7` (berisi #14/#15/#16/#20/#21). Pekerjaan disusun di sesi Claude cloud; push dari sesi itu ditolak GitHub (403, akses integrasi), sehingga commit dipindahkan ke checkout lokal Ical lewat `git am` dan di-push dari sana. Ownership dicek dengan `scripts/check_handoff.py --branch ical/evidence-demo-pack` (valid). Hash commit dicantumkan di PR/laporan, bukan di sini.
+Saat dipasang di laptop Ical, `origin/main` sudah maju ke `2585bb3` (berisi #23 Bima); `git am --3way` bersih tanpa konflik.
 
 ## File dan fungsi
 - `evaluation/baseline_crm.py` (baru)
@@ -64,6 +65,7 @@ Env: `DEALCOMPASS_ENGINE_MODE` (rules/jev/replay/auto), `TYPESAFE_API_KEY`, `TYP
 - `python -m evaluation.baseline_crm` → hasil di atas; `tests/ical/test_baseline.py` 8/8, `tests/ical/test_eval_sources.py` 2/2.
 - Smoke HTTP lokal uvicorn port 8131, `DEALCOMPASS_ENGINE_MODE=rules`, tanpa key: `/health` 200; `/api/pipeline/priorities` 200 (3,95 dtk request pertama, cold); `/api/pipeline/initial-analysis` 200 (0,75 dtk); `/api/deals/DL-002/initial-analysis` 200; `DL-999` 404; `POST /api/deals/DL-002/analyze` 200 `engine_mode=rules` dengan approval VP Sales. Urutan HTTP P04→P01→P02→P03→P05. Server dihentikan. Observasi lokal, bukan SLA.
 - `python scripts/check_handoff.py --all` dan `--base origin/main --head HEAD --branch ical/evidence-demo-pack` → valid.
+- Ulang di laptop Ical (Windows, Python 3.11.9, di atas `2585bb3`, ±20:25 WIB): `DEALCOMPASS_ENGINE_MODE=rules python -m unittest discover -s tests` → `Ran 174 tests, OK` (main kini memuat tes tambahan); `python -m evaluation.baseline_crm --no-write` → urutan sama seperti di atas; `check_handoff.py --all` dan `--base origin/main --head HEAD --branch ical/evidence-demo-pack` → valid.
 - Belum: browser/UI ranking (menunggu BOY-04), Jev live, CI pada PR.
 
 ## Fixture dan keterbatasan
