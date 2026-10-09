@@ -32,9 +32,9 @@ def validate_note(text: str) -> list[str]:
 
 def role_for(branch: str) -> str:
     prefix = branch.split('/', 1)[0].upper()
-    if '/' not in branch or prefix not in (*OWNED, 'MAIN'):
-        raise ValueError('Branch harus boy/*, bima/*, ical/* atau main/*.')
-    return prefix
+    if '/' not in branch or prefix not in (*OWNED, 'INTEGRATOR'):
+        raise ValueError('Branch harus boy/*, bima/*, ical/* atau integrator/*.')
+    return 'MAIN' if prefix == 'INTEGRATOR' else prefix
 
 def validate_changes(paths: list[str], branch: str, read_text) -> list[str]:
     role = role_for(branch)

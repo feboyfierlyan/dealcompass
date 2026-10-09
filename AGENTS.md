@@ -4,7 +4,7 @@
 - Baca `docs/coordination/MAIN.md`, `API_CONTRACT.md`, dan prompt peranmu.
 - Main adalah peran integrator Boy + AI pada chat koordinasi, bukan produk AI lain.
 - Kerjakan satu branch/checkout per anggota. Jangan berpindah branch bersama.
-- Branch: `boy/*`, `bima/*`, `ical/*`; integrator memakai `main/*`.
+- Branch: `boy/*`, `bima/*`, `ical/*`; integrator memakai `integrator/*`.
 - WAJIB update `docs/handoffs/<PERAN>.md` di setiap PR pekerjaan.
 - Gunakan semua heading template; catat fungsi, bukti uji, blocker, dan waktu WIB.
 - Status pelaksana maksimal READY_FOR_REVIEW. Main menetapkan VERIFIED/MERGED.
