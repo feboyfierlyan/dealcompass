@@ -1,32 +1,75 @@
 # Handoff ICAL
 
 ## Task dan status
-ICAL-01: TODO. Catatan awal disiapkan Main; anggota belum melaporkan pekerjaan.
-- [ ] Acceptance pada docs/prompts/ICAL.md dipenuhi.
+ICAL-02 (revisi PR #7, review R1/R2/R3/R5 dan review ulang R6/R7 `docs/reviews/2026-10-09-pr7-r2.md`): READY_FOR_REVIEW. Main yang memverifikasi; belum merged.
+- [x] R6: keputusan hanya berlaku untuk deal fokus bila `deal_id` eksplisit = deal fokus (dan `account_id` kosong/sama). Keputusan akun yang sama untuk deal lain, level akun tanpa `deal_id`, atau `deal_id` fokus dengan `account_id` lain tidak menghapus approval tertunda; dicatat sebagai fakta + "tidak berlaku otomatis" dan tetap boleh jadi preseden (`ContextIndex.focus_decisions()` mengembalikan `(scoped, out_of_scope)`).
+- [x] R7: persentase kosong/tidak terbaca (mis. `''`, `dua puluh persen`, `20` tanpa %) menjadi unknown, bukan approval/penolakan. Approval harus `Disetujui` + pemutus VP Sales + persentase terbaca ≥ permintaan; persetujuan lebih kecil (15% untuk permintaan 20%) dinyatakan tidak mencakup. Penolakan hanya pada persentase yang sama.
+- [x] R1: hambatan, permintaan, approval hanya dari akun/deal fokus (`account_id` interaksi = `context.deal.account_id`; decision `deal_id`/`account_id` fokus). Bukti akun lain hanya untuk preseden/kandidat referensi. P02 nyata: satu mention `I0348 20% request`; I0054/I0061/I0066 (C01) tidak dipakai.
+- [x] R2: excerpt dibaca sebagai JSON object (`backend/decision/records.py`); `isi` = pesan, `account_id` pemilik, `jabatan`/`kompetitor` dari field. Tidak ada split koma. E01 = VP Sales; KasirPro terbaca untuk DL-002, DL-006, DL-007.
+- [x] R1: permintaan dideduplikasi per (interaksi, persentase); dibedakan `request` / `approval_claim` / `rejection_claim` (klaim di pesan) vs keputusan tercatat Disetujui/Ditolak/Menunggu di decision_log dengan verifikasi jabatan pemutus.
+- [x] R3: relasi produsen (`related_account_*`, `employed_at`, `overlapping_employment`, `interaction_for`, `candidate_precedent_*`). P03: C09/C17 diusulkan, C03/C27 ditolak dengan alasan. P04: C06 (work_overlap) diusulkan, overlap dinyatakan bukan bukti saling kenal. P01: K017 Rina Hapsari sebagai inferensi (I0343 + kontak CRM + riwayat kerja), ambigu → tidak ditebak.
+- [x] R5: validasi angka Jev (finite, bukan bool, noul 0..1, score 0..n-1, confidence/probabilities 0..1), respons/rekaman replay rusak → `JevError`, error tak terduga → fallback. Fallback mengulang seluruh analisis dalam rules. Anggaran waktu total `DEALCOMPASS_ANALYSIS_BUDGET_S` default 15 dtk (< batas UI 20 dtk); Jev hanya dipanggil untuk pesan fokus (P02: 4) dan preseden relevan.
+- [x] Tes integrasi wajib dengan `build_deal_context` nyata (lihat Pengujian aktual).
+- [ ] Jev live: BELUM DIUJI (tidak ada `TYPESAFE_API_KEY`).
+- [ ] Ranking lintas deal dan pemetaan `analysis_status`: belum; menunggu Main.
 
 ## Branch dan commit
-Branch rencana: ical/decision-jev. Commit pekerjaan anggota belum ada.
+Branch `ical/decision-jev`, PR #7. Commit kode ICAL-01: `9557c83`. Merge `origin/main` (`ddf7a2a`, berisi graph Bima #6) di `96fc7d8`. Revisi ICAL-02 R1-R3/R5: `7919550`. Merge `origin/main` (`0aed855`, catatan review R6/R7) di `c437c36`. Commit revisi R6/R7 dibuat setelah catatan ini; hash dilihat di PR.
 
 ## File dan fungsi
-Belum ada perubahan oleh anggota. Fondasi Main dijelaskan pada README dan MAIN.md.
+- `backend/decision/records.py` (baru): `parse(EvidenceRecord) -> Record` (field JSON, `text`=isi interaksi), `ContextIndex` (focus_interactions, focus_decisions -> (scoped, out_of_scope), competitor_of, employee_title, vp_sales_ids, related_accounts, contacts_at, employment).
+- `backend/decision/signals.py`: `extract(idx) -> Signals` (obstacles, discount_mentions dedup + kind, competitor_gaps, competitor, discount_decisions dengan pct/raw_value/approver_title, out_of_scope_decisions, vp_sales_ids). Kriteria `OBSTACLES` juga dipakai Choice Jev.
+- `backend/decision/precedents.py`: `assess(idx, decision, signals, trust_accounts)` → skor transparan (pemohon sama +1, kompetitor sama +2, persentase sama +2 / sama-sama >10% +1, paket +1, komitmen terbuka di akun riwayat pengambil keputusan +2); cocok ≥3, sebagian ≥2. Starter vs outlet → `SKENARIO_USULAN`.
+- `backend/decision/analyze.py`: `analyze_deal(context) -> Recommendation`; `analyze_deal_trace(context, mode=None, client=None) -> (Recommendation, DecisionTrace)`; playbook `harga`, `pengambil_keputusan`, `referensi`, selain itu discovery + `insufficient_evidence`. Trace menambah `discount_mentions`, `reference_candidates` (shortlist/ditolak + alasan), `decision_maker` (inferred), `elapsed_ms`.
+- `backend/integrations/jev.py`: validasi ketat, `ask(..., timeout_s)` untuk anggaran, replay rusak → `invalid_replay`.
+- `evaluation/cases.py`, `evaluation/run_eval.py`, `evaluation/results/latest.{json,md}`, `evaluation/README.md`. `evaluation/fixtures/` dihapus.
+- `tests/ical/test_decision.py`: 24 tes (12 integrasi graph nyata, termasuk kontrol approval valid dan regresi R6/R7).
+
+Keluaran tetap kontrak v1: `action` diawali `USULAN:`; `precedent_comparison` berbaris `FAKTA |`, `INTERPRETASI |`, `SKENARIO |`.
+
+P02 nyata (rules): hambatan harga; approval tertunda `VP Sales (E01)` untuk 20% (I0348); 15 × Rp350.000 × 12 = Rp63.000.000 → Rp50.400.000 (turun Rp12.600.000); paket minimum Growth; preseden D-2025-02 (cocok), D-2025-06 (sebagian, Starter maks 10 → pilot ≤10 Rp42.000.000/th skenario), D-2024-02, D-2025-12, D-2026-04 (sebagian); 8 keputusan lain diperiksa dan tidak dipakai; ringkasan 6 keputusan diskon >10% di konteks: 1 disetujui, 5 ditolak.
 
 ## Kontrak dan dependency
-API v1, backend/contracts.py. Perubahan schema/dependency dikoordinasikan Main.
+Kontrak v1 dan klarifikasi Main (API_CONTRACT.md) diikuti; tidak ada perubahan schema/dependency.
+Usulan ke Main (belum diterapkan): field fakta/interpretasi terpisah atau endpoint trace; pemetaan `analysis_status` dari `DecisionTrace`; nama env di `.env.example`: `DEALCOMPASS_ENGINE_MODE`, `DEALCOMPASS_ANALYSIS_BUDGET_S`, `TYPESAFE_BASE_URL`, `TYPESAFE_TIMEOUT_S`, `DEALCOMPASS_REPLAY_DIR`, `DEALCOMPASS_RECORD_DIR` (nilai tidak dicatat).
+Untuk Bima: konteks DL-004 tidak memuat `employees.csv:E01`, jadi bila nanti ada permintaan diskon P04 jabatan VP Sales tidak dapat diverifikasi (engine akan menyatakannya di unknowns). Data: `crm_accounts` C01 masih mencatat K017 sebagai champion padahal K017 keluar 2026-08-15 (anomali sumber, belum dipakai sebagai fakta).
 
 ## Cara menjalankan
-Ikuti README.md. Anggota wajib menambahkan perintah khusus modulnya setelah implementasi.
+```bash
+python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
+python -m evaluation.run_eval
+python -m backend.decision.analyze DL-002      # konteks nyata, cetak rekomendasi + trace
+```
+Jev live (belum diuji): `TYPESAFE_API_KEY` di env backend, `DEALCOMPASS_ENGINE_MODE=jev`; rekam dengan `DEALCOMPASS_RECORD_DIR`, putar ulang `DEALCOMPASS_ENGINE_MODE=replay DEALCOMPASS_REPLAY_DIR=<dir>`.
 
 ## Pengujian aktual
-Belum dijalankan oleh anggota; jangan menganggap hasil bootstrap sebagai hasil tugas ini.
+2026-10-09 17:47 WIB, Windows, Python 3.11.9, `PYTHONUTF8=1` (CI Python 3.12 dijalankan saat push PR):
+- `DEALCOMPASS_ENGINE_MODE=rules python -m unittest discover -s tests` → `Ran 51 tests in 8.6s, OK` (17 Bima + 24 Ical + 10 bootstrap/handoff).
+- Reproduksi review R6/R7 (`add_decision` D-SYNTHETIC): deal lain akun sama → 1 approval tertunda, tidak ada klaim "sudah disetujui"; persentase kosong → 1 approval tertunda + unknown; kontrol valid DL-002 20% E01 → 0 approval tertunda, "Diskon 20% untuk DL-002 sudah disetujui VP Sales".
+- Regresi baru: R6 (`DL-OLD`/P02, tanpa deal_id/P02, DL-002/C23) dan R7 (`''`, `dua puluh persen`, `20`, `15%`) tetap butuh VP Sales; kontrol positif approval sah tetap lulus.
+- Tes integrasi graph nyata: P02 satu permintaan 20% I0348 dan tanpa 15% C01; E01 VP Sales; KasirPro DL-002/006/007; interaksi C23 sintetis lebih baru tidak mengubah hambatan/aksi P02; P03 C03/C09/C17/C27 dan P04 C06 terbaca; P05 insufficient_evidence; respons Jev rusak (noul string, score string, choice di luar criteria, timeout) → rules dengan alasan; endpoint `POST /api/deals/DL-002/analyze` 200 dengan konteks nyata.
+- `DEALCOMPASS_ENGINE_MODE=rules python -m evaluation.run_eval` → 34/35 lulus; inti 34/34 (E31-E35 baru untuk R6/R7, E02 kontrol approval valid); E15 (parafrase "lebih ramah di kantong") gagal = batas rules diketahui; invarian lima deal nyata benar.
+- Waktu: build graph pertama ±2,05 dtk (cache Bima); analisis rules <20 ms per deal. E24: anggaran 0,8 dtk dengan mock 0,4 dtk/panggilan → `budget_exceeded`, selesai <2 dtk.
+- Belum: Jev live, browser/UI gabungan dengan Boy.
 
 ## Fixture dan keterbatasan
-Graph detail dan decision engine belum tersedia pada fondasi. Belum ada Jev live.
+- Fixture tulisan tangan dihapus; semua tes/evaluasi memakai konteks Bima nyata. Mutasi kasus berlabel sintetis.
+- Mode aktual hasil: `rules`. Kasus `jev`/`replay` memakai mock; bukan bukti integrasi live.
+- Klasifikasi pesan berbasis kata kunci; parafrase tanpa kata kunci terlewat (E15).
+- Kandidat referensi disaring dengan health dashboard dan keputusan eskalasi/komitmen terbuka di konteks; tiket/usage kandidat belum dinilai. Kelayakan dan kesediaan belum dikonfirmasi.
+- Identitas pengambil keputusan P01 = inferensi dari jabatan yang disebut di I0343 + satu kontak CRM cocok; bukan konfirmasi.
+- Tidak ada ranking, probabilitas closing, atau tanggal target rekaan.
 
 ## Blocker
-Mulai setelah clone repo dan menerima akses. Catat hambatan nyata ketika ditemukan.
+- `TYPESAFE_API_KEY` tidak tersedia. Dampak: Jev live belum diuji. Butuh key di env backend.
+- Tidak ada blocker kode lain untuk R1-R3/R5/R6/R7.
 
 ## Tugas berikutnya
-Kerjakan ICAL-01 sesuai docs/prompts/ICAL.md; P02 integrasi pertama, P01-P05 scope final.
+1. Main review ulang PR #7 pada SHA baru; uji gabungan dengan UI Boy.
+2. Jev live dengan key; rekam replay; bandingkan rules vs Jev pada E14/E15.
+3. Ranking lintas deal transparan + pemetaan `analysis_status` (setelah keputusan kontrak Main).
+4. Nilai tiket/usage kandidat referensi; pembanding CRM-only dan holdout.
 
 ## Update WIB
-2026-10-09 15:43 WIB (bootstrap Main; bukan laporan anggota).
+2026-10-09 17:50 WIB (Ical via Claude).
