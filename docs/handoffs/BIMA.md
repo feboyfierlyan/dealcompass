@@ -1,185 +1,141 @@
 # Handoff BIMA
 
 ## Task dan status
-BIMA-01 / [GitHub Issue #2](https://github.com/feboyfierlyan/dealcompass/issues/2): **READY_FOR_REVIEW** untuk pekerjaan Bima. Bukan VERIFIED/MERGED dan bukan klaim seluruh produk selesai.
-Scope P01–P05; P02/DL-002 adalah pembuktian pertama.
+**BIMA-02: READY_FOR_REVIEW.** Analisis awal internal dan bersumber untuk P01–P05 pada snapshot **2026-10-01**. Bima tidak menetapkan VERIFIED/MERGED; keputusan itu milik Main.
 
-- [x] Seluruh 15 sumber CSV/JSONL di-ingest; CSV keputusan kanonis, XLSX tidak menambah keputusan.
-- [x] Snapshot bisnis 2026-10-01, angka/tanggal dihitung dari sumber, usage lengkap tetap queryable.
-- [x] `build_deal_context` mengembalikan schema v1 untuk DL-001–DL-005.
-- [x] I0296/I0348 dan D-2025-02/06 dapat ditelusuri; graph tidak membuat approval P02 atau email preseden.
-- [x] Graph temporal, direct/inferred, lookup bukti/subgraph, unknowns dan ID asing 404.
-- [x] Route detail/analyze yang sudah ada terhubung ke konteks nyata. Analyze tetap 501 karena implementasi Ical belum tersedia.
-- [x] 17 tes Bima dan seluruh 27 tes repo lulus; HTTP server aktual diperiksa.
-- [x] Catatan ini memakai seluruh heading template dan mencatat batas integrasi.
+BIMA-01 / Issue #2 / [PR #6](https://github.com/feboyfierlyan/dealcompass/pull/6) sudah merged oleh Main (`73fb045`), bukan PR yang dibuka ulang. Acuan BIMA-02: `docs/coordination/MAIN.md`, `API_CONTRACT.md`, dan `docs/reviews/2026-10-09-pr5-7.md`.
+
+- Umur deal/tahap, jumlah dan tanggal terakhir interaksi dihitung dari sumber.
+- Setiap temuan mempunyai fakta, evidence IDs, interpretasi inferred, informasi kurang, dan implikasi pemeriksaan tindak lanjut.
+- Identitas P01 serta kandidat referensi P03/P04 ditelusuri; kandidat bukan kelayakan atau izin.
+- Business anomaly, data gap, dan outlier statistik dibedakan. Tidak ada ranking, approval, confidence Jev, atau closing rekaan.
+- Kontrak API, engine Ical, frontend, dependency, koordinasi, dan dataset asli tidak diubah.
 
 ## Branch dan commit
-Branch aktif `bima/data-graph`; checkout awal bersih. `git fetch origin` berhasil; `git rev-list --left-right --count HEAD...origin/main` menghasilkan `0 0` sebelum implementasi.
-Commit kode beserta handoff: [`642d97fec3c524f888d1d3d9430fc5cf863f2659`](https://github.com/feboyfierlyan/dealcompass/commit/642d97fec3c524f888d1d3d9430fc5cf863f2659), `feat(bima): ingest dataset and build sourced deal contexts`.
-`git push origin bima/data-graph` berhasil tanpa force. [PR #6](https://github.com/feboyfierlyan/dealcompass/pull/6) dibuka dari `bima/data-graph` ke `main`; review diminta kepada Main `@feboyfierlyan` melalui GitHub (HTTP 201). Permintaan review bukan approval; belum VERIFIED/MERGED.
-Pembaruan catatan publikasi ini disertakan dalam commit handoff terpisah; hash commit handoff sendiri tidak perlu ditulis di dalam file.
-Issue #2 dibaca lewat API GitHub terautentikasi tanpa mencetak/menyimpan credential.
+Branch `bima/data-graph`; checkout awal BIMA-02 bersih. `git fetch origin` dan fast-forward `origin/main` ke `ddf7a2a` berhasil; pekerjaan BIMA-01 dipertahankan.
+
+Commit kode BIMA-02 beserta handoff: [`3b172621eee3a4f19738c4d57a668a2faad099bf`](https://github.com/feboyfierlyan/dealcompass/commit/3b172621eee3a4f19738c4d57a668a2faad099bf). `git push origin bima/data-graph` berhasil tanpa force. **[PR #10](https://github.com/feboyfierlyan/dealcompass/pull/10)** baru dibuka, base `main`, status open, review diminta ke Main (`feboyfierlyan`). Pembaruan receipt ini disertakan pada commit handoff terpisah, bukan klaim approval review.
+
+Histori BIMA-01: commit kode `642d97fec3c524f888d1d3d9430fc5cf863f2659`, catatan publikasi `c5e8820f3a76cd6d1669b665efd961233490fd5e`, kemudian PR #6 merged oleh Main.
 
 ## File dan fungsi
-
-| File/fungsi | Input → output dan perilaku |
+| File/fungsi baru | Input → output dan batas |
 | --- | --- |
-| `backend/ingestion/dataset.py:load_dataset(data_dir=DATA_DIR)` | Direktori 15 sumber → `Dataset`; seluruh baris dan raw string dipertahankan, lokasi file/ID/baris disimpan. Duplicate key, angka/tanggal/JSON/CSV rusak menghasilkan error berlokasi. |
-| `normalize_row(raw, filename, line)` | Raw string → nilai bertipe: kosong `None`, ID uppercase/trim, email lowercase, peserta ID dinormalisasi, integer kuantitas/IDR, `date`, bulan ISO, `Decimal` diskon. Versi aplikasi tetap string; nilai “tanpa batas” bukan nol. |
-| `get_dataset()` | Snapshot sumber cached per proses; `cache_clear()` tersedia untuk fixture. Tidak ada ingest kedua di decision engine. |
-| `Dataset.tables / by_id / query(filename, **filters) / inventory()` | Seluruh record, indeks PK/composite key, filter nilai normalisasi, daftar kolom/key/count. Filter tanggal memakai `datetime.date`, ID memakai bentuk kanonis. |
-| `backend/ingestion/deals.py:deal_summary(record, dataset, snapshot_date=SNAPSHOT_DATE)` | Record deal dan akun → `DealSummary`; umur stage dan annual value dihitung, bukan ranking/pendapatan realized. |
-| `list_deals()` | Dataset bersama → lima prospek terbuka, urutan sumber, total potensi tahunan Rp667.800.000; tidak menetapkan rank atau hasil analisis. |
-| `backend/graph/store.py:ContextGraph(dataset)` | Dataset → `NetworkX.MultiDiGraph`, evidence registry dan sumber resolvable pada snapshot bisnis. |
-| `ContextGraph.lookup_evidence(evidence_id)` | ID evidence → record sumber asli beserta physical line; agregat → seluruh baris pembentuknya, bukan contoh/sampling. ID asing menghasilkan `KeyError`. |
-| `ContextGraph.subgraph(account_ids)` | Set ID akun → `(EvidenceGraph, EvidenceRecord[])`; endpoint edge dan semua evidence IDs disertakan. Tidak menelusuri owner bersama ke seluruh akun lain. |
-| `ContextGraph.deal_context(deal_id)` / `get_context_graph()` | Deal prospek terbuka → konteks v1; graph cached per proses. ID asing/closed deal bukan konteks prospek dan menghasilkan `KeyError`. |
-| `backend/graph/context.py:build_deal_context(deal_id, snapshot_date='2026-10-01')` | Antarmodul v1 → `DealContext`. Snapshot lain ditolak dengan `ValueError`, bukan rekonstruksi historis palsu dari CRM saat ini. |
-| `tests/bima/test_ingestion.py` | Inventaris, normalisasi, fixture 15 sumber, missing/zero, error berlokasi, duplicate key dan JSON rusak. |
-| `tests/bima/test_context.py` | Lima deal, preseden P02, integrity graph/evidence, identitas temporal, overlap inferred, future event, exact aggregate dan ambiguity. |
-| `tests/bima/test_api.py` | Detail asli 200, ID asing 404, unavailable analyzer 501. Hanya skenario analyzer unavailable yang memakai exception mock; konteks tidak di-mock. |
+| `backend/ingestion/metrics.py:summarize_deal(deal_id, snapshot_date='2026-10-01', dataset=...)` | Deal prospek terbuka → umur deal/tahap, bucket external/internal/unclassified, tanggal terakhir beserta seluruh tied IDs, query scope dan unknowns. Umur tidak valid/missing tetap null; nol valid tidak diubah menjadi missing. |
+| `metrics.py:evidence_id(record)` | SourceRecord → ID kanonis `filename:source_id`. |
+| `backend/graph/verification.py:verify_authority_paths(context, dataset=...)` | Konteks v1 → temuan kewenangan dari percakapan fokus + role + employment aktif. Kandidat ambigu/tidak cocok tetap unknown; bukan memilih jabatan tertinggi. |
+| `verification.py:reference_request_rows(context, dataset=...)` | Konteks v1 → record permintaan referensi pelanggan yang bertanggal, dalam jendela deal dan terhubung melalui edge kanonis. Parser yang sama digunakan analisis dan verifikasi. |
+| `verification.py:verify_reference_candidates(context, dataset=...)` | Konteks v1 → kandidat pelanggan melalui `related_account_*`, kontak/history/overlap dan usage bulan lengkap terbaru; suitability/willingness/consent tetap null. |
+| `backend/graph/analysis.py:analyze_deal_initial(context, dataset=...)` | DealContext → report internal berisi metrics, findings, reference_candidates, boundaries dan registry EvidenceRecord. Harga pelanggan dan usulan diskon internal dipisahkan; sumber akun lain tidak menjadi diagnosis fokus. |
+| `analysis.py:analyze_pipeline_initial(snapshot_date='2026-10-01', dataset=...)` | Dataset/konteks kanonis → laporan seluruh prospek terbuka dan statistical_assessment `not_assessed`. Tidak menghasilkan Recommendation Ical. |
+| `tests/bima/test_metrics.py` | 12 tes perhitungan, cutoff, ties, missing/zero, akun fokus, tanggal invalid dan gate snapshot. |
+| `tests/bima/test_verification.py` | 27 tes jalur identitas/referensi, vocabulary kanonis, ambiguity, temporal overlap, negatif/subject-only/outbound, latest usage zero/missing/future. |
+| `tests/bima/test_analysis.py` | 9 tes diagnosis/source IDs, isolasi akun, request bukan approval, P05 gap, dan tidak mengarang outlier. |
 
-`backend/main.py` tidak perlu diubah: route yang ada sudah mengimpor fungsi graph dan fungsi Ical. Setelah stub graph diganti, detail memakai implementasi nyata; analyze membangun konteks sebelum memanggil Ical. Tidak ada endpoint baru/`ask`, shim, kontrak baru atau perubahan milik anggota lain.
+Fondasi BIMA-01 tetap dipakai: `load_dataset/get_dataset`, `Dataset.query/inventory/by_id`, `ContextGraph.lookup_evidence/subgraph/deal_context`, dan `build_deal_context`. Inventaris sumber tetap 15 CSV/JSONL dan 229627 record, termasuk 226300 usage harian serta 30 keputusan CSV; XLSX bukan sumber tambahan. Rincian inventaris BIMA-01 tersedia pada histori PR #6.
 
-### Inventaris aktual
+### Ringkasan untuk mentor
+Umur adalah selisih hari kalender pada snapshot. Interaksi dihitung hanya untuk akun fokus sejak deal dibuat sampai snapshot, inklusif. External mencakup email keluar dan meeting, **bukan jumlah balasan buyer**. Email internal tidak mengubah tanggal terakhir external. `null` berarti tidak ada tanggal tersedia dalam query, bukan tanggal buatan.
 
-Sumber relatif repo: `dataset_kasirnusa/`. Jumlah dihitung dari parser, bukan perkiraan README dataset.
-Composite key memakai `|`; `SourceRecord.line` adalah physical line awal record, termasuk CSV quoted/multiline.
+| Deal/akun | Umur deal | Umur tahap | External | Internal | Total | Terakhir external | Terakhir internal | Terakhir semua |
+| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| DL-001/P01 | 61 | 20 | 4 | 0 | 4 | 2026-09-24 | null | 2026-09-24 |
+| DL-002/P02 | 68 | 45 | 3 | 1 | 4 | 2026-09-05 | 2026-09-28 | 2026-09-28 |
+| DL-003/P03 | 16 | 10 | 1 | 0 | 1 | 2026-09-21 | null | 2026-09-21 |
+| DL-004/P04 | 57 | 30 | 3 | 0 | 3 | 2026-09-22 | null | 2026-09-22 |
+| DL-005/P05 | 5 | 5 | 0 | 0 | 0 | null | null | null |
 
-| Sumber | Record | Key / ID penghubung |
-| --- | ---: | --- |
-| crm_accounts.csv | 45 | account_id; account_owner_id, champion_contact_id |
-| crm_contacts.csv | 160 | contact_id; account_id_saat_ini, email |
-| contact_employment_history.csv | 217 | contact_id\|organisasi\|mulai; account_id dan interval mulai–selesai |
-| crm_deals.csv | 22 | deal_id; account_id, owner_id, kompetitor |
-| employees.csv | 10 | employee_id; email |
-| interactions.jsonl | 350 | interaction_id; account_id, email dari/ke, peserta, membalas_id |
-| outlets.csv | 620 | outlet_id; account_id |
-| product_usage_daily.csv | 226300 | tanggal\|outlet_id; account_id, versi_aplikasi |
-| feature_usage_monthly.csv | 1178 | bulan\|account_id\|feature_id |
-| support_tickets.csv | 640 | ticket_id; account_id, outlet_id, pelapor_contact_id, bug_id, versi_aplikasi |
-| bugs.csv | 4 | bug_id; fitur_terkait, versi_terdampak |
-| releases.csv | 3 | versi; tanggal_rilis |
-| features.csv | 8 | feature_id; target awal/terkini |
-| contracts_billing.csv | 40 | contract_id; account_id, decision_id |
-| decision_log.csv | 30 | decision_id; account_id, deal_id, employee IDs, bukti_interaction_id, fitur_dijanjikan |
-| **Total** | **229627** | **14 CSV + 1 JSONL; XLSX dikecualikan** |
+Umur bersumber `crm_deals.csv:DL-001` sampai `DL-005`. Set interaksi external: P01 I0279/I0310/I0325/I0343; P02 I0269/I0296/I0322; P03 I0334; P04 I0284/I0314/I0335; P05 kosong. Internal P02 I0348; seluruh ID interaksi memakai prefix `interactions.jsonl:`. I0322 adalah follow-up sales, tidak dianggap respons pelanggan.
 
-Kolom lengkap (juga tersedia lewat `Dataset.inventory()`):
-- **crm_accounts.csv:** account_id, nama, tipe, industri, kota, paket, jumlah_outlet, account_owner_id, champion_contact_id, nps_terakhir, health_score_dashboard.
-- **crm_contacts.csv:** contact_id, nama, email, account_id_saat_ini, jabatan_saat_ini.
-- **contact_employment_history.csv:** contact_id, account_id, organisasi, jabatan, mulai, selesai.
-- **crm_deals.csv:** deal_id, account_id, tipe, stage, stage_sejak, dibuat, owner_id, outlet, nilai_tahunan, status, alasan_kalah, kompetitor.
-- **employees.csv:** employee_id, nama, jabatan, email.
-- **interactions.jsonl:** interaction_id, tanggal, tipe, account_id, dari, ke, peserta, subjek, isi, membalas_id.
-- **outlets.csv:** outlet_id, account_id, kota, mode_offline_aktif.
-- **product_usage_daily.csv:** tanggal, outlet_id, account_id, versi_aplikasi, jumlah_transaksi, transaksi_offline_tersinkron.
-- **feature_usage_monthly.csv:** bulan, account_id, feature_id, pengguna_aktif.
-- **support_tickets.csv:** ticket_id, dibuat, account_id, outlet_id, pelapor_contact_id, kategori, prioritas, status, versi_aplikasi, judul, deskripsi, bug_id, diselesaikan.
-- **bugs.csv:** bug_id, judul, versi_terdampak, status, dibuat, selesai, fitur_terkait.
-- **releases.csv:** versi, tanggal_rilis.
-- **features.csv:** feature_id, nama, status, target_awal, target_terkini, catatan.
-- **contracts_billing.csv:** contract_id, account_id, paket, outlet_kontrak, batas_outlet_paket, mulai, tanggal_renewal, harga_per_outlet_bulan, diskon_pct, nilai_tahunan, keterlambatan_bayar_12bln, decision_id.
-- **decision_log.csv:** decision_id, tanggal, tipe, account_id, deal_id, diminta_oleh, diputuskan_oleh, keputusan, nilai, alasan, bukti_interaction_id, fitur_dijanjikan, status_janji.
+**P01 — jalur kewenangan pengadaan**
+- Fakta: I0343/Fajar menyatakan proposal diteruskan ke GM Operations baru yang bergabung awal September, keputusan pengadaan pada orang tersebut, sedangkan dirinya teknis. CRM K017/Rina Hapsari berjabatan GM Operations P01 dengan employment mulai 2026-09-01.
+- Bukti: `interactions.jsonl:I0343`, `crm_contacts.csv:K052`, `crm_contacts.csv:K017`, `contact_employment_history.csv:K017|Grup Ritel Mandala|2026-09-01` dan deal DL-001.
+- Interpretasi: gabungan isi percakapan, role dan interval mengarah ke K017; **inferred**, bukan edge decision-maker eksplisit atau pilihan otomatis CEO K089.
+- Kurang: konfirmasi identitas pemegang kewenangan, mandat dan proses pengadaan terkini.
+- Implikasi: verifikasi kepada Fajar dan identifikasi jalur pengadaan sebelum memperlakukan kandidat sebagai pengambil keputusan yang terkonfirmasi.
+- Jalur identitas historis: employment K017 di C01 mulai 2021-03-01 sampai 2026-08-15 (`contact_employment_history.csv:K017|Kopi Lintas Nusantara|2021-03-01`) + kontak K017 + I0051/I0066/I0159/I0223/I0224/I0290 mendukung alias `rina.hapsari@kopilintas.co.id`. Setiap path mempunyai tiga record sumber dan interval; alias tetap inferred, bukan alamat baru atau konfirmasi langsung.
 
-### Graph dan provenance
+**P02 — harga berbeda dari approval**
+- Fakta: I0296 menyebut harga tinggi dan KasirPro sekitar 20% lebih murah. I0348 adalah Citra mengusulkan diskon 20% kepada Andi/VP Sales. Pencarian 30 record `decision_log.csv` dengan account_id P02, deal_id DL-002 dan tanggal ≤ snapshot menemukan nol log fokus.
+- Bukti: `interactions.jsonl:I0296`, `interactions.jsonl:I0348`, `employees.csv:E01`, `crm_deals.csv:DL-002`; report menyimpan filter, file sumber dan inspected_record_count pencarian log.
+- Interpretasi: keberatan harga didukung percakapan; email sales adalah permintaan, bukan approval. Angka diskon tidak diduplikasi dari subjek. Log C01 tidak mengesahkan P02.
+- Kurang: batas anggaran, kesetaraan lingkup kompetitor, keputusan permintaan serta justifikasi komersial. Nol log dalam dataset tidak membuktikan keputusan tidak pernah ada di luar sumber.
+- Implikasi: klarifikasi harga/lingkup dan periksa keputusan + log sebelum menawarkan diskon; >10% memerlukan VP Sales dan pencatatan sesuai kontrak tim.
+- Preseden D-2025-02/D-2025-06 tetap tersedia di konteks BIMA-01: penolakan diskon 20% dan pilot tanpa diskon pada C23 adalah preseden historis, **bukan** approval P02. Pemilihan applicability tetap milik Ical.
 
-Snapshot graph aktual: **3907 node, 8657 edge, 4003 evidence**, termasuk **676 agregat usage**.
-Node meliputi akun, kontak, employee, organisasi eksternal, deal, interaksi, email, keputusan, kontrak, outlet, tiket, bug, release, feature, usage bulanan dan agregat usage harian per akun/bulan/versi.
-Relasi direct: kepemilikan/CRM champion, employment, current CRM account, deal/account, keputusan/deal/peminta/pengambil keputusan/bukti/janji fitur, kontrak/decision, tiket/outlet/pelapor/bug, bug/feature/versi, email sender/recipient, peserta dan reply, usage/feature/versi. `mentions` hanya rujukan teks, bukan sebab/approval.
+**P03 — permintaan referensi apotek**
+- Fakta: I0334/Ratna meminta referensi apotek. Kandidat C03/C09/C17/C27 ditelusuri dari akun fokus melalui industri/FEAT-05; usage September 2026 adalah bulan lengkap terbaru.
+- Bukti: `interactions.jsonl:I0334`, `crm_accounts.csv:C03/C09/C17/C27` (empat ID terpisah), `feature_usage_monthly.csv:2026-09|C03|FEAT-05` dan key setara C09/C17/C27; relasi dan source IDs lengkap ada dalam report.
+- Interpretasi: permintaan perlu dijawab, tetapi tidak otomatis membuktikan deal sudah tertunda. Usage hanya bukti pemakaian fitur, bukan kualitas implementasi atau kesediaan menjadi referensi.
+- Kurang: kriteria kemiripan yang diterima Ratna, pengalaman terkini, suitability serta izin kandidat/contact.
+- Implikasi: validasi kebutuhan referensi, periksa kandidat dengan account owner, lalu minta izin sebelum perkenalan. Tidak memilih pemenang atau membuat ranking.
 
-Relasi inferred: identitas email lama, overlap masa kerja, lexical feature match, agregat, related-account dan candidate-precedent.
-Kandidat lintas akun dicari dari kompetitor yang sama, industri beririsan, employment terdahulu, overlap pekerjaan, atau usage feature yang diminta sebagai referensi. Setiap hubungan mempunyai sumber; hubungan tersebut **bukan** skor relevansi, ranking, acquaintance, persetujuan referensi atau rekomendasi.
-Preseden menyimpan semua field CSV asli sebagai string. Source ID bukti direct adalah PK/composite key; source ID agregat `lines:<ranges>` menunjuk tepat baris CSV pembentuknya. Evidence IDs agregat stabil berdasarkan akun/bulan/versi. Ringkasan memisahkan offline missing dan observed zero.
-Event setelah snapshot tidak masuk graph; employment historis tetap ada dengan masa berlaku. Total bulanan baru dipakai setelah bulan lengkap. CRM master adalah keadaan snapshot, bukan replay keadaan masa lalu.
+| Kandidat | Akun | Outlet CRM | Pengguna aktif FEAT-05 September |
+| --- | --- | ---: | ---: |
+| C03 | Apotek Sehat Sentosa | 18 | 14 |
+| C09 | Apotek Medika Farma | 15 | 11 |
+| C17 | Apotek Bunda Sehat | 10 | 22 |
+| C27 | Apotek Kimia Sejahtera | 22 | 48 |
+
+**P04 — referensi menjadi syarat, jalur network belum izin**
+- Fakta: I0335/Yuli menyatakan direktur meminta rekomendasi pengguna mirip sebelum tanda tangan dan menunda sampai ada referensi. K028/Hartono dan K116/Budi pernah bekerja di PT Sentosa Abadi Group, overlap 2015-02-01–2019-11-30. Budi kini CFO C06/Saiyo Group, history mulai 2020-01-02.
+- Bukti: `interactions.jsonl:I0335`, kontak K028/K116, akun P04/C06, dan `contact_employment_history.csv:K028|PT Sentosa Abadi Group|2015-01-01`, `...:K116|PT Sentosa Abadi Group|2015-02-01`, `...:K116|Saiyo Group|2020-01-02` (prefix file sama).
+- Interpretasi: percakapan mendukung hambatan referensi; overlap memberi jalur kandidat C06, **bukan** bukti saling kenal. P04 Hospitality dan C06 Resto Padang tidak otomatis memenuhi kriteria mirip.
+- Kurang: acquaintance, kesesuaian pengalaman/operasi, willingness dan consent.
+- Implikasi: pastikan kriteria dengan Yuli, verifikasi jalur melalui account owner dan minta izin; jangan menjanjikan endorsement direktur atau kandidat.
+
+**P05 — informasi belum cukup**
+- Fakta: tidak ada interaksi external/internal bertanggal untuk P05 dalam jendela deal-snapshot; last_date null. Bukti `crm_deals.csv:DL-005`, `crm_accounts.csv:P05`, plus query scope `interactions.jsonl`/P05/2026-09-26–2026-10-01 dalam report.
+- Interpretasi: **data_gap**, bukan bukti tidak berminat, kalah atau outlier.
+- Kurang: kebutuhan, kontak, hambatan, kewenangan dan proses pengadaan yang didukung percakapan.
+- Implikasi: lengkapi discovery dan pencatatan, bukan membuat diagnosis komersial dari kekosongan.
+
+**Klasifikasi:** business_anomaly berarti hambatan/ketidakselarasan yang didukung percakapan, bukan pelanggaran SLA. Data_gap adalah batas pengetahuan. Statistical outlier **not_assessed**: lima prospek berada pada lima tahap berbeda, tidak tersedia cohort pembanding per tahap/segmen atau SLA; method/threshold/outlier_deal_ids null. Umur maksimum hanya deskripsi, bukan dasar memberi label outlier.
 
 ## Kontrak dan dependency
-Tetap **v1**, `backend/contracts.py` dan `docs/coordination/API_CONTRACT.md` tidak diubah. Semua edge menunjuk node/evidence yang tersedia.
-Dependency yang sudah ditetapkan Main dipasang dengan `python -m pip install -r requirements.txt`; tidak mengubah file dependency. Runtime aktual: Python 3.14.7, NetworkX 3.7, FastAPI 0.127.0, Pydantic 2.12.5.
-Ical memakai `backend.graph.context.build_deal_context` → `backend.decision.analyze.analyze_deal(context)`; Boy tetap memanggil endpoint v1 yang sama.
-Tidak mengusulkan perubahan schema/endpoint. Lookup bukti/subgraph saat ini fungsi internal sesuai prompt Bima.
+Tetap **v1**; `backend/contracts.py` dan `docs/coordination/` tidak diubah. Menggunakan `interaction_for`, `employed_at`, `overlapping_employment` dan `related_account_*` kanonis. EvidenceRecord memakai JSON row asli di excerpt; `isi` adalah pesan, subjek metadata. Semua source IDs report dapat diselesaikan ke record direct. Identitas/hubungan/interpretasi tetap diberi batas inferred.
+
+Tidak menambah dependency atau endpoint. Usulan kepada Main (belum disetujui/diimplementasikan): **GET `/api/deals/{deal_id}/initial-analysis`** untuk laporan diagnostik bersumber, terpisah dari Recommendation Ical. Field yang diperlukan: snapshot; umur deal/tahap beserta age_evidence_ids; jumlah/latest per tipe beserta query_scope dan unknowns; findings dengan fact/evidence_ids/interpretation/missing_information/follow_up_implication; kandidat dengan jalur/usage/latest period dan null suitability/willingness/consent; evidence registry. Main menentukan bentuk/versi kontrak, akses UI dan apakah endpoint ini diperlukan; Bima tidak melakukan cutover sepihak.
 
 ## Cara menjalankan
-Prasyarat proyek Python 3.11+; gunakan dependency repo. Dari root:
+Dari root repo, dengan dependency proyek terpasang:
 
 ```bash
-python -m pip install -r requirements.txt
-python -m uvicorn backend.main:app --host 127.0.0.1 --port 8765
 python -m unittest discover -s tests -v
 python scripts/check_handoff.py --all
+python -c "import json; from backend.graph.analysis import analyze_pipeline_initial; print(json.dumps(analyze_pipeline_initial(), ensure_ascii=False, indent=2, allow_nan=False))"
 ```
 
-Detail: `GET http://127.0.0.1:8765/api/deals/DL-002`; ganti dengan DL-001/DL-003/DL-004/DL-005 untuk cakupan lain.
-API memakai **deal_id**, bukan P02. Server smoke dimatikan setelah pemeriksaan; port di atas hanya port verifikasi, bukan perubahan konfigurasi produk.
-Contoh query internal: `get_dataset().query('product_usage_daily.csv', account_id='C23')`; lookup: `get_context_graph().lookup_evidence('interactions.jsonl:I0296')`.
-Cache memuat sumber sekali per proses; restart server jika sumber lokal diganti pada fixture. Dataset asli tidak diubah.
+Single deal: panggil `analyze_deal_initial(build_deal_context('DL-002'))`; bukan Recommendation dan tidak dipanggil oleh route analyze yang ada. Lookup sumber: `get_dataset().by_id['interactions.jsonl']['I0348']` atau `get_context_graph().lookup_evidence('interactions.jsonl:I0348')`. Snapshot lain ditolak, bukan replay historis palsu. Dataset/cache tidak dimodifikasi; fixture memakai temporary directory.
 
 ## Pengujian aktual
-Tanggal 2026-10-09, WIB; hasil berikut dari eksekusi sesi ini, bukan hasil bootstrap Main.
+2026-10-09, WIB; berikut eksekusi BIMA-02, bukan klaim hasil integrator:
 
-1. Sebelum implementasi, `python -c "from backend.graph.context import build_deal_context; build_deal_context('DL-002')"` menghasilkan `NotImplementedError` dari stub graph.
-2. Run pertama `python -m unittest discover -s tests -v`: 24 tes, 23 lulus, satu error karena industri fixture kosong menjadi `None` lalu `.lower()`. Pencarian diperbaiki agar tidak mencocokkan data kosong dan menambah unknown.
-3. Regression spesifik `python -m unittest tests.bima.test_context.SnapshotFixtureTests.test_future_interaction_is_ingested_but_not_graph_evidence -v`: 1 tes lulus.
-4. Run setelah integrasi dan tambahan boundary test, `python -m unittest discover -s tests -v`: **27 tes lulus, 4.145 s**; 17 milik Bima. Fixture temporary tidak mengubah sumber asli.
-5. Server nyata: `python -m uvicorn backend.main:app --host 127.0.0.1 --port 8765`. Python Eval/stdlib `urllib.request` memanggil HTTP aktual, bukan TestClient; respons setiap detail divalidasi `DealContext.model_validate`.
-6. Verifikasi ulang sebelum commit/push: `python -m unittest discover -s tests -v` **27 tes lulus, 6.562 s**; `python scripts/check_handoff.py --all` lulus. Tidak ada perubahan kode setelah run ini.
+- Integration run awal: `python -m unittest discover -s tests -v` — **75 tes lulus, 12.824 s**.
+- Run final setelah pembersihan assertion incidental: perintah sama — **75 tes lulus, 10.683 s**. Total 65 tes Bima (48 baru BIMA-02), 10 bootstrap/handoff; tidak ada perubahan kode setelah run ini.
+- Smoke fungsi internal aktual pada **17:47:08 WIB**: canonical contexts → metrics/findings → serialisasi JSON strict dan round-trip consumer → EvidenceRecord validation → lookup sumber. Semua excerpt sama dengan row raw, source_file/source_id tepat, lima akun lengkap; setiap temuan memiliki komponen wajib dan evidence resolvable. Kandidat suitability/willingness/consent null; statistik not_assessed. Output `SMOKE PASS: canonical contexts -> metrics/findings -> JSON consumer -> original source rows`.
+- Smoke sebelumnya pada 17:43:22 WIB juga memeriksa jalur identity/overlap dan setiap sumber laporan. Tidak membuat file smoke permanen atau mengubah dataset.
+- `python scripts/check_handoff.py --all` — lulus: “Handoff valid. Main tetap memverifikasi kebenaran laporan dan integrasi.”
+- `python scripts/check_handoff.py --base origin/main --head HEAD --branch bima/data-graph` pada commit kode `3b17262` — lulus terhadap diff committed; hanya tujuh file Bima/handoff berubah.
 
-| Runtime path | Hasil aktual |
-| --- | --- |
-| GET /health | 200; ok, v1, snapshot 2026-10-01 |
-| GET /api/deals | 200; lima prospek, jumlah annual value Rp667.800.000 |
-| GET /api/deals/DL-001 sampai DL-005 | Seluruhnya 200; schema, keunikan ID, endpoint edge dan evidence IDs diperiksa |
-| GET /api/deals/DL-999 | 404 DEAL_NOT_FOUND |
-| POST /api/deals/DL-999/analyze | 404 DEAL_NOT_FOUND |
-| GET /api/deals/P02 | 404 DEAL_NOT_FOUND; account_id tidak ditukar dengan deal_id |
-| GET /api/deals/DL-006 | 404 DEAL_NOT_FOUND; historical deal tersedia sebagai bukti, bukan prospek terbuka |
-| POST /api/deals/DL-002/analyze | 501 NOT_IMPLEMENTED dari stub Ical; tidak ada recommendation rekaan |
-
-| Konteks | Node | Edge | Evidence | Candidate decisions | Unknowns |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| P01 / DL-001 | 749 | 1647 | 763 | 6 | 12 |
-| P02 / DL-002 | 1305 | 2895 | 1361 | 13 | 19 |
-| P03 / DL-003 | 443 | 941 | 476 | 3 | 8 |
-| P04 / DL-004 | 147 | 297 | 147 | 0 | 6 |
-| P05 / DL-005 | 3 | 3 | 3 | 0 | 5 |
-
-Smoke internal tambahan memeriksa semua edge graph terhadap evidence registry dan **seluruh** agregat terhadap record sumber: 226300 baris terselesaikan tepat sekali, total 53524240 transaksi server, 215350 nilai offline kosong. Tidak mengubah kosong menjadi nol atau mengklaim jumlah transaksi sebenarnya di kasir.
-Script smoke tidak disimpan di repo. Langkah mencatat timestamp awal gagal karena Windows tidak memiliki database `tzdata`; perilaku HTTP dan assertion graph telah selesai sebelumnya. Pencatatan waktu diulang hanya pada langkah gagal dengan UTC+07:00, tanpa perubahan dependency.
-`python scripts/check_handoff.py --all`: **lulus**, output “Handoff valid. Main tetap memverifikasi kebenaran laporan dan integrasi.”
-`scripts.check_handoff.validate_changes` dengan delapan file yang dibuat/diubah sesi ini dan branch `bima/data-graph`: **lulus**, tanpa pelanggaran heading/ownership. Ini pemeriksaan file hasil sesi, **bukan** diff PR yang sudah committed.
-`python scripts/check_handoff.py --base origin/main --head HEAD --branch bima/data-graph` pada commit kode `642d97f`: **lulus** terhadap diff committed, sebelum push dan pembukaan PR.
-Frontend build, Jev live, rekomendasi Ical, ranking dan UI end-to-end **tidak diuji** pada tugas Bima. Server smoke sudah dihentikan.
-
-### Bukti P02 dan coverage lain
-- P02: I0269 discovery, I0296 keberatan harga/kompetitor sekitar 20% lebih murah, I0322 follow-up dan I0348 usulan diskon 20%. I0348 adalah **permintaan**, tidak ada log approval untuk P02.
-- C23/DL-006 + D-2025-02: diskon 20% ditolak; deal kalah dengan alasan harga.
-- C23/DL-007 + D-2025-06: pengecualian paket Starter tanpa diskon, pilot enam outlet disetujui pada log; deal menang. **Bukan** approval pilot/diskon untuk P02.
-- Kedua preseden mempunyai evidence CSV dan hubungan inferred `candidate_precedent_same_competitor`; `bukti_interaction_id` keduanya kosong, tanpa email buatan.
-- P01: konteks memuat K017, perpindahan C01 → P01, email lama yang inferred dan status FEAT-07 tanpa tanggal pasti.
-- P03: interaksi I0334, permintaan referensi apotek dan usage FEAT-05 sebagai penghubung kandidat, bukan approval referensi.
-- P04: I0335 menunda pengadaan sampai ada referensi; graph mencakup network temporal. Tidak ada candidate decision melalui penghubung yang tersedia.
-- P05: tidak ada interaksi/kontak kebutuhan/preseden relevan melalui penghubung saat ini; unknowns eksplisit, bukan analisis siap atau closing rekaan.
+BIMA-01 historis: 27 tes, HTTP detail seluruh DL-001–DL-005 200, unknown 404 dan analyzer unavailable 501 pernah diamati sebelum merge PR #6. **Bukan** smoke HTTP baru BIMA-02. Frontend/UI, Jev live, rekomendasi/ranking Ical dan end-to-end produk tidak diuji pada BIMA-02.
 
 ## Fixture dan keterbatasan
-Dataset sumber sintetis asli dipakai untuk konteks dan HTTP smoke. Small fixtures menulis seluruh 15 sumber di temporary directory untuk malformed value, duplicate key, whitespace/case ID, missing versus zero, future interaction, exact aggregate, dan alias email ambigu/di luar employment.
-Semua sumber keputusan ditelusuri ke CSV; **29 dari 30** keputusan tidak mempunyai bukti_interaction_id. Tidak menambal kekosongan dengan interaksi sintetis.
-Email lama dicocokkan hanya bila local-part sama dan tepat satu identitas memiliki employment pada akun/tanggal interaksi; tetap **inferred**, belum konfirmasi langsung.
-Overlap kerja membuktikan periode/organisasi, bukan saling kenal. Gejala/versi/tiket linked_bug bukan bukti penyebab seluruh penurunan usage. Tidak menghasilkan confidence Jev, approval, ranking atau probabilitas closing.
-Master CRM bersifat snapshot; tanggal lain sengaja ditolak. Field roadmap quarter/“Belum ditetapkan” tetap string, bukan tanggal rilis palsu.
-P02 memiliki 13 kandidat dari graph pencarian, bukan dua preseden terpilih oleh decision engine. Ical harus membandingkan applicability dan menyebut bukti/unknowns.
-Payload P02 pada smoke 1687310 byte karena konteks menyertakan sumber terkait dan locator agregat lengkap. Belum melakukan benchmark atau verifikasi renderer frontend; ini batas integrasi UI, bukan klaim UI lulus.
+Sumber sintetis kanonis digunakan untuk smoke dan regression nyata. Small fixtures terisolasi menguji batas tanggal inklusif, akun lain, tanggal/type missing, zero, ties, title-only, negated/subject-only/outbound/internal claims, ID yang berubah, employment ambigu/berakhir, vocabulary nonkanonis, dan latest usage zero/missing/future tanpa fallback positif lama.
+
+Parser percakapan adalah aturan lexical untuk isi pesan kanonis; bukan NLP umum atau verifikasi mandat hukum. Kandidat unik dari role/history tetap inference. Overlap kerja tidak membuktikan acquaintance. Usage FEAT-05 tidak membuktikan eligibility/consent. External count bukan buyer-response count. Absence memiliki query scope, bukan bukti universal tidak ada aktivitas. Tidak memvalidasi/mengeluarkan approval, SLA, Jev confidence atau statistik outlier.
+
+CRM adalah snapshot 2026-10-01; tidak mendukung tanggal lain. Laporan internal tidak menambah schema API dan belum ditampilkan UI. Temuan diagnostic tidak menggantikan analisis/policy Ical. Masalah Ical/Boy yang dicatat review Main tetap di area mereka; Bima tidak mengubah implementasi itu atau mengklaim sudah memperbaikinya.
 
 ## Blocker
-Tidak ada blocker untuk loader, konteks lima prospek dan endpoint detail Bima.
-**Integrasi rekomendasi nyata menunggu Ical**: `backend/decision/analyze.py` masih `NotImplementedError`; 501 nyata teramati. Main/Ical perlu menyediakan implementation tanpa mengubah loader/kontrak diam-diam. Tidak ada Jev live yang diuji.
-NetworkX awalnya belum terpasang, sudah diselesaikan dari requirements repo. `gh` tidak tersedia dan URL issue private memberi 404 tanpa auth; isi issue berhasil dibaca lewat API authenticated tanpa mencetak secret.
+Tidak ada blocker untuk analisis internal P01–P05 dan sumbernya. Integrasi field/endpoint/UI menunggu keputusan Main atas usulan kontrak; suitability/izin referensi dan konfirmasi procurement membutuhkan informasi bisnis di luar dataset, dinyatakan unknown bukan diisi rekaan. Jev/ranking/evaluasi tetap milik Ical.
 
 ## Tugas berikutnya
-1. Bima: publikasi kode dan pembukaan PR #6 sudah dilakukan; tanggapi review Main pada branch yang sama dan sertakan perubahan handoff di setiap PR pekerjaan.
-2. Ical: gunakan konteks nyata, pilih/bandingkan preseden yang relevan, policy diskon >10% wajib VP Sales dan log; permintaan I0348 tidak dianggap approval. Candidate/evidence IDs rekomendasi harus resolvable.
-3. Main: review sumber dan acceptance; jalankan suite serta smoke ulang setelah mengintegrasikan Ical. Baru Main menetapkan VERIFIED/MERGED dan memperbarui README/status koordinasi yang masih menjelaskan bootstrap.
-4. Boy/Main: periksa detail/graph/evidence di UI untuk P01–P05, termasuk unknowns P05 dan ukuran payload; belum ada bukti UI dari pekerjaan ini.
-5. Produk final tetap mencakup P01–P05, analisis, ranking lintas deal dan integrasi Jev/evaluasi milik tim. Keberhasilan konteks P02 tidak menutup scope akhir.
+1. Bima: PR #10 sudah dibuka dan review Main diminta; tanggapi review pada branch yang sama dan sertakan handoff di setiap perubahan. PR #6 tetap selesai.
+2. Main: review metrik, source paths, klasifikasi, batas izin/approval dan usulan endpoint; hanya Main menetapkan VERIFIED/MERGED serta mengubah kontrak/koordinasi.
+3. Ical: konsumsi konteks kanonis; jangan memakai C01 sebagai sinyal fokus P02, menganggap I0348 approval, atau kandidat sebagai reference permission. Diagnostic internal bukan keputusan penawaran.
+4. Boy/Main: tentukan penyajian metrik dan bukti yang dapat dibaca mentor, beserta unknowns P05, setelah kontrak UI disepakati.
+5. Tim/manusia: konfirmasi kewenangan P01, keputusan harga P02, kriteria/izin kandidat P03/P04 dan discovery P05. Scope akhir tetap P01–P05.
 
 ## Update WIB
-2026-10-09 16:52:41 WIB (waktu aktual PR #6 dibuat dan review Main diminta, UTC+07:00).
+2026-10-09 17:52:08 WIB (waktu aktual PR #10 dibuat dan review Main diminta; UTC+07:00). Status penyerahan READY_FOR_REVIEW, belum verifikasi Main.
