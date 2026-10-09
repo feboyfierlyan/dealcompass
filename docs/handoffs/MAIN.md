@@ -1,31 +1,31 @@
 # Handoff MAIN
 
 ## Task dan status
-MAIN-01 IN_PROGRESS. BOY-01/02 MERGED #5, R4 VERIFIED. BIMA-01 MERGED #6. ICAL-02 terakhir NEEDS_REVISION R6/R7; integrasi akhir belum selesai.
+MAIN-01 VERIFIED untuk smoke integrasi rules P01-P05. ICAL-01/02 MERGED #7; BIMA-02 MERGED #10. BOY-03 TODO dengan prompt siap. Produk akhir belum selesai.
 
 ## Branch dan commit
-integrator/boy-r2-review-notes dari main 3b8cc872b421d193ba56937201a7c9c3739d6015. Kode Boy direview b95d7ed; sinkron main menghasilkan 4c82ea4 tanpa perubahan frontend/handoff Boy; CI final lulus sebelum merge.
+integrator/ical-bima-verified-boy03 dari main 41cee67. Kode Ical 3e90711 dan Bima 93c3ed1 diuji gabungan dengan frontend main 803b737. Head sinkron Ical f5ac3d3 / Bima d7a2351 tidak mengubah kode anggota tersebut; CI final lulus. Merge Ical cef7e7c, Bima 41cee67.
 
 ## File dan fungsi
-Review docs/reviews/2026-10-09-pr5-r2.md; checklist docs/coordination/MAIN.md dan handoff Main. Graph index/scope/search/path/expand/layout serta EvidencePanel/Browser diverifikasi. Catatan PR ini tidak mengubah kode anggota.
+Review docs/reviews/2026-10-09-pr7-pr10-final.md; prompt docs/prompts/BOY-03.md; checklist MAIN.md dan status endpoint API_CONTRACT.md. Tidak ada perubahan kode anggota. focus_decisions/_price dan analisis internal Bima diverifikasi.
 
 ## Kontrak dan dependency
-Schema v1, dependency dan dataset tidak berubah. Graph subset eksplisit, akses ke seluruh bukti tetap tersedia. Rank null tetap belum tersedia.
+Kontrak v1 tetap. Analyze kini tersedia di main; diagnostic Bima masih fungsi internal. Ranking, analysis_status dan API diagnostic belum ditetapkan integrasinya. Dependency dan dataset tidak berubah.
 
 ## Cara menjalankan
-Ikuti frontend/TESTING.md. Review memakai backend lokal port 8126 dan Vite 5177 dengan override proxy runtime, tanpa mengubah file konfigurasi. Server review dihentikan dan viewport browser direset setelah uji.
+README dan frontend/TESTING.md. Gunakan DEALCOMPASS_ENGINE_MODE=rules untuk smoke; unittest discover dan python -m evaluation.run_eval --no-write. Diagnostic internal melalui analyze_pipeline_initial. Backend/UI review lokal dihentikan setelah pengujian.
 
 ## Pengujian aktual
-20/20 tes frontend, 27/27 backend/handoff, build produksi, ownership/handoff dan diff check lulus. Browser P01-P05 desktop 1440x1000/mobile 390x844: label 13px, tidak ada overflow halaman. P02 7/1305 node, 9/2895 relasi; bukti I0348/I0296, preseden D-2025-06, filter dan pagination diverifikasi. Analyze 501 ditampilkan eksplisit. CI final PR #5 verify sukses.
+99/99 unittest gabungan lulus (19,423 detik). Evaluasi 34/35, inti 34/34. Probe R6/R7 independen plus kontrol approval valid lulus. Seluruh sumber report Bima dicocokkan ke row raw, JSON strict dan EvidenceRecord valid. HTTP analyze P01-P05 200 rules; evidence IDs dapat di-resolve. Browser aktual menjalankan kelima analisis, menampilkan action/owner/milestone/approval/sumber; console tanpa error/warn. CI final kedua PR sukses.
 
 ## Fixture dan keterbatasan
-Uji graph dan browser memakai API dataset nyata, bukan fixture. Jev live, ranking dan panel analisis Ical belum terintegrasi di main. Klik edge preseden diverifikasi lewat keyboard Enter; tidak mengklaim pengujian seluruh kurva dengan pointer.
+Probe approval sintetis menambah record pada salinan konteks, bukan dataset asli. Jev diuji mock/replay, belum live. E15 parafrase rules tetap batas diketahui. Smoke browser bukan acceptance lengkap UX/demo. BIMA-02 belum endpoint/UI; ranking belum ada dan status daftar belum tersinkron dengan hasil analisis.
 
 ## Blocker
-Tidak ada blocker BOY-02 yang ditemukan pada cakupan review. R6/R7 Ical tetap menghalangi integrasi analisis berdasarkan review terakhir; status review lain tidak diubah tanpa bukti baru.
+Tidak ada blocker tersisa dalam cakupan #7/#10 yang direview. Output wajib ranking, API diagnostic dan Jev live masih pekerjaan produk berikutnya. Jangan mengklaim seluruh aplikasi final selesai.
 
 ## Tugas berikutnya
-BOY-03 siapkan checklist demo sekarang, lalu uji panel analisis kelima deal setelah Ical merged. Main review revisi Ical dan pekerjaan Bima berikutnya, kemudian koordinasikan ranking. Detail assignment di MAIN.md.
+Boy jalankan docs/prompts/BOY-03.md dari main terbaru pada branch baru dan wajib handoff. Main menetapkan kontrak ranking/diagnostic/analysis_status; Bima/Ical melanjutkan area masing-masing setelah acceptance jelas. Detail di MAIN.md.
 
 ## Update WIB
-2026-10-09 17:53 WIB
+2026-10-09 18:05 WIB
