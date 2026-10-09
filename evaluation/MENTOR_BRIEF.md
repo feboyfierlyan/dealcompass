@@ -27,7 +27,7 @@ sumber:
 |---|---|---|
 | P04 | Negosiasi, Rp147 jt → "dorong tanda tangan" | Pelanggan menunda sampai ada referensi (`interactions.jsonl:I0335`); kandidat C06 Saiyo Group lewat overlap kerja K028–K116, izin kontak belum ada |
 | P01 | Proposal, Rp252 jt → "follow up kontak" | Keputusan pindah ke GM Operations baru (`I0343`); kandidat K017 Rina Hapsari (inferred); janji FEAT-07 belum ditepati di perusahaan lamanya (`D-2025-11`, `D-2026-08`) |
-| P02 | Demo, Rp63 jt, kompetitor KasirPro → "kirim penawaran" | Keberatan harga (`I0296`), **permintaan** diskon 20% (`I0348`) yang wajib diputus VP Sales E01; 0 log keputusan untuk DL-002; preseden 20% ditolak (`D-2025-02`, `D-2024-02`, `D-2026-04`) |
+| P02 | Demo, Rp63 jt → "kirim penawaran" (kompetitor tidak dipakai baseline) | Keberatan harga (`I0296`), **permintaan** diskon 20% (`I0348`) yang wajib diputus VP Sales E01; 0 log keputusan untuk DL-002; preseden 20% ditolak (`D-2025-02`, `D-2024-02`, `D-2026-04`) |
 | P03 | Discovery, Rp37,8 jt → "lanjut discovery" | Pelanggan minta referensi apotek (`I0334`); kandidat C17/C09/C27 dengan usage FEAT-05 Sep 2026; C03 dicek belakangan (6 tiket terbuka) |
 | P05 | Lead, Rp168 jt → "kualifikasi" | Tidak ada interaksi: status `insufficient_evidence`, tindakan discovery; tidak ada sumber tambahan (jujur: graph tidak menambah apa pun di sini) |
 
@@ -49,7 +49,7 @@ menunjuk path edge asli, misalnya:
 - P02: `DL-002 → D-2025-02 → DL-006` — owner yang sama (E07) pernah minta 20% untuk
   C23, ditolak; deal itu kalah. `D-2025-06 → DL-007`: pilot Starter tanpa diskon
   disetujui dan menang — satu keberhasilan lama, bukan jaminan.
-- P01: `K017 → C01 → D-2025-11 → FEAT-07` — riwayat kerja kandidat pengambil
+- P01: `K017 → C01 ← D-2025-11 → FEAT-07` — riwayat kerja kandidat pengambil
   keputusan bertemu janji fitur yang belum ditepati (inferensi, perlu konfirmasi).
 
 Path tidak membuat edge baru; validator menolak edge/node palsu dan shortcut (R8).
@@ -82,8 +82,8 @@ bukan prediksi urutan closing, bukan nilai pelanggan.
 - **P01 (E06):** minta kontak teknis (pengirim I0343) memperkenalkan ke Rina Hapsari
   (K017, inferred). Jangan menjanjikan tanggal FEAT-07.
 - **P02 (E07):** jangan tawarkan diskon 20% sebelum VP Sales E01 memutuskan dan mencatat.
-  Opsi tanpa diskon: 15 outlet Growth Rp63 jt; pilot ≤10 outlet Starter (Rp42 jt) hanya
-  skenario yang butuh persetujuan.
+  Opsi tanpa diskon: 15 outlet Growth Rp63 jt; pilot Starter untuk 10 outlet = Rp42 jt/tahun (maksimum10 outlet; jumlah lebih
+  kecil dihitung Rp350 ribu/outlet/bulan), hanya skenario yang butuh persetujuan.
 - **P03 (E08):** konfirmasi kriteria; AM cek C17, C09, C27 (FEAT-05 Sep 2026: 22/11/48
   pengguna aktif); C03 belakangan karena 6 tiket terbuka (3 bug, 1 Tinggi).
 - **P05 (E07):** jadwalkan discovery: pengambil keputusan, kebutuhan, jumlah outlet, anggaran.
@@ -138,7 +138,7 @@ context graph. Adapter Jev (typesafe.ai) ada dan diuji mock/replay; live belum
 diverifikasi, jadi tidak diklaim.
 
 **Apa buktinya graph+rules lebih baik dari CRM?** Kami tidak mengklaim lebih akurat.
-Yang dapat ditunjukkan: alasan bersumber, gate approval yang tidak terlihat di CRM,
+Yang dapat ditunjukkan: alasan bersumber, gate approval yang tidak terlihat pada baseline CRM-only ini,
 tindakan dengan owner/milestone, dan unknown yang dinyatakan. Dampak bisnis adalah
 hipotesis untuk diuji (lihat DEMO_CLAIMS.md).
 

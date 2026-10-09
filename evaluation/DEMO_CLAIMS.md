@@ -20,7 +20,7 @@ disertai kalimat batas; **JANGAN** = belum terbukti.
 | C8 | Dibanding baseline CRM-only, graph+rules menambah hambatan bersumber (4/5 deal), gate VP Sales (1 vs 0) dan sumber lintas tabel | `python -m evaluation.baseline_crm` → `results/baseline_latest.md`; `tests/ical/test_baseline.py` | Urutan baseline "tahap lalu nilai" **sama** dengan graph+rules; jumlah bukti bukan ukuran akurasi; tindakan baseline = template buatan Ical | BOLEH + batas |
 | C9 | Tidak ada deal yang dinyatakan outlier statistik | `statistical_assessment.status = not_assessed`, method/threshold null | 5 deal di 5 tahap; tidak ada SLA | BOLEH |
 | C10 | Referensi P03/P04: kandidat bersumber (usage, overlap kerja), izin/kesediaan belum diketahui | Recommendation DL-003/DL-004; eval E29, E30, K14 | Overlap kerja bukan bukti saling kenal; health/NPS indikator CRM | BOLEH + batas |
-| C11 | P01: kandidat pengambil keputusan K017 dan risiko janji FEAT-07 di C01 | path `K017 → C01 → D-2025-11 → FEAT-07`; eval E27, E28 | Identitas K017 **inferred**; pengetahuan K017 atas janji itu belum dikonfirmasi | BOLEH + batas |
+| C11 | P01: kandidat pengambil keputusan K017 dan risiko janji FEAT-07 di C01 | path `K017 → C01 ← D-2025-11 → FEAT-07`; eval E27, E28 | Identitas K017 **inferred**; pengetahuan K017 atas janji itu belum dikonfirmasi | BOLEH + batas |
 | C12 | Evaluasi: decision 34/35 (inti 34/34), ranking 15/15 | `python -m evaluation.run_eval`; `results/latest.md`, `results/ranking_latest.md` | E15 gagal (parafrase sulit, batas diketahui); benchmark disusun bersama pengembangan, bukan holdout | BOLEH + batas |
 | C13 | Adapter Jev ada dengan fallback rules saat gagal/timeout/respons rusak | eval E16–E26 (mock/replay); `backend/integrations/jev.py` | **Mock/replay, bukan live**. Jev tidak dipakai ranking | BOLEH + batas |
 
@@ -65,14 +65,16 @@ curl -s http://127.0.0.1:8000/api/pipeline/priorities | python -m json.tool | he
 python -m evaluation.baseline_crm --no-write
 ```
 
-UI ranking/diagnostic bergantung BOY-04; bila belum merged, pakai endpoint + tabel
-`results/baseline_latest.md` sebagai cadangan.
+UI ranking/diagnostic BOY-04 sudah VERIFIED/MERGED #22; gunakan UI dari main
+terbaru. Endpoint dan `results/baseline_latest.md` tetap tersedia sebagai cadangan.
+Jalankan backend/frontend pada terminal terpisah; panduan lintas OS dan pemulihan
+ada di [runbook Bima](../backend/api/DEMO_RUNBOOK.md).
 
 | Menit | Yang ditampilkan | Kalimat kunci |
 |---|---|---|
 | 0:00–0:30 | Masalah: 5 prospek, Rp667,8 jt potensi, bukti tersebar | "CRM tahu tahapnya, bukan alasannya." |
 | 0:30–1:15 | Baseline CRM-only vs graph+rules (`baseline_latest.md`) | "Urutannya sama; yang berbeda alasan, tindakan dan gate." |
-| 1:15–2:30 | P02: I0296 → I0348 → E01, preseden D-2025-02/D-2025-06 | "Permintaan bukan approval. Rank tidak bisa melompati VP Sales." |
+| 1:15–2:30 | P02: baca I0296 dan I0348, lalu path I0348 → email:andi@kasirnusa.id → E01; preseden D-2025-02/D-2025-06 | "Permintaan bukan approval. Rank tidak bisa melompati VP Sales." |
 | 2:30–3:15 | P04 vs P01: skor seri 8, tie-break I0335; sensitivitas | "Ini pilihan desain yang terbuka, bukan hasil statistik." |
 | 3:15–3:45 | P05 discovery | "Unknown bukan nol, bukan peluang buruk." |
 | 3:45–4:30 | Batas: rules, mock Jev, tanpa uplift, E15 | "Dampak bisnis kami sebut hipotesis yang siap diuji." |
