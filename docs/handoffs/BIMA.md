@@ -15,7 +15,9 @@ Scope P01–P05; P02/DL-002 adalah pembuktian pertama.
 
 ## Branch dan commit
 Branch aktif `bima/data-graph`; checkout awal bersih. `git fetch origin` berhasil; `git rev-list --left-right --count HEAD...origin/main` menghasilkan `0 0` sebelum implementasi.
-Perubahan pekerjaan masih lokal; belum dibuat commit, push atau PR. Jangan menganggap catatan ini sebagai bukti merge.
+Commit kode beserta handoff: [`642d97fec3c524f888d1d3d9430fc5cf863f2659`](https://github.com/feboyfierlyan/dealcompass/commit/642d97fec3c524f888d1d3d9430fc5cf863f2659), `feat(bima): ingest dataset and build sourced deal contexts`.
+`git push origin bima/data-graph` berhasil tanpa force. [PR #6](https://github.com/feboyfierlyan/dealcompass/pull/6) dibuka dari `bima/data-graph` ke `main`; review diminta kepada Main `@feboyfierlyan` melalui GitHub (HTTP 201). Permintaan review bukan approval; belum VERIFIED/MERGED.
+Pembaruan catatan publikasi ini disertakan dalam commit handoff terpisah; hash commit handoff sendiri tidak perlu ditulis di dalam file.
 Issue #2 dibaca lewat API GitHub terautentikasi tanpa mencetak/menyimpan credential.
 
 ## File dan fungsi
@@ -120,6 +122,7 @@ Tanggal 2026-10-09, WIB; hasil berikut dari eksekusi sesi ini, bukan hasil boots
 3. Regression spesifik `python -m unittest tests.bima.test_context.SnapshotFixtureTests.test_future_interaction_is_ingested_but_not_graph_evidence -v`: 1 tes lulus.
 4. Run setelah integrasi dan tambahan boundary test, `python -m unittest discover -s tests -v`: **27 tes lulus, 4.145 s**; 17 milik Bima. Fixture temporary tidak mengubah sumber asli.
 5. Server nyata: `python -m uvicorn backend.main:app --host 127.0.0.1 --port 8765`. Python Eval/stdlib `urllib.request` memanggil HTTP aktual, bukan TestClient; respons setiap detail divalidasi `DealContext.model_validate`.
+6. Verifikasi ulang sebelum commit/push: `python -m unittest discover -s tests -v` **27 tes lulus, 6.562 s**; `python scripts/check_handoff.py --all` lulus. Tidak ada perubahan kode setelah run ini.
 
 | Runtime path | Hasil aktual |
 | --- | --- |
@@ -144,6 +147,7 @@ Smoke internal tambahan memeriksa semua edge graph terhadap evidence registry da
 Script smoke tidak disimpan di repo. Langkah mencatat timestamp awal gagal karena Windows tidak memiliki database `tzdata`; perilaku HTTP dan assertion graph telah selesai sebelumnya. Pencatatan waktu diulang hanya pada langkah gagal dengan UTC+07:00, tanpa perubahan dependency.
 `python scripts/check_handoff.py --all`: **lulus**, output “Handoff valid. Main tetap memverifikasi kebenaran laporan dan integrasi.”
 `scripts.check_handoff.validate_changes` dengan delapan file yang dibuat/diubah sesi ini dan branch `bima/data-graph`: **lulus**, tanpa pelanggaran heading/ownership. Ini pemeriksaan file hasil sesi, **bukan** diff PR yang sudah committed.
+`python scripts/check_handoff.py --base origin/main --head HEAD --branch bima/data-graph` pada commit kode `642d97f`: **lulus** terhadap diff committed, sebelum push dan pembukaan PR.
 Frontend build, Jev live, rekomendasi Ical, ranking dan UI end-to-end **tidak diuji** pada tugas Bima. Server smoke sudah dihentikan.
 
 ### Bukti P02 dan coverage lain
@@ -171,11 +175,11 @@ Tidak ada blocker untuk loader, konteks lima prospek dan endpoint detail Bima.
 NetworkX awalnya belum terpasang, sudah diselesaikan dari requirements repo. `gh` tidak tersedia dan URL issue private memberi 404 tanpa auth; isi issue berhasil dibaca lewat API authenticated tanpa mencetak secret.
 
 ## Tugas berikutnya
-1. Bima: commit file miliknya beserta handoff ini, push `bima/data-graph`, buka PR untuk Issue #2; catat hash/PR setelah benar-benar tersedia.
+1. Bima: publikasi kode dan pembukaan PR #6 sudah dilakukan; tanggapi review Main pada branch yang sama dan sertakan perubahan handoff di setiap PR pekerjaan.
 2. Ical: gunakan konteks nyata, pilih/bandingkan preseden yang relevan, policy diskon >10% wajib VP Sales dan log; permintaan I0348 tidak dianggap approval. Candidate/evidence IDs rekomendasi harus resolvable.
 3. Main: review sumber dan acceptance; jalankan suite serta smoke ulang setelah mengintegrasikan Ical. Baru Main menetapkan VERIFIED/MERGED dan memperbarui README/status koordinasi yang masih menjelaskan bootstrap.
 4. Boy/Main: periksa detail/graph/evidence di UI untuk P01–P05, termasuk unknowns P05 dan ukuran payload; belum ada bukti UI dari pekerjaan ini.
 5. Produk final tetap mencakup P01–P05, analisis, ranking lintas deal dan integrasi Jev/evaluasi milik tim. Keberhasilan konteks P02 tidak menutup scope akhir.
 
 ## Update WIB
-2026-10-09 16:35:59 WIB (waktu aktual pencatatan pemeriksaan handoff/ownership, UTC+07:00).
+2026-10-09 16:52:41 WIB (waktu aktual PR #6 dibuat dan review Main diminta, UTC+07:00).
