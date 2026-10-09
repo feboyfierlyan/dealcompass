@@ -1,5 +1,5 @@
 {
-  "generated_wib": "2026-10-09 18:37 WIB",
+  "generated_wib": "2026-10-09 20:01 WIB",
   "source": "build_deal_context + analyze_deal_initial nyata (Bima, dataset asli); kasus mutasi sintetis berlabel",
   "jev": "Ranking tidak memakai Jev (rules). Tidak ada mock/replay/live pada ranking.",
   "methodology": {
@@ -62,7 +62,7 @@
     "Sensitivitas tanpa faktor preseden_relevan: urutan acceleration DL-004 > DL-001 > DL-002 > DL-003 (sama).",
     "Sensitivitas bobot nilai x2: urutan acceleration DL-001 > DL-004 > DL-002 > DL-003 (berubah dari DL-004 > DL-001 > DL-002 > DL-003)."
   ],
-  "rank_deals_ms_warm": 78,
+  "rank_deals_ms_warm": 109,
   "items": [
     {
       "rank": 1,
@@ -336,13 +336,43 @@
   ],
   "summary": {
     "cases": 15,
-    "passed": 15
+    "passed": 15,
+    "by_source": {
+      "dataset_asli": {
+        "cases": 5,
+        "passed": 5,
+        "ids": [
+          "K01",
+          "K02",
+          "K13",
+          "K14",
+          "K15"
+        ]
+      },
+      "sintetis": {
+        "cases": 10,
+        "passed": 10,
+        "ids": [
+          "K03",
+          "K04",
+          "K05",
+          "K06",
+          "K07",
+          "K08",
+          "K09",
+          "K10",
+          "K11",
+          "K12"
+        ]
+      }
+    }
   },
   "cases": [
     {
       "id": "K01",
       "category": "lima deal nyata",
       "description": "Kontrak fase 3 pada lima deal nyata: rank 1..5, faktor, Recommendation v1, bukti dan path.",
+      "source": "dataset_asli",
       "passed": true,
       "checks": {
         "kontrak & path valid": true,
@@ -360,12 +390,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 377
+      "latency_ms": 724
     },
     {
       "id": "K02",
       "category": "input diacak",
       "description": "Lima kali urutan contexts dan diagnostics diacak independen: hasil identik.",
+      "source": "dataset_asli",
       "passed": true,
       "checks": {
         "output identik": true
@@ -378,12 +409,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 1145
+      "latency_ms": 1727
     },
     {
       "id": "K03",
       "category": "ID diganti",
       "description": "Tukar ID DL-001<->DL-004 dan P01<->P04 di seluruh input: prioritas mengikuti data, bukan ID.",
+      "source": "sintetis",
       "passed": true,
       "checks": {
         "rank 1 tetap Nirwana (data P04)": true,
@@ -398,12 +430,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 450
+      "latency_ms": 641
     },
     {
       "id": "K04",
       "category": "tie",
       "description": "Salinan DL-003 dengan ID DL-903: faktor identik, diputus deal_id dan dijelaskan.",
+      "source": "sintetis",
       "passed": true,
       "checks": {
         "DL-003 tepat di atas DL-903": true,
@@ -419,12 +452,13 @@
         "DL-903",
         "DL-005"
       ],
-      "latency_ms": 267
+      "latency_ms": 478
     },
     {
       "id": "K05",
       "category": "nilai besar bukti kurang",
       "description": "Sintetis: nilai P05 Rp10 miliar tanpa interaksi tetap discovery terakhir.",
+      "source": "sintetis",
       "passed": true,
       "checks": {
         "P05 tetap rank 5 discovery": true
@@ -437,12 +471,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 247
+      "latency_ms": 238
     },
     {
       "id": "K06",
       "category": "faktor berubah",
       "description": "Sintetis: tahap P03 menjadi Negosiasi -> skor 5 setara P02, menang tie-break tahap.",
+      "source": "sintetis",
       "passed": true,
       "checks": {
         "P03 naik di atas P02": true,
@@ -456,12 +491,13 @@
         "DL-002",
         "DL-005"
       ],
-      "latency_ms": 203
+      "latency_ms": 241
     },
     {
       "id": "K07",
       "category": "faktor berubah",
       "description": "Sintetis: I0335 tanpa pernyataan tunda -> hambatan pelanggan 1, P01 menjadi rank 1.",
+      "source": "sintetis",
       "passed": true,
       "checks": {
         "P01 rank 1, P04 rank 2": true
@@ -474,12 +510,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 212
+      "latency_ms": 216
     },
     {
       "id": "K08",
       "category": "approval gate",
       "description": "Sintetis: nilai P02 Rp10 miliar tidak menghapus approval VP Sales.",
+      "source": "sintetis",
       "passed": true,
       "checks": {
         "gate tetap": true,
@@ -493,12 +530,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 224
+      "latency_ms": 362
     },
     {
       "id": "K09",
       "category": "approval gate R6",
       "description": "Sintetis: approval 20% untuk deal lain (DL-OLD) tidak menghapus gate P02 di ranking.",
+      "source": "sintetis",
       "passed": true,
       "checks": {
         "gate tetap": true
@@ -511,12 +549,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 212
+      "latency_ms": 260
     },
     {
       "id": "K10",
       "category": "approval gate R7",
       "description": "Sintetis: approval DL-002 dengan nilai kosong tidak menghapus gate P02 di ranking.",
+      "source": "sintetis",
       "passed": true,
       "checks": {
         "gate tetap": true
@@ -529,12 +568,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 238
+      "latency_ms": 262
     },
     {
       "id": "K11",
       "category": "approval gate kontrol",
       "description": "Sintetis: approval sah 20% E01 untuk DL-002 menghapus gate tanpa mengubah rank.",
+      "source": "sintetis",
       "passed": true,
       "checks": {
         "gate hilang": true,
@@ -548,12 +588,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 261
+      "latency_ms": 423
     },
     {
       "id": "K12",
       "category": "missing data",
       "description": "Sintetis: tahap P03 tidak dikenal dan metrics diagnostic P02 hilang -> unknown eksplisit.",
+      "source": "sintetis",
       "passed": true,
       "checks": {
         "tahap P03 null": true,
@@ -571,12 +612,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 213
+      "latency_ms": 240
     },
     {
       "id": "K13",
       "category": "tanpa Jev",
       "description": "Env meminta Jev dengan key dummy; ranking tetap rules dan tanpa HTTP.",
+      "source": "dataset_asli",
       "passed": true,
       "checks": {
         "engine rules": true
@@ -589,12 +631,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 109
+      "latency_ms": 200
     },
     {
       "id": "K14",
       "category": "referensi",
       "description": "P03/P04 memakai verifikasi Bima: usage bulan lengkap terakhir, izin null, overlap bukan saling kenal.",
+      "source": "dataset_asli",
       "passed": true,
       "checks": {
         "usage C17 2026-09 dari Bima": true,
@@ -610,12 +653,13 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 201
+      "latency_ms": 184
     },
     {
       "id": "K15",
       "category": "sensitivitas",
       "description": "Sensitivitas tiap faktor dilaporkan; urutan P01/P04 bergantung pada faktor tahap/hambatan/nilai.",
+      "source": "dataset_asli",
       "passed": true,
       "checks": {
         "semua faktor dilaporkan": true
@@ -628,7 +672,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 204
+      "latency_ms": 314
     }
   ]
 }

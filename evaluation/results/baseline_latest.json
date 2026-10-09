@@ -1,0 +1,335 @@
+{
+  "snapshot_date": "2026-10-01",
+  "graph_rules_method": "deal-priority-heuristic-v1",
+  "crm_fields_used": [
+    "stage",
+    "annual_value",
+    "stage_age_days",
+    "owner_id"
+  ],
+  "not_used_by_baseline": [
+    "interactions.jsonl: isi email/meeting (hambatan, permintaan diskon, syarat referensi)",
+    "decision_log.csv: preseden dan approval VP Sales",
+    "crm_contacts.csv + contact_employment_history.csv: pengambil keputusan dan riwayat kerja",
+    "feature_usage_monthly.csv, features.csv, support_tickets.csv: bukti kandidat referensi",
+    "employees.csv: siapa pemegang approval",
+    "crm_deals.kompetitor: kolom CRM yang terlihat tetapi tidak dipakai baseline utama; tidak memuat permintaan diskon atau status approval",
+    "Edge graph/provenance dan diagnostic Bima"
+  ],
+  "baselines": {
+    "stage_value": {
+      "label": "Tahap lanjut dulu, lalu nilai potensi terbesar (baseline utama)",
+      "order": [
+        "DL-004",
+        "DL-001",
+        "DL-002",
+        "DL-003",
+        "DL-005"
+      ],
+      "same_order_as_graph_rules": true
+    },
+    "value_only": {
+      "label": "Nilai potensi terbesar saja",
+      "order": [
+        "DL-001",
+        "DL-005",
+        "DL-004",
+        "DL-002",
+        "DL-003"
+      ],
+      "same_order_as_graph_rules": false
+    },
+    "stage_age": {
+      "label": "Paling lama di tahap saat ini (deal \"macet\")",
+      "order": [
+        "DL-002",
+        "DL-004",
+        "DL-001",
+        "DL-003",
+        "DL-005"
+      ],
+      "same_order_as_graph_rules": false
+    }
+  },
+  "graph_rules_order": [
+    "DL-004",
+    "DL-001",
+    "DL-002",
+    "DL-003",
+    "DL-005"
+  ],
+  "deals": [
+    {
+      "deal_id": "DL-004",
+      "account_id": "P04",
+      "crm": {
+        "rank": 1,
+        "action": "Follow up negosiasi dan dorong tanda tangan kontrak.",
+        "evidence_count": 2,
+        "source_files": [
+          "crm_accounts.csv",
+          "crm_deals.csv"
+        ]
+      },
+      "graph_rules": {
+        "rank": 1,
+        "priority_kind": "acceleration",
+        "analysis_status": "ready",
+        "main_obstacle": "referensi",
+        "score": 8,
+        "owner_id": "E06",
+        "action": "USULAN: E06 mengonfirmasi kriteria \"pengguna serupa\" atas permintaan I0335, lalu meminta account manager memeriksa pengalaman terbaru dan menanyakan kesediaan serta izin kontak Saiyo Group (C06, AM E04) sebelum perkenalan ke Nirwana Hotel & Resto.",
+        "milestone": "Kriteria referensi tervalidasi dan minimal satu kandidat menyatakan bersedia serta mengizinkan kontak.",
+        "obstacle_evidence_ids": [
+          "interactions.jsonl:I0335"
+        ],
+        "gate": "kesediaan/izin kandidat referensi belum ada",
+        "gate_evidence_ids": [
+          "crm_accounts.csv:C06"
+        ],
+        "approvals_needed": [],
+        "precedent_ids": [],
+        "unknowns_count": 8,
+        "evidence_count": 10,
+        "paths_count": 3,
+        "source_files": [
+          "contact_employment_history.csv",
+          "crm_accounts.csv",
+          "crm_contacts.csv",
+          "crm_deals.csv",
+          "interactions.jsonl",
+          "support_tickets.csv"
+        ]
+      },
+      "rank_changed": false,
+      "additional_source_files": [
+        "contact_employment_history.csv",
+        "crm_contacts.csv",
+        "interactions.jsonl",
+        "support_tickets.csv"
+      ]
+    },
+    {
+      "deal_id": "DL-001",
+      "account_id": "P01",
+      "crm": {
+        "rank": 2,
+        "action": "Follow up proposal ke kontak yang tercatat.",
+        "evidence_count": 2,
+        "source_files": [
+          "crm_accounts.csv",
+          "crm_deals.csv"
+        ]
+      },
+      "graph_rules": {
+        "rank": 2,
+        "priority_kind": "acceleration",
+        "analysis_status": "ready",
+        "main_obstacle": "pengambil_keputusan",
+        "score": 8,
+        "owner_id": "E06",
+        "action": "USULAN: E06 meminta kontak teknis memperkenalkan dan menjadwalkan pertemuan langsung dengan Rina Hapsari (GM Operations, identitas inferensi yang perlu dikonfirmasi); sesuaikan proposal dengan prioritas operasional. Jawab jujur status fitur yang belum rilis dan jangan menjanjikan tanggal fitur tanpa keputusan tercatat.",
+        "milestone": "Pertemuan dengan Rina Hapsari terlaksana, perannya terkonfirmasi, dan kriteria keputusan pengadaan tercatat.",
+        "obstacle_evidence_ids": [
+          "interactions.jsonl:I0343"
+        ],
+        "gate": "identitas pengambil keputusan masih inferred",
+        "gate_evidence_ids": [
+          "crm_contacts.csv:K017"
+        ],
+        "approvals_needed": [],
+        "precedent_ids": [
+          "D-2025-11",
+          "D-2026-08"
+        ],
+        "unknowns_count": 13,
+        "evidence_count": 9,
+        "paths_count": 6,
+        "source_files": [
+          "contact_employment_history.csv",
+          "crm_contacts.csv",
+          "crm_deals.csv",
+          "decision_log.csv",
+          "interactions.jsonl"
+        ]
+      },
+      "rank_changed": false,
+      "additional_source_files": [
+        "contact_employment_history.csv",
+        "crm_contacts.csv",
+        "decision_log.csv",
+        "interactions.jsonl"
+      ]
+    },
+    {
+      "deal_id": "DL-002",
+      "account_id": "P02",
+      "crm": {
+        "rank": 3,
+        "action": "Follow up hasil demo dan kirim penawaran harga.",
+        "evidence_count": 2,
+        "source_files": [
+          "crm_accounts.csv",
+          "crm_deals.csv"
+        ]
+      },
+      "graph_rules": {
+        "rank": 3,
+        "priority_kind": "acceleration",
+        "analysis_status": "ready",
+        "main_obstacle": "harga",
+        "score": 5,
+        "owner_id": "E07",
+        "action": "USULAN: Jangan menawarkan atau menjanjikan diskon 20% ke Teras Kafe Group sebelum VP Sales memutuskan dan mencatatnya. E07 membawa permintaan tersebut ke VP Sales bersama pembanding preseden. Siapkan opsi tanpa diskon: 15 outlet paket Growth harga normal Rp63.000.000/tahun; pilot sebagian outlet hanya sebagai skenario usulan yang butuh persetujuan. Tanggapi keberatan harga dengan nilai produk berdasar kebutuhan yang tercatat, bukan menyamai harga kompetitor.",
+        "milestone": "Keputusan VP Sales atas permintaan diskon tercatat di decision_log, lalu tanggapan tertulis pelanggan atas opsi harga yang disetujui.",
+        "obstacle_evidence_ids": [
+          "interactions.jsonl:I0296",
+          "interactions.jsonl:I0348"
+        ],
+        "gate": "approval VP Sales tertunda",
+        "gate_evidence_ids": [
+          "employees.csv:E01",
+          "interactions.jsonl:I0348"
+        ],
+        "approvals_needed": [
+          "VP Sales (E01): putuskan dan catat di decision_log permintaan diskon 20% (I0348, 2026-09-28); >10% wajib approval. Belum ada keputusan sah yang tercatat untuk DL-002."
+        ],
+        "precedent_ids": [
+          "D-2025-02",
+          "D-2025-06",
+          "D-2024-02",
+          "D-2025-12",
+          "D-2026-04"
+        ],
+        "unknowns_count": 19,
+        "evidence_count": 15,
+        "paths_count": 6,
+        "source_files": [
+          "crm_accounts.csv",
+          "crm_deals.csv",
+          "decision_log.csv",
+          "employees.csv",
+          "interactions.jsonl"
+        ]
+      },
+      "rank_changed": false,
+      "additional_source_files": [
+        "decision_log.csv",
+        "employees.csv",
+        "interactions.jsonl"
+      ]
+    },
+    {
+      "deal_id": "DL-003",
+      "account_id": "P03",
+      "crm": {
+        "rank": 4,
+        "action": "Lanjutkan discovery lalu jadwalkan demo.",
+        "evidence_count": 2,
+        "source_files": [
+          "crm_accounts.csv",
+          "crm_deals.csv"
+        ]
+      },
+      "graph_rules": {
+        "rank": 4,
+        "priority_kind": "acceleration",
+        "analysis_status": "ready",
+        "main_obstacle": "referensi",
+        "score": 2,
+        "owner_id": "E08",
+        "action": "USULAN: E08 mengonfirmasi kriteria \"pengguna serupa\" atas permintaan I0334, lalu meminta account manager memeriksa pengalaman terbaru dan menanyakan kesediaan serta izin kontak Apotek Bunda Sehat (C17, AM E05), Apotek Medika Farma (C09, AM E03), Apotek Kimia Sejahtera (C27, AM E04) sebelum perkenalan ke Klinik Pratama Medika. Kandidat lain dicek belakangan karena catatan: C03 (6 tiket terbuka (3 bug, 1 prioritas Tinggi/Kritis; T0521, T0523, T0526, T0566, T0608, T0616; judul: Laporan tidak sesuai/Selisih transaksi/Sinkronisasi)).",
+        "milestone": "Kriteria referensi tervalidasi dan minimal satu kandidat menyatakan bersedia serta mengizinkan kontak.",
+        "obstacle_evidence_ids": [
+          "interactions.jsonl:I0334"
+        ],
+        "gate": "kesediaan/izin kandidat referensi belum ada",
+        "gate_evidence_ids": [
+          "crm_accounts.csv:C09",
+          "crm_accounts.csv:C17",
+          "crm_accounts.csv:C27",
+          "crm_accounts.csv:P03"
+        ],
+        "approvals_needed": [],
+        "precedent_ids": [],
+        "unknowns_count": 10,
+        "evidence_count": 23,
+        "paths_count": 7,
+        "source_files": [
+          "crm_accounts.csv",
+          "crm_deals.csv",
+          "decision_log.csv",
+          "feature_usage_monthly.csv",
+          "features.csv",
+          "interactions.jsonl",
+          "support_tickets.csv"
+        ]
+      },
+      "rank_changed": false,
+      "additional_source_files": [
+        "decision_log.csv",
+        "feature_usage_monthly.csv",
+        "features.csv",
+        "interactions.jsonl",
+        "support_tickets.csv"
+      ]
+    },
+    {
+      "deal_id": "DL-005",
+      "account_id": "P05",
+      "crm": {
+        "rank": 5,
+        "action": "Kualifikasi lead dan jadwalkan kontak pertama.",
+        "evidence_count": 2,
+        "source_files": [
+          "crm_accounts.csv",
+          "crm_deals.csv"
+        ]
+      },
+      "graph_rules": {
+        "rank": 5,
+        "priority_kind": "discovery",
+        "analysis_status": "insufficient_evidence",
+        "main_obstacle": "bukti_kurang",
+        "score": null,
+        "owner_id": "E07",
+        "action": "USULAN: E07 menjadwalkan discovery dengan PT Distribusi Sumber Rejeki untuk mengidentifikasi pengambil keputusan, kebutuhan, jumlah outlet dan anggaran sebelum menawarkan harga atau paket.",
+        "milestone": "Catatan discovery pertama berisi pengambil keputusan, kebutuhan dan jadwal pengadaan.",
+        "obstacle_evidence_ids": [],
+        "gate": "discovery belum dilakukan",
+        "gate_evidence_ids": [],
+        "approvals_needed": [],
+        "precedent_ids": [],
+        "unknowns_count": 7,
+        "evidence_count": 2,
+        "paths_count": 1,
+        "source_files": [
+          "crm_accounts.csv",
+          "crm_deals.csv"
+        ]
+      },
+      "rank_changed": false,
+      "additional_source_files": []
+    }
+  ],
+  "summary": {
+    "deals": 5,
+    "rank_changed_vs_stage_value": [],
+    "approval_gates_visible_crm": 0,
+    "approval_gates_visible_graph_rules": 1,
+    "deals_with_named_obstacle_graph_rules": 4,
+    "deals_with_additional_sources": [
+      "DL-004",
+      "DL-001",
+      "DL-002",
+      "DL-003"
+    ]
+  },
+  "limits": [
+    "Lima deal, satu snapshot; tidak ada label hasil closing sehingga tidak ada klaim akurasi atau uplift.",
+    "Urutan yang sama atau berbeda bukan bukti salah satu metode lebih akurat.",
+    "Tindakan baseline adalah template generik buatan Ical, bukan perilaku CRM atau sales nyata.",
+    "Graph+rules memakai formula production deal-priority-heuristic-v1 tanpa perubahan; bobot tetap pilihan desain."
+  ],
+  "generated_wib": "2026-10-09 20:01 WIB"
+}

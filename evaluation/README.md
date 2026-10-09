@@ -15,14 +15,22 @@ Bandingkan CRM-only, graph + rules, graph + Jev saat implementasi siap.
   Ranking tidak memakai Jev.
 - `ranking.md`: metode, bobot, tie-break, tradeoff, sensitivitas dan hasil ranking.
 - `run_eval.py`: menjalankan keduanya dan menulis `results/latest.{json,md}` (decision) serta
-  `results/ranking_latest.{json,md}` (ranking).
+  `results/ranking_latest.{json,md}` (ranking), dipisah per sumber kasus (dataset asli,
+  sintetis, mock Jev, replay mock).
+- `baseline_crm.py` (ICAL-04): baseline CRM-only (tahap/nilai/umur tahap dari `list_deals()`)
+  vs graph+rules production pada lima deal yang sama → `results/baseline_latest.{json,md}`.
+- `MENTOR_BRIEF.md`: penjelasan mentor dan jawaban P04/P01, P02, P05, bobot, anomaly vs outlier.
+- `DEMO_CLAIMS.md`: matriks klaim → bukti → batas, klaim terlarang, hipotesis dampak, skrip demo.
 
 ```bash
 python -m evaluation.run_eval
+python -m evaluation.baseline_crm
 ```
 
 ## Status
 
 Decision: 34/35 (inti 34/34); E15 batas parafrase rules yang diketahui. Ranking: 15/15.
-Belum ada pembanding CRM-only, holdout terpisah, backtest closing, atau panggilan Jev live;
-hasil tidak boleh dilaporkan sebagai akurasi Jev atau validasi closing.
+Dataset asli: decision 7/7, ranking 5/5; sisanya mutasi sintetis atau mock/replay Jev.
+Pembanding CRM-only tersedia (urutan baseline utama sama dengan graph+rules; perbedaan ada
+pada alasan, gate dan sumber). Belum ada holdout terpisah, backtest closing, atau panggilan
+Jev live; hasil tidak boleh dilaporkan sebagai akurasi Jev, uplift, atau validasi closing.

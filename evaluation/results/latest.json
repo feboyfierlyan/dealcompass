@@ -1,5 +1,5 @@
 {
-  "generated_wib": "2026-10-09 18:37 WIB",
+  "generated_wib": "2026-10-09 20:01 WIB",
   "context_source": "build_deal_context nyata (graph Bima, dataset asli); mutasi kasus sintetis berlabel",
   "jev": "Tidak ada panggilan live. Kasus Jev memakai transport mock.",
   "summary": {
@@ -11,13 +11,75 @@
       "E15"
     ],
     "known_limitations_passed": [],
-    "invariants_all_true": true
+    "invariants_all_true": true,
+    "by_source": {
+      "dataset_asli": {
+        "cases": 7,
+        "passed": 7,
+        "ids": [
+          "E01",
+          "E09",
+          "E11",
+          "E12",
+          "E27",
+          "E29",
+          "E30"
+        ]
+      },
+      "sintetis": {
+        "cases": 17,
+        "passed": 16,
+        "ids": [
+          "E02",
+          "E03",
+          "E04",
+          "E05",
+          "E06",
+          "E31",
+          "E32",
+          "E33",
+          "E34",
+          "E35",
+          "E07",
+          "E08",
+          "E10",
+          "E13",
+          "E14",
+          "E15",
+          "E28"
+        ]
+      },
+      "mock_jev": {
+        "cases": 9,
+        "passed": 9,
+        "ids": [
+          "E16",
+          "E17",
+          "E18",
+          "E19",
+          "E20",
+          "E21",
+          "E22",
+          "E23",
+          "E24"
+        ]
+      },
+      "replay_mock": {
+        "cases": 2,
+        "passed": 2,
+        "ids": [
+          "E25",
+          "E26"
+        ]
+      }
+    }
   },
   "cases": [
     {
       "id": "E01",
       "category": "P02 nyata",
       "description": "P02 graph nyata: hambatan harga, I0348 20% sekali, tanpa 15% C01, preseden D-2025-02/06.",
+      "source": "dataset_asli",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -47,12 +109,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 1951
+      "latency_ms": 2772
     },
     {
       "id": "E02",
       "category": "request vs approval",
       "description": "Sintetis: VP Sales (E01) menyetujui 20% untuk DL-002 di decision_log.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -71,12 +134,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 73
+      "latency_ms": 107
     },
     {
       "id": "E03",
       "category": "request vs approval",
       "description": "Sintetis: \"persetujuan\" 20% oleh E07 (Sales Executive) tidak sah.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -97,12 +161,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 71
+      "latency_ms": 100
     },
     {
       "id": "E04",
       "category": "request vs approval",
       "description": "Sintetis: persetujuan oleh E99 yang jabatannya tidak ada di konteks.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -123,12 +188,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 71
+      "latency_ms": 107
     },
     {
       "id": "E05",
       "category": "request vs approval",
       "description": "Sintetis: penolakan 20% tercatat oleh E01 untuk DL-002.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -147,12 +213,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 141
+      "latency_ms": 112
     },
     {
       "id": "E06",
       "category": "request vs approval",
       "description": "Sintetis: pesan P02 mengklaim \"diskon 20% sudah disetujui\" tanpa decision_log.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -172,12 +239,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 69
+      "latency_ms": 219
     },
     {
       "id": "E31",
       "category": "R6 cakupan approval",
       "description": "Sintetis: E01 menyetujui 20% untuk deal lain (DL-OLD) di akun P02 -> tidak berlaku untuk DL-002.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -199,12 +267,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 147
+      "latency_ms": 144
     },
     {
       "id": "E32",
       "category": "R6 cakupan approval",
       "description": "Sintetis: E01 menyetujui 20% di level akun P02 tanpa deal_id -> cakupan tidak terbukti.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -226,12 +295,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 71
+      "latency_ms": 113
     },
     {
       "id": "E33",
       "category": "R7 persentase",
       "description": "Sintetis: E01 menyetujui DL-002 dengan nilai kosong -> unknown, bukan approval.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -253,12 +323,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 70
+      "latency_ms": 113
     },
     {
       "id": "E34",
       "category": "R7 persentase",
       "description": "Sintetis: E01 menyetujui DL-002 dengan nilai malformed \"dua puluh persen\" -> unknown.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -280,12 +351,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 150
+      "latency_ms": 109
     },
     {
       "id": "E35",
       "category": "R7 persentase",
       "description": "Sintetis: E01 menyetujui 15% untuk DL-002 sedangkan permintaan 20% -> tidak mencakup.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -307,12 +379,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 71
+      "latency_ms": 110
     },
     {
       "id": "E07",
       "category": "hitungan diskon",
       "description": "Sintetis: I0348 menjadi diskon 10% (batas): tidak butuh VP Sales.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -328,12 +401,13 @@
         "D-2025-02",
         "D-2025-07"
       ],
-      "latency_ms": 69
+      "latency_ms": 100
     },
     {
       "id": "E08",
       "category": "hitungan diskon",
       "description": "Sintetis: I0348 menjadi diskon 11%: melewati batas 10%.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -351,12 +425,13 @@
         "D-2025-06",
         "D-2025-12"
       ],
-      "latency_ms": 149
+      "latency_ms": 195
     },
     {
       "id": "E09",
       "category": "hitungan diskon",
       "description": "P02 nyata 20%: Rp63.000.000 -> Rp50.400.000.",
+      "source": "dataset_asli",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -377,12 +452,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 84
+      "latency_ms": 113
     },
     {
       "id": "E10",
       "category": "lintas akun",
       "description": "Sintetis: interaksi C23 lebih baru (minta referensi + diskon 15%) tidak mengubah P02.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -403,12 +479,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 75
+      "latency_ms": 117
     },
     {
       "id": "E11",
       "category": "preseden tidak cocok",
       "description": "P02 nyata: D-2026-11 (pengecualian migrasi data C19) tidak dipakai sebagai preseden.",
+      "source": "dataset_asli",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -428,12 +505,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 162
+      "latency_ms": 119
     },
     {
       "id": "E12",
       "category": "bukti kurang",
       "description": "P05 nyata: lead tanpa interaksi.",
+      "source": "dataset_asli",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -447,12 +525,13 @@
       "main_obstacle": "bukti_kurang",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 27
+      "latency_ms": 33
     },
     {
       "id": "E13",
       "category": "ID tidak valid",
       "description": "Sintetis: edge merujuk evidence_id EV-NOPE.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -472,12 +551,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 73
+      "latency_ms": 110
     },
     {
       "id": "E14",
       "category": "parafrase",
       "description": "Sintetis: I0296 \"biayanya kemahalan dibanding tawaran pesaing\".",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -496,12 +576,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 147
+      "latency_ms": 122
     },
     {
       "id": "E15",
       "category": "parafrase",
       "description": "Sintetis sulit: \"KasirPro lebih ramah di kantong\". Batas rules diketahui.",
+      "source": "sintetis",
       "known_limitation": true,
       "passed": false,
       "checks": {
@@ -520,12 +601,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 75
+      "latency_ms": 155
     },
     {
       "id": "E16",
       "category": "Jev gagal",
       "description": "Jev (mock) timeout -> fallback rules penuh.",
+      "source": "mock_jev",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -548,12 +630,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 152
+      "latency_ms": 192
     },
     {
       "id": "E17",
       "category": "Jev gagal",
       "description": "Jev (mock) 401 -> fallback rules, key tidak bocor.",
+      "source": "mock_jev",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -576,12 +659,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 77
+      "latency_ms": 119
     },
     {
       "id": "E18",
       "category": "Jev rusak",
       "description": "Jev (mock) choice di luar criteria -> invalid_response.",
+      "source": "mock_jev",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -603,12 +687,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 73
+      "latency_ms": 125
     },
     {
       "id": "E19",
       "category": "Jev rusak",
       "description": "Jev (mock) noul=\"not-a-number\" -> invalid_response.",
+      "source": "mock_jev",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -630,12 +715,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 152
+      "latency_ms": 126
     },
     {
       "id": "E20",
       "category": "Jev rusak",
       "description": "Jev (mock) score=7 (di luar 0..2) -> invalid_response.",
+      "source": "mock_jev",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -657,12 +743,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 74
+      "latency_ms": 122
     },
     {
       "id": "E21",
       "category": "Jev rusak",
       "description": "Jev (mock) noul=true (bool) -> invalid_response.",
+      "source": "mock_jev",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -684,12 +771,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 73
+      "latency_ms": 112
     },
     {
       "id": "E22",
       "category": "Jev mock",
       "description": "Jev (mock) sukses -> engine_mode jev; policy tetap rules.",
+      "source": "mock_jev",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -711,12 +799,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 148
+      "latency_ms": 111
     },
     {
       "id": "E23",
       "category": "Jev mock",
       "description": "Jev Noul (mock) menilai I0348 menyiratkan approval -> tetap bukan approval.",
+      "source": "mock_jev",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -736,12 +825,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 75
+      "latency_ms": 217
     },
     {
       "id": "E24",
       "category": "Jev waktu",
       "description": "Anggaran 0,8 dtk, tiap panggilan mock 0,4 dtk -> budget_exceeded, fallback rules.",
+      "source": "mock_jev",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -764,12 +854,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 551
+      "latency_ms": 521
     },
     {
       "id": "E25",
       "category": "replay",
       "description": "Rekam respons Jev (mock) lalu putar ulang -> engine_mode replay, hasil sama.",
+      "source": "replay_mock",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -789,12 +880,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 159
+      "latency_ms": 235
     },
     {
       "id": "E26",
       "category": "replay",
       "description": "Rekaman replay rusak -> invalid_replay, fallback rules.",
+      "source": "replay_mock",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -816,12 +908,13 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 242
+      "latency_ms": 239
     },
     {
       "id": "E27",
       "category": "P01 nyata",
       "description": "P01: I0343 + kontak CRM + riwayat kerja -> K017 Rina Hapsari (inferensi), risiko FEAT-07 C01.",
+      "source": "dataset_asli",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -839,12 +932,13 @@
         "D-2025-11",
         "D-2026-08"
       ],
-      "latency_ms": 52
+      "latency_ms": 77
     },
     {
       "id": "E28",
       "category": "P01 sintetis",
       "description": "Sintetis: dua kontak P01 berjabatan GM Operations -> identitas tidak dipastikan.",
+      "source": "sintetis",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -856,12 +950,13 @@
       "main_obstacle": "pengambil_keputusan",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 50
+      "latency_ms": 82
     },
     {
       "id": "E29",
       "category": "P03 nyata",
       "description": "P03: kandidat related_account C03/C09/C17/C27 dipertimbangkan.",
+      "source": "dataset_asli",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -877,12 +972,13 @@
       "main_obstacle": "referensi",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 47
+      "latency_ms": 70
     },
     {
       "id": "E30",
       "category": "P04 nyata",
       "description": "P04: C06 via related_account_work_overlap; overlap bukan bukti saling kenal.",
+      "source": "dataset_asli",
       "known_limitation": false,
       "passed": true,
       "checks": {
@@ -896,7 +992,7 @@
       "main_obstacle": "referensi",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 29
+      "latency_ms": 49
     }
   ],
   "deals": [
