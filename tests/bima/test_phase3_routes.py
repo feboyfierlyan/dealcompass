@@ -98,7 +98,9 @@ class Phase3RouteTests(unittest.TestCase):
                 elif change == 'rank':
                     result['items'][0]['rank'] = True
                 elif change == 'path':
-                    result['items'][0]['evidence_paths'][0]['node_ids'].reverse()
+                    # Not a reverse traversal (now valid, R8): the pair no longer matches the edge endpoints.
+                    nodes = result['items'][0]['evidence_paths'][0]['node_ids']
+                    nodes[1] = nodes[0]
                 elif change == 'source':
                     result['items'][0]['evidence'][0]['excerpt'] = 'SYNTHETIC fabricated row'
                 else:

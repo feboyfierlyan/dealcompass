@@ -133,13 +133,41 @@ class PrioritiesContractTests(unittest.TestCase):
         payload['items'][0]['evidence'].pop()
         self.assert_invalid(payload)
 
-    def test_paths_reject_reversal_fabrication_shortcut_and_missing_edge_sources(self):
-        for change in ('reverse', 'edge', 'node', 'shortcut', 'length', 'coverage'):
+    def test_reverse_traversal_of_original_edge_is_accepted(self):
+        # R8: walking an original edge against its arrow is a valid traversal; the edge is not rewritten.
+        payload = deepcopy(self.fixture)
+        item = next(item for item in payload['items'] if item['evidence_paths'])
+        item['evidence_paths'][0]['node_ids'].reverse()
+        self.assertIs(validate_priorities(payload, self.contexts, self.diagnostics), payload)
+        context = next(c for c in self.contexts if c.deal.deal_id == 'DL-002')
+        edges = {(e.source, e.target, e.relation): e for e in context.graph.edges}
+        deal_for = next(e for (s, t, r), e in edges.items() if (s, t, r) == ('DL-002', 'P02', 'deal_for'))
+        interaction_for = next(e for (s, t, r), e in edges.items() if (s, t, r) == ('I0348', 'P02', 'interaction_for'))
+        payload = deepcopy(self.fixture)
+        target = next(i for i in payload['items'] if i['deal_id'] == 'DL-002')
+        ids = sorted(set(deal_for.evidence_ids) | set(interaction_for.evidence_ids))
+        target['evidence_paths'] = [dict(node_ids=['DL-002', 'P02', 'I0348'], edge_ids=[deal_for.id, interaction_for.id],
+                                         evidence_ids=ids)]
+        registered = {e['id'] for e in target['evidence']}
+        self.assertLessEqual(set(ids), registered)
+        self.assertIs(validate_priorities(payload, self.contexts, self.diagnostics), payload)
+        self.assertEqual((interaction_for.source, interaction_for.target), ('I0348', 'P02'))
+
+    def test_paths_reject_disconnected_fabricated_shortcut_and_missing_edge_sources(self):
+        context = next(c for c in self.contexts if c.deal.deal_id == 'DL-002')
+        by_key = {(e.source, e.target, e.relation): e for e in context.graph.edges}
+        deal_for, interaction_for = by_key[('DL-002', 'P02', 'deal_for')], by_key[('I0348', 'P02', 'interaction_for')]
+        for change in ('self_pair', 'disconnected_order', 'edge', 'node', 'shortcut', 'length', 'coverage'):
             payload = deepcopy(self.fixture)
             item = next(item for item in payload['items'] if item['evidence_paths'])
             path = item['evidence_paths'][0]
-            if change == 'reverse':
-                path['node_ids'].reverse()
+            if change == 'self_pair':
+                path['node_ids'][1] = path['node_ids'][0]
+            elif change == 'disconnected_order':
+                item = next(i for i in payload['items'] if i['deal_id'] == 'DL-002')
+                # Same original edges, but P02 -> DL-002 -> I0348: DL-002 and I0348 are not joined by interaction_for.
+                item['evidence_paths'] = [dict(node_ids=['P02', 'DL-002', 'I0348'], edge_ids=[deal_for.id, interaction_for.id],
+                                               evidence_ids=sorted(set(deal_for.evidence_ids) | set(interaction_for.evidence_ids)))]
             elif change == 'edge':
                 path['edge_ids'][0] = 'fabricated-edge'
             elif change == 'node':

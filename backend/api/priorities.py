@@ -60,7 +60,10 @@ def _validate_priorities(result: dict, contexts: list[DealContext], diagnostics:
             for index, edge_id in enumerate(path_edges):
                 _require(edge_id in edges)
                 edge = edges[edge_id]
-                _require(edge.source == path_nodes[index] and edge.target == path_nodes[index + 1])
+                # Traversal may follow an original edge in either direction (e.g. DL-002 -> P02 <- I0348);
+                # the edge itself (source/target/relation/evidence) is never rewritten here.
+                step = (path_nodes[index], path_nodes[index + 1])
+                _require(step in ((edge.source, edge.target), (edge.target, edge.source)))
                 _require(set(edge.evidence_ids) <= path_evidence)
     _require(collect_evidence_ids(result) <= pipeline_evidence_ids)
     return result
