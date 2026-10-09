@@ -9,7 +9,7 @@ probabilities, confidence}, score -> {score, legend, probabilities, confidence}.
 Status error terdokumentasi: 401, 422, 429, 529.
 
 Secret hanya dibaca dari env backend dan tidak pernah dicatat.
-Integrasi live BELUM diuji: tidak ada TYPESAFE_API_KEY saat implementasi.
+Integrasi live diverifikasi 2026-10-10; setiap request nyata wajib memiliki ledger usage.
 """
 import hashlib
 import json
@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import httpx
+from backend.integrations.usage import UsageLedger, UsageError
 
 DEFAULT_BASE_URL = 'https://api.typesafe.ai/v1'
 DEFAULT_MODEL = 'jev-latest'
@@ -108,16 +109,20 @@ class JevClient:
 
     def __init__(self, api_key: str, model: str = DEFAULT_MODEL, base_url: str = DEFAULT_BASE_URL,
                  timeout_s: float = DEFAULT_TIMEOUT_S, transport: httpx.BaseTransport | None = None,
-                 record_dir: str | None = None):
+                 record_dir: str | None = None, usage_ledger: UsageLedger | None = None):
         if not api_key:
             raise JevError('missing_key')
         self._key = api_key
         self.model = model
         self.base_url = base_url.rstrip('/')
+        if self.base_url != DEFAULT_BASE_URL:
+            raise JevError('untrusted_endpoint')
         self.timeout_s = timeout_s
         self._transport = transport
         self.record_dir = Path(record_dir) if record_dir else None
         self.calls: list[JevCall] = []
+        # Only in-memory MockTransport tests bypass billing; every real transport is metered.
+        self.ledger = usage_ledger if usage_ledger is not None else (None if isinstance(transport, httpx.MockTransport) else UsageLedger())
 
     def __repr__(self):
         return f'JevClient(model={self.model!r}, base_url={self.base_url!r})'
@@ -125,36 +130,52 @@ class JevClient:
     def ask(self, state, questions: dict, timeout_s: float | None = None) -> dict:
         call = JevCall(list(questions), self.mode)
         self.calls.append(call)
+        payload = {'state': state, 'model': self.model, 'questions': questions}
+        request_id = None
+        if self.ledger:
+            try:
+                request_id = self.ledger.reserve(payload)
+            except UsageError as e:
+                call.error = str(e)
+                raise JevError(call.error) from None
         start = time.perf_counter()
         timeout = self.timeout_s if timeout_s is None else min(self.timeout_s, timeout_s)
         try:
             with httpx.Client(transport=self._transport, timeout=timeout) as client:
                 r = client.post(f'{self.base_url}/systemone',
                                 headers={'Authorization': f'Bearer {self._key}', 'Content-Type': 'application/json'},
-                                json={'state': state, 'model': self.model, 'questions': questions})
+                                json=payload)
         except httpx.TimeoutException as e:
+            self._finish_usage(request_id, None)
             call.error = 'timeout'
             raise JevError('timeout') from e
         except httpx.HTTPError as e:
+            self._finish_usage(request_id, None)
             call.error = 'network_error'
             raise JevError('network_error', type(e).__name__) from e
         finally:
             call.latency_ms = round((time.perf_counter() - start) * 1000)
-        if r.status_code != 200:
-            call.error = _STATUS_CODES.get(r.status_code, f'http_{r.status_code}')
-            raise JevError(call.error)
         try:
             data = r.json()
         except ValueError as e:
-            call.error = 'invalid_response'
-            raise JevError('invalid_response', 'bukan JSON') from e
+            self._finish_usage(request_id, None, r.status_code)
+            call.error = _STATUS_CODES.get(r.status_code, f'http_{r.status_code}') if r.status_code != 200 else 'invalid_response'
+            raise JevError(call.error) from e
+        raw_usage = data.get('usage') if isinstance(data, dict) else None
+        call.usage = {k: v for k, v in raw_usage.items() if k in ('input_tokens', 'output_tokens') and type(v) is int and v >= 0} if isinstance(raw_usage, dict) else {}
+        usage_error = self._finish_usage(request_id, raw_usage, r.status_code)
+        if r.status_code != 200:
+            call.error = _STATUS_CODES.get(r.status_code, f'http_{r.status_code}')
+            raise JevError(call.error)
+        if usage_error:
+            call.error = usage_error
+            raise JevError(usage_error)
         try:
             answers = _validate_answers(questions, data)
         except JevError as e:
             call.error = e.code
             raise
         call.model = data.get('model')
-        call.usage = data.get('usage') or {}
         if self.record_dir:
             self.record_dir.mkdir(parents=True, exist_ok=True)
             rec = {'request': {'state': state, 'model': self.model, 'questions': questions},
@@ -163,6 +184,16 @@ class JevClient:
             (self.record_dir / f'{request_key(state, questions)}.json').write_text(
                 json.dumps(rec, ensure_ascii=False, indent=2), encoding='utf-8')
         return answers
+
+    def _finish_usage(self, request_id, usage, http_status=None):
+        if request_id is not None:
+            try:
+                self.ledger.finish(request_id, usage, http_status)
+            except UsageError as e:
+                # Receipt was persisted as unknown, or the reservation remains pending.
+                # Both block subsequent requests, including after process restart.
+                return str(e)
+        return None
 
 
 class ReplayClient:

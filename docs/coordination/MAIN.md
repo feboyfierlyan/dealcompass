@@ -3,6 +3,17 @@
 Pemilik: Boy + AI pada chat koordinasi. Tanggal: 9 Oktober 2026, WIB.
 Deadline: 10 Oktober 2026 09.00 WIB. CP2 20.00-22.00, CP3 08.00-09.00.
 
+## Aktivasi Jev live — 10 Oktober 2026 01:10 WIB
+
+Pengguna memberikan key untuk build testing dan mengonfirmasi belum dipakai.
+Key hanya berada di `.env` lokal, tidak dicommit. Smoke Jev PASS; P01–P04 live
+PASS, P02 UI menampilkan Analisis dengan Jev dan approval tetap wajib. P05 rules,
+0 request. SQLite ledger tim: 31 request / 17.840 input token / 1.657 output;
+batas 100 juta input, tidak ada pending. Guard transaksi/reservasi/fail-closed aktif.
+Semua anggota wajib memakai backend/ledger yang sama, bukan counter per laptop.
+Rincian: [panduan Jev](../../backend/integrations/JEV_LIVE.md), handoff Main.
+Catatan status di bawah adalah riwayat sebelum aktivasi ini.
+
 ## Status produk
 
 PR Boy #14, Ical #15, dan API #16 sudah MERGED. R9 dan R8 VERIFIED; revisi API
