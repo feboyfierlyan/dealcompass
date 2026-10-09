@@ -1,0 +1,9 @@
+feature_id,nama,status,target_awal,target_terkini,catatan
+FEAT-01,POS inti,Rilis,,,
+FEAT-02,Manajemen stok multi-gudang,Rilis,2025-Q4,2025-Q4,Rilis Nov 2025
+FEAT-03,Program loyalti pelanggan,Rilis,2026-Q1,2026-Q1,Rilis Feb 2026
+FEAT-04,Mode offline + sinkronisasi,Rilis,,,
+FEAT-05,Modul apotek (resep & batch obat),Rilis,2025-Q4,2025-Q4,
+FEAT-06,Dashboard multi-outlet,Rilis,2026-Q2,2026-Q2,
+FEAT-07,Integrasi akuntansi (Jurnal & Accurate),Dalam pengembangan,2026-Q3,Belum ditetapkan,Diperbarui Jul 2026
+FEAT-08,E-faktur pajak,Backlog,2027-Q1,2027-Q1,

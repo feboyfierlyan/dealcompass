@@ -1,0 +1,23 @@
+deal_id,account_id,tipe,stage,stage_sejak,dibuat,owner_id,outlet,nilai_tahunan,status,alasan_kalah,kompetitor
+DL-001,P01,baru,Proposal,2026-09-11,2026-08-01,E06,60,252000000,Terbuka,,
+DL-002,P02,baru,Demo,2026-08-17,2026-07-25,E07,15,63000000,Terbuka,,KasirPro
+DL-003,P03,baru,Discovery,2026-09-21,2026-09-15,E08,9,37800000,Terbuka,,
+DL-004,P04,baru,Negosiasi,2026-09-01,2026-08-05,E06,35,147000000,Terbuka,,
+DL-005,P05,baru,Lead,2026-09-26,2026-09-26,E07,40,168000000,Terbuka,,
+DL-006,C23,baru,Closed Lost,2025-03-14,2025-01-20,E07,6,25200000,Kalah,Harga,KasirPro
+DL-007,C23,baru,Closed Won,2025-09-08,2025-08-11,E07,6,25200000,Menang,,KasirPro
+DL-008,C01,renewal,Closed Won,2025-12-03,2025-11-01,E03,42,149940000,Menang,,
+DL-009,C07,renewal,Closed Won,2025-10-17,2025-09-17,E04,21,88200000,Menang,,
+DL-010,C15,renewal,Closed Won,2025-11-27,2025-10-28,E04,23,96600000,Menang,,
+DL-011,C17,renewal,Closed Won,2026-04-20,2026-03-21,E05,10,42000000,Menang,,
+DL-012,C18,ekspansi,Closed Won,2026-09-05,2026-08-06,E03,8,33600000,Menang,,
+DL-013,C19,ekspansi,Closed Won,2026-01-12,2025-12-13,E04,8,33600000,Menang,,
+DL-014,C20,ekspansi,Closed Won,2026-04-21,2026-03-22,E03,5,21000000,Menang,,
+DL-015,C22,renewal,Closed Won,2026-07-03,2026-06-03,E03,18,75600000,Menang,,
+DL-016,C26,ekspansi,Closed Won,2025-12-25,2025-11-25,E03,10,42000000,Menang,,
+DL-017,C27,ekspansi,Closed Won,2026-07-02,2026-06-02,E04,22,92400000,Menang,,
+DL-018,C28,ekspansi,Closed Won,2026-02-26,2026-01-27,E05,12,50400000,Menang,,
+DL-019,C33,renewal,Closed Won,2026-03-08,2026-02-06,E05,4,16800000,Menang,,
+DL-020,C35,renewal,Closed Won,2026-05-21,2026-04-21,E04,22,92400000,Menang,,
+DL-021,C37,ekspansi,Closed Won,2025-10-30,2025-09-30,E04,12,50400000,Menang,,
+DL-022,C38,ekspansi,Closed Won,2026-06-24,2026-05-25,E04,21,88200000,Menang,,

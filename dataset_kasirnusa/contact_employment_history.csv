@@ -1,0 +1,218 @@
+contact_id,account_id,organisasi,jabatan,mulai,selesai
+K001,C05,Minimarket Berkah,Operations Manager,2020-06-01,
+K002,C18,Fashion Outlet Anggun,Manajer Area,2021-01-01,
+K003,C37,Toko Sepatu Langkah,Pemilik,2016-03-01,
+K004,C31,Material Bangunan Kokoh,Manajer Area,2022-12-01,
+K005,,KAP Wijaya & Rekan,Staf,2015-01-01,2016-06-30
+K005,C32,Toko Herbal Alami,Manajer Operasional,2018-05-01,
+K006,C12,Toko Kue Delima,Supervisor Toko,2019-10-01,
+K007,C02,TB Sinar Jaya,Admin Operasional,2021-08-01,
+K008,C14,Optik Prima Vision,Staf IT,2019-10-01,
+K009,C16,Toko Besi Makmur,Pemilik,2016-12-01,
+K010,C18,Fashion Outlet Anggun,Pemilik,2018-10-01,
+K011,,CV Cahaya Abadi,Staf,2015-01-01,2018-06-30
+K011,C30,Depot Rawon Setan,Admin Keuangan,2022-04-01,
+K012,C37,Toko Sepatu Langkah,Pemilik,2024-05-01,
+K013,,PT Kreasi Kuliner,Supervisor,2016-01-01,2018-06-30
+K013,C27,Apotek Kimia Sejahtera,Manajer Operasional,2018-11-01,
+K014,C25,Toko Sembako Maju,Manajer Area,2020-02-01,
+K015,,Bank Daerah Jatim,Supervisor,2015-01-01,2016-06-30
+K015,C21,Martabak Bangka Jaya,Supervisor Toko,2016-07-01,
+K016,C10,Bakmi Jowo Pak Gondo,Manajer Operasional,2016-11-01,
+K017,,PT Kreasi Kuliner,Operations Supervisor,2016-06-01,2021-02-28
+K017,C01,Kopi Lintas Nusantara,Head of Operations,2021-03-01,2026-08-15
+K017,P01,Grup Ritel Mandala,GM Operations,2026-09-01,
+K018,,PT Teknologi Kasir Prima,Analis,2013-01-01,2017-06-30
+K018,C14,Optik Prima Vision,Pemilik,2023-02-01,
+K019,,PT Teknologi Kasir Prima,Supervisor,2017-01-01,2020-06-30
+K019,C26,Ayam Geprek Mantul,Admin Keuangan,2023-10-01,
+K020,C15,Kedai Teh Nusantara,Staf IT,2022-01-01,
+K021,C03,Apotek Sehat Sentosa,Staf IT,2023-01-01,
+K022,,PT Teknologi Kasir Prima,Supervisor,2018-01-01,2019-06-30
+K022,C17,Apotek Bunda Sehat,Pemilik,2023-01-01,
+K023,,PT Gerai Nusantara,Staf,2016-01-01,2018-06-30
+K023,C17,Apotek Bunda Sehat,Manajer Operasional,2019-01-01,
+K024,C12,Toko Kue Delima,Manajer Area,2019-09-01,
+K025,,PT Sinar Logistik,Staf,2012-01-01,2016-06-30
+K025,C24,Bengkel Motor Sentosa,Manajer Area,2019-01-01,
+K026,C40,Toko Alat Tulis Cerdas,Supervisor Toko,2016-03-01,
+K027,,CV Karya Bersama,Supervisor,2014-01-01,2018-06-30
+K027,C12,Toko Kue Delima,Pemilik,2024-03-01,
+K028,,PT Sentosa Abadi Group,General Manager,2015-01-01,2019-11-30
+K028,P04,Nirwana Hotel & Resto,Direktur Utama,2020-01-01,
+K029,,PT Medika Utama,Supervisor,2015-01-01,2018-06-30
+K029,C24,Bengkel Motor Sentosa,Staf IT,2018-11-01,
+K030,C17,Apotek Bunda Sehat,Admin Keuangan,2024-04-01,
+K031,C32,Toko Herbal Alami,Manajer Operasional,2024-01-01,
+K032,C09,Apotek Medika Farma,Supervisor Toko,2020-01-01,
+K033,C12,Toko Kue Delima,Supervisor Kasir,2019-01-01,2025-12-31
+K033,C19,Mie Ayam Gajah Mada,Store Manager,2026-01-15,
+K034,C39,Es Teh Indonesia Lokal,Staf IT,2019-04-01,
+K035,,PT Mitra Swalayan,Analis,2018-01-01,2019-06-30
+K035,C36,Bakso Cak Man,Staf IT,2018-07-01,
+K036,C32,Toko Herbal Alami,Manajer Operasional,2017-10-01,
+K037,C33,Kopi Kenangan Desa,Manajer Operasional,2023-03-01,
+K038,C30,Depot Rawon Setan,Staf IT,2018-01-01,
+K039,,PT Retail Makmur,Analis,2016-01-01,2019-06-30
+K039,C29,Roti Bakar 88,Pemilik,2016-12-01,
+K040,C30,Depot Rawon Setan,Staf IT,2019-12-01,
+K041,C40,Toko Alat Tulis Cerdas,Manajer Area,2016-11-01,
+K041,,PT Mitra Swalayan,Staf,2017-01-01,2018-06-30
+K042,C27,Apotek Kimia Sejahtera,Staf IT,2024-08-01,
+K043,C33,Kopi Kenangan Desa,Admin Keuangan,2022-05-01,
+K044,,Bank Daerah Jatim,Staf,2018-01-01,2019-06-30
+K044,C25,Toko Sembako Maju,Staf IT,2020-01-01,
+K045,C07,Warung Sambal Bu Tini,Manajer Area,2023-03-01,
+K046,C22,Toko Buku Pelita,Admin Keuangan,2019-01-01,
+K047,C36,Bakso Cak Man,Admin Keuangan,2019-07-01,
+K048,C20,Pet Shop Sahabat,Staf IT,2017-05-01,
+K049,P03,Klinik Pratama Medika,Kepala Apotek,2021-01-01,
+K050,C01,Kopi Lintas Nusantara,IT Supervisor,2022-05-01,
+K051,C09,Apotek Medika Farma,Manajer Area,2017-02-01,
+K052,P01,Grup Ritel Mandala,IT Manager,2022-02-01,
+K053,C04,Roti Kenanga,Pemilik,2017-03-01,
+K054,C18,Fashion Outlet Anggun,Staf IT,2022-09-01,
+K055,,PT Teknologi Kasir Prima,Supervisor,2014-01-01,2016-06-30
+K055,C19,Mie Ayam Gajah Mada,Manajer Operasional,2019-01-01,
+K056,C01,Kopi Lintas Nusantara,Direktur Utama,2018-01-01,
+K057,C38,Laundry Bersih Kilat,Supervisor Toko,2016-01-01,
+K058,,PT Kreasi Kuliner,Staf,2017-01-01,2018-06-30
+K058,C08,Toko Elektronik Cahaya,Supervisor Toko,2019-12-01,
+K059,C37,Toko Sepatu Langkah,Manajer Area,2017-01-01,
+K060,,PT Kreasi Kuliner,Supervisor,2016-01-01,2019-06-30
+K060,C39,Es Teh Indonesia Lokal,Pemilik,2022-08-01,
+K061,,PT Sinar Logistik,Supervisor,2014-01-01,2016-06-30
+K061,C20,Pet Shop Sahabat,Pemilik,2020-03-01,
+K062,C13,Resto Seafood Bahari,Manajer Operasional,2020-10-01,
+K063,,PT Teknologi Kasir Prima,Staf,2012-01-01,2013-06-30
+K063,C14,Optik Prima Vision,Pemilik,2020-09-01,
+K064,,PT Medika Utama,Analis,2012-01-01,2014-06-30
+K064,C11,Swalayan Sumber Rejeki,Manajer Area,2022-11-01,
+K065,P04,Nirwana Hotel & Resto,Purchasing Manager,2021-06-01,
+K066,,PT Retail Makmur,Analis,2016-01-01,2018-06-30
+K066,C19,Mie Ayam Gajah Mada,Supervisor Toko,2021-02-01,
+K067,,PT Retail Makmur,Supervisor,2014-01-01,2015-06-30
+K067,C11,Swalayan Sumber Rejeki,Pemilik,2019-08-01,
+K068,C27,Apotek Kimia Sejahtera,Staf IT,2021-07-01,
+K069,,PT Mitra Swalayan,Staf,2015-01-01,2016-06-30
+K069,C09,Apotek Medika Farma,Supervisor Toko,2023-12-01,
+K070,,CV Cahaya Abadi,Staf,2018-01-01,2022-06-30
+K070,C25,Toko Sembako Maju,Admin Keuangan,2022-09-01,
+K071,C18,Fashion Outlet Anggun,Manajer Area,2024-04-01,
+K072,,PT Medika Utama,Staf,2012-01-01,2015-06-30
+K072,C29,Roti Bakar 88,Pemilik,2021-01-01,
+K073,,PT Sinar Logistik,Supervisor,2016-01-01,2018-06-30
+K073,C15,Kedai Teh Nusantara,Staf IT,2022-06-01,
+K074,C31,Material Bangunan Kokoh,Admin Keuangan,2024-09-01,
+K075,C35,Frozen Food Mama,Pemilik,2017-06-01,
+K076,P02,Teras Kafe Group,Pemilik,2019-05-01,
+K077,C28,Toko Mainan Ceria,Manajer Operasional,2018-11-01,
+K078,,KAP Wijaya & Rekan,Supervisor,2012-01-01,2015-06-30
+K078,C22,Toko Buku Pelita,Admin Keuangan,2022-02-01,
+K079,C03,Apotek Sehat Sentosa,Manajer Operasional,2019-02-01,
+K080,C13,Resto Seafood Bahari,Admin Keuangan,2017-05-01,
+K081,C08,Toko Elektronik Cahaya,Manajer Operasional,2020-06-01,
+K082,C22,Toko Buku Pelita,Manajer Area,2019-12-01,
+K083,,CV Cahaya Abadi,Analis,2018-01-01,2021-06-30
+K083,C30,Depot Rawon Setan,Manajer Operasional,2024-12-01,
+K084,,PT Kreasi Kuliner,Analis,2016-01-01,2019-06-30
+K084,C08,Toko Elektronik Cahaya,Admin Keuangan,2019-02-01,
+K085,C26,Ayam Geprek Mantul,Pemilik,2021-10-01,
+K086,C16,Toko Besi Makmur,Manajer Operasional,2023-03-01,
+K087,,CV Cahaya Abadi,Supervisor,2017-01-01,2020-06-30
+K087,C16,Toko Besi Makmur,Admin Keuangan,2017-06-01,
+K088,C27,Apotek Kimia Sejahtera,Pemilik,2020-10-01,
+K089,P01,Grup Ritel Mandala,Direktur Utama,2014-01-01,
+K090,C32,Toko Herbal Alami,Pemilik,2020-04-01,
+K091,C36,Bakso Cak Man,Manajer Operasional,2016-08-01,
+K091,,PT Sinar Logistik,Analis,2018-01-01,2022-06-30
+K092,C17,Apotek Bunda Sehat,Pemilik,2017-07-01,
+K092,,PT Sinar Logistik,Staf,2018-01-01,2019-06-30
+K093,C12,Toko Kue Delima,Supervisor Toko,2018-09-01,
+K094,C23,Kafe Senja,Pemilik,2020-02-01,
+K095,C23,Kafe Senja,Pemilik,2018-01-01,
+K096,C31,Material Bangunan Kokoh,Supervisor Toko,2018-07-01,
+K097,C28,Toko Mainan Ceria,Staf IT,2023-02-01,
+K098,C30,Depot Rawon Setan,Manajer Operasional,2022-09-01,
+K099,C39,Es Teh Indonesia Lokal,Staf IT,2016-02-01,
+K100,C07,Warung Sambal Bu Tini,Staf IT,2020-03-01,
+K101,C31,Material Bangunan Kokoh,Pemilik,2018-06-01,
+K102,C28,Toko Mainan Ceria,Staf IT,2021-04-01,
+K103,C05,Minimarket Berkah,Supervisor Gudang,2022-03-01,
+K104,C38,Laundry Bersih Kilat,Manajer Area,2019-11-01,
+K105,,PT Kreasi Kuliner,Supervisor,2015-01-01,2019-06-30
+K105,C28,Toko Mainan Ceria,Pemilik,2021-09-01,
+K106,,KAP Wijaya & Rekan,Analis,2017-01-01,2018-06-30
+K106,C40,Toko Alat Tulis Cerdas,Admin Keuangan,2021-04-01,
+K107,,Bank Daerah Jatim,Analis,2018-01-01,2020-06-30
+K107,C26,Ayam Geprek Mantul,Manajer Operasional,2022-09-01,
+K108,C15,Kedai Teh Nusantara,Manajer Area,2018-07-01,
+K109,,PT Gerai Nusantara,Staf,2017-01-01,2019-06-30
+K109,C11,Swalayan Sumber Rejeki,Supervisor Toko,2021-03-01,
+K110,C13,Resto Seafood Bahari,Manajer Area,2021-05-01,
+K111,C02,TB Sinar Jaya,Pemilik,2015-01-01,
+K112,C16,Toko Besi Makmur,Supervisor Toko,2022-10-01,
+K113,,PT Teknologi Kasir Prima,Analis,2014-01-01,2018-06-30
+K113,C15,Kedai Teh Nusantara,Staf IT,2018-05-01,
+K114,P03,Klinik Pratama Medika,Direktur Klinik,2018-01-01,
+K115,C34,Grosir Plastik Jaya,Staf IT,2020-03-01,
+K116,,PT Sentosa Abadi Group,Finance Manager,2015-02-01,2019-12-31
+K116,C06,Saiyo Group,CFO,2020-01-02,
+K117,,CV Karya Bersama,Supervisor,2018-01-01,2021-06-30
+K117,C21,Martabak Bangka Jaya,Manajer Operasional,2020-11-01,
+K118,C07,Warung Sambal Bu Tini,Admin Keuangan,2018-12-01,
+K119,C29,Roti Bakar 88,Manajer Area,2022-12-01,
+K120,,KAP Wijaya & Rekan,Analis,2015-01-01,2016-06-30
+K120,C38,Laundry Bersih Kilat,Pemilik,2021-09-01,
+K121,C10,Bakmi Jowo Pak Gondo,Pemilik,2021-07-01,
+K122,,PT Kreasi Kuliner,Supervisor,2016-01-01,2019-06-30
+K122,C33,Kopi Kenangan Desa,Supervisor Toko,2021-08-01,
+K123,C10,Bakmi Jowo Pak Gondo,Pemilik,2021-12-01,
+K124,C34,Grosir Plastik Jaya,Pemilik,2023-06-01,
+K125,,PT Teknologi Kasir Prima,Analis,2017-01-01,2019-06-30
+K125,C10,Bakmi Jowo Pak Gondo,Admin Keuangan,2019-08-01,
+K126,,CV Karya Bersama,Analis,2014-01-01,2015-06-30
+K126,C14,Optik Prima Vision,Admin Keuangan,2018-02-01,
+K127,C23,Kafe Senja,Manajer Area,2019-05-01,
+K128,C35,Frozen Food Mama,Staf IT,2017-03-01,
+K129,,PT Gerai Nusantara,Supervisor,2018-01-01,2022-06-30
+K129,C23,Kafe Senja,Manajer Area,2023-02-01,
+K130,,Bank Daerah Jatim,Supervisor,2017-01-01,2018-06-30
+K130,C20,Pet Shop Sahabat,Supervisor Toko,2021-01-01,
+K131,C24,Bengkel Motor Sentosa,Admin Keuangan,2022-02-01,
+K132,C36,Bakso Cak Man,Manajer Operasional,2018-02-01,
+K133,C37,Toko Sepatu Langkah,Admin Keuangan,2022-12-01,
+K134,,PT Boga Rasa Indonesia,Finance Manager,2019-04-01,2026-06-30
+K134,C01,Kopi Lintas Nusantara,CFO,2026-07-01,
+K135,C19,Mie Ayam Gajah Mada,Staf IT,2019-09-01,
+K136,,PT Kreasi Kuliner,Supervisor,2015-01-01,2016-06-30
+K136,C09,Apotek Medika Farma,Staf IT,2021-10-01,
+K137,C20,Pet Shop Sahabat,Staf IT,2017-06-01,
+K138,C25,Toko Sembako Maju,Staf IT,2024-03-01,
+K139,C34,Grosir Plastik Jaya,Staf IT,2023-11-01,
+K140,C07,Warung Sambal Bu Tini,Staf IT,2021-07-01,
+K141,C13,Resto Seafood Bahari,Manajer Operasional,2021-05-01,
+K142,C26,Ayam Geprek Mantul,Staf IT,2022-10-01,
+K143,C29,Roti Bakar 88,Staf IT,2021-12-01,
+K144,C33,Kopi Kenangan Desa,Manajer Operasional,2018-11-01,
+K145,,PT Gerai Nusantara,Supervisor,2014-01-01,2016-06-30
+K145,C34,Grosir Plastik Jaya,Manajer Area,2023-08-01,
+K146,C38,Laundry Bersih Kilat,Admin Keuangan,2016-05-01,
+K147,,PT Sinar Logistik,Supervisor,2016-01-01,2019-06-30
+K147,C19,Mie Ayam Gajah Mada,Supervisor Toko,2021-06-01,
+K148,,PT Gerai Nusantara,Analis,2017-01-01,2021-06-30
+K148,C21,Martabak Bangka Jaya,Pemilik,2020-08-01,
+K149,,PT Teknologi Kasir Prima,Supervisor,2013-01-01,2016-06-30
+K149,C08,Toko Elektronik Cahaya,Admin Keuangan,2017-08-01,
+K150,C22,Toko Buku Pelita,Supervisor Toko,2020-06-01,
+K151,C35,Frozen Food Mama,Manajer Area,2016-11-01,
+K152,C29,Roti Bakar 88,Admin Keuangan,2021-10-01,
+K153,C06,Saiyo Group,Manajer Operasional,2019-07-01,
+K154,C21,Martabak Bangka Jaya,Admin Keuangan,2022-10-01,
+K155,C24,Bengkel Motor Sentosa,Admin Keuangan,2022-08-01,
+K156,C23,Kafe Senja,Manajer Operasional,2022-01-01,
+K157,,PT Gerai Nusantara,Supervisor,2018-01-01,2020-06-30
+K157,C39,Es Teh Indonesia Lokal,Supervisor Toko,2021-11-01,
+K158,C40,Toko Alat Tulis Cerdas,Admin Keuangan,2019-05-01,
+K159,C35,Frozen Food Mama,Manajer Operasional,2016-03-01,
+K160,C11,Swalayan Sumber Rejeki,Admin Keuangan,2023-09-01,

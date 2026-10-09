@@ -1,0 +1,13 @@
+:root {font-family: system-ui, sans-serif; color: #173d39; background: #f5f7f5; font-synthesis: none; line-height: 1.5;}
+* {box-sizing: border-box;}
+body {margin: 0;}
+main {max-width: 1050px; margin: auto; padding: 40px 24px;}
+h1 {font-size: 36px; margin: 8px 0;}
+h2 {font-size: 19px; margin: 8px 0;}
+.eyebrow {font-size: 12px; letter-spacing: .06em;}
+aside {padding: 16px 0; margin: 24px 0; border-top: 1px solid #c9d6ce; border-bottom: 1px solid #c9d6ce;}
+section {display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 20px;}
+article {padding: 20px; background: #fff; border: 1px solid #dbe4dc; border-radius: 8px;}
+.muted {color: #536860; font-size: 14px;}
+[role=alert] {color: #9a2525;}
+

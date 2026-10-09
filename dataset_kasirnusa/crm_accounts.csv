@@ -1,0 +1,46 @@
+account_id,nama,tipe,industri,kota,paket,jumlah_outlet,account_owner_id,champion_contact_id,nps_terakhir,health_score_dashboard
+C01,Kopi Lintas Nusantara,pelanggan,F&B,Surabaya,Enterprise,42,E03,K017,8,Hijau
+C02,TB Sinar Jaya,pelanggan,Toko bangunan,Sidoarjo,Growth,25,E05,K111,9,Kuning
+C03,Apotek Sehat Sentosa,pelanggan,Apotek,Surabaya,Growth,18,E03,K079,8,Kuning
+C04,Roti Kenanga,pelanggan,Bakery,Malang,Starter,8,E04,K053,6,Hijau
+C05,Minimarket Berkah,pelanggan,Ritel,Gresik,Growth,24,E05,K001,8,Hijau
+C06,Saiyo Group,pelanggan,Resto Padang,Surabaya,Enterprise,30,E04,K116,9,Hijau
+C07,Warung Sambal Bu Tini,pelanggan,F&B,Surabaya,Growth,21,E04,K118,9,Hijau
+C08,Toko Elektronik Cahaya,pelanggan,Ritel,Gresik,Growth,14,E04,K081,10,Hijau
+C09,Apotek Medika Farma,pelanggan,Apotek,Jember,Growth,15,E03,K051,9,Hijau
+C10,Bakmi Jowo Pak Gondo,pelanggan,F&B,Mojokerto,Growth,21,E05,K121,8,Hijau
+C11,Swalayan Sumber Rejeki,pelanggan,Ritel,Sidoarjo,Growth,22,E03,K067,8,Hijau
+C12,Toko Kue Delima,pelanggan,Bakery,Surabaya,Enterprise,24,E05,K093,8,Kuning
+C13,Resto Seafood Bahari,pelanggan,F&B,Gresik,Growth,17,E04,K110,7,Hijau
+C14,Optik Prima Vision,pelanggan,Ritel,Pasuruan,Starter,8,E05,K126,10,Hijau
+C15,Kedai Teh Nusantara,pelanggan,F&B,Malang,Enterprise,23,E04,K113,10,Hijau
+C16,Toko Besi Makmur,pelanggan,Toko bangunan,Jember,Starter,8,E05,K086,8,Hijau
+C17,Apotek Bunda Sehat,pelanggan,Apotek,Mojokerto,Starter,10,E05,K030,10,Hijau
+C18,Fashion Outlet Anggun,pelanggan,Ritel,Malang,Starter,8,E03,K002,10,Hijau
+C19,Mie Ayam Gajah Mada,pelanggan,F&B,Pasuruan,Starter,8,E04,K033,7,Hijau
+C20,Pet Shop Sahabat,pelanggan,Ritel,Gresik,Starter,5,E03,K061,9,Hijau
+C21,Martabak Bangka Jaya,pelanggan,F&B,Kediri,Starter,9,E04,K117,8,Hijau
+C22,Toko Buku Pelita,pelanggan,Ritel,Gresik,Growth,18,E03,K046,9,Kuning
+C23,Kafe Senja,pelanggan,F&B,Mojokerto,Starter,6,E03,K095,8,Hijau
+C24,Bengkel Motor Sentosa,pelanggan,Ritel,Pasuruan,Starter,10,E04,K029,9,Hijau
+C25,Toko Sembako Maju,pelanggan,Ritel,Gresik,Growth,15,E05,K070,8,Hijau
+C26,Ayam Geprek Mantul,pelanggan,F&B,Mojokerto,Starter,10,E03,K085,7,Kuning
+C27,Apotek Kimia Sejahtera,pelanggan,Apotek,Jember,Growth,22,E04,K042,8,Kuning
+C28,Toko Mainan Ceria,pelanggan,Ritel,Malang,Growth,12,E05,K077,8,Hijau
+C29,Roti Bakar 88,pelanggan,Bakery,Malang,Growth,12,E05,K152,8,Kuning
+C30,Depot Rawon Setan,pelanggan,F&B,Kediri,Growth,17,E04,K038,7,Hijau
+C31,Material Bangunan Kokoh,pelanggan,Toko bangunan,Gresik,Growth,13,E03,K101,7,Hijau
+C32,Toko Herbal Alami,pelanggan,Ritel,Kediri,Growth,14,E03,K036,10,Hijau
+C33,Kopi Kenangan Desa,pelanggan,F&B,Malang,Starter,4,E05,K144,9,Hijau
+C34,Grosir Plastik Jaya,pelanggan,Ritel,Jember,Growth,12,E03,K115,9,Hijau
+C35,Frozen Food Mama,pelanggan,Ritel,Pasuruan,Growth,22,E04,K151,9,Hijau
+C36,Bakso Cak Man,pelanggan,F&B,Mojokerto,Growth,11,E05,K091,10,Hijau
+C37,Toko Sepatu Langkah,pelanggan,Ritel,Gresik,Growth,12,E04,K003,10,Kuning
+C38,Laundry Bersih Kilat,pelanggan,Ritel,Gresik,Growth,21,E04,K104,7,Hijau
+C39,Es Teh Indonesia Lokal,pelanggan,F&B,Pasuruan,Growth,19,E03,K034,9,Kuning
+C40,Toko Alat Tulis Cerdas,pelanggan,Ritel,Sidoarjo,Starter,10,E05,K026,9,Hijau
+P01,Grup Ritel Mandala,prospek,Minimarket,Surabaya,,60,E06,,,
+P02,Teras Kafe Group,prospek,F&B,Malang,,15,E07,,,
+P03,Klinik Pratama Medika,prospek,Klinik + apotek,Sidoarjo,,9,E08,,,
+P04,Nirwana Hotel & Resto,prospek,Hospitality,Surabaya,,35,E06,,,
+P05,PT Distribusi Sumber Rejeki,prospek,Distributor,Gresik,,40,E07,,,

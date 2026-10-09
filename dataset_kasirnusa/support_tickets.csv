@@ -1,0 +1,641 @@
+ticket_id,dibuat,account_id,outlet_id,pelapor_contact_id,kategori,prioritas,status,versi_aplikasi,judul,deskripsi,bug_id,diselesaikan
+T0001,2025-10-01,C37,C37-O11,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-10-06
+T0002,2025-10-01,C33,C33-O04,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-10-06
+T0003,2025-10-02,C05,C05-O06,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2025-10-03
+T0004,2025-10-03,C10,C10-O05,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2025-10-07
+T0005,2025-10-03,C11,C11-O16,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2025-10-09
+T0006,2025-10-04,C23,C23-O06,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2025-10-07
+T0007,2025-10-05,C28,C28-O03,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2025-10-05
+T0008,2025-10-05,C27,C27-O06,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-10-05
+T0009,2025-10-05,C30,C30-O12,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2025-10-10
+T0010,2025-10-06,C16,C16-O04,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2025-10-10
+T0011,2025-10-06,C29,C29-O04,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-10-10
+T0012,2025-10-06,C19,C19-O01,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2025-10-08
+T0013,2025-10-08,C31,C31-O08,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-10-12
+T0014,2025-10-08,C06,C06-O23,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-10-11
+T0015,2025-10-09,C40,C40-O07,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2025-10-15
+T0016,2025-10-09,C28,C28-O12,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-10-15
+T0017,2025-10-10,C23,C23-O01,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-10-15
+T0018,2025-10-11,C36,C36-O11,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2025-10-15
+T0019,2025-10-11,C05,C05-O13,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-10-14
+T0020,2025-10-11,C33,C33-O02,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-10-13
+T0021,2025-10-11,C23,C23-O02,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2025-10-12
+T0022,2025-10-12,C23,C23-O05,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-10-16
+T0023,2025-10-12,C34,C34-O06,,bug,Sedang,Selesai,4.10,Aplikasi tertutup sendiri,Laporan dari outlet.,,2025-10-17
+T0024,2025-10-12,C20,C20-O03,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2025-10-18
+T0025,2025-10-13,C33,C33-O04,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2025-10-14
+T0026,2025-10-15,C34,C34-O01,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2025-10-17
+T0027,2025-10-16,C35,C35-O03,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-10-21
+T0028,2025-10-16,C27,C27-O06,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2025-10-17
+T0029,2025-10-16,C31,C31-O03,,pertanyaan,Rendah,Selesai,4.10,Cara menambah kasir baru,Laporan dari outlet.,,2025-10-20
+T0030,2025-10-17,C09,C09-O05,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2025-10-22
+T0031,2025-10-17,C37,C37-O08,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-10-21
+T0032,2025-10-17,C14,C14-O03,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2025-10-20
+T0033,2025-10-18,C15,C15-O10,,bug,Sedang,Selesai,4.10,Printer struk tidak merespons,Laporan dari outlet.,,2025-10-18
+T0034,2025-10-19,C14,C14-O07,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2025-10-25
+T0035,2025-10-19,C35,C35-O21,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2025-10-25
+T0036,2025-10-20,C38,C38-O07,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2025-10-23
+T0037,2025-10-20,C31,C31-O07,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2025-10-26
+T0038,2025-10-21,C39,C39-O12,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-10-24
+T0039,2025-10-21,C23,C23-O02,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2025-10-23
+T0040,2025-10-21,C39,C39-O02,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2025-10-22
+T0041,2025-10-22,C36,C36-O04,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-10-24
+T0042,2025-10-22,C37,C37-O12,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-10-24
+T0043,2025-10-23,C03,C03-O09,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-10-28
+T0044,2025-10-24,C12,C12-O03,,bug,Sedang,Selesai,4.10,Printer struk tidak merespons,Laporan dari outlet.,,2025-10-27
+T0045,2025-10-25,C08,C08-O09,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-10-28
+T0046,2025-10-26,C30,C30-O05,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2025-11-01
+T0047,2025-10-26,C25,C25-O03,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-11-01
+T0048,2025-10-28,C06,C06-O15,,bug,Sedang,Selesai,4.10,Printer struk tidak merespons,Laporan dari outlet.,,2025-11-02
+T0049,2025-10-28,C19,C19-O01,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2025-11-03
+T0050,2025-10-28,C38,C38-O10,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2025-10-30
+T0051,2025-10-29,C13,C13-O02,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2025-11-01
+T0052,2025-10-29,C06,C06-O10,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-11-02
+T0053,2025-10-30,C13,C13-O06,,bug,Sedang,Selesai,4.10,Aplikasi tertutup sendiri,Laporan dari outlet.,,2025-11-04
+T0054,2025-10-30,C39,C39-O19,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-11-03
+T0055,2025-10-30,C18,C18-O01,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-11-04
+T0056,2025-10-31,C26,C26-O02,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2025-10-31
+T0057,2025-11-01,C11,C11-O20,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-11-06
+T0058,2025-11-02,C12,C12-O19,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2025-11-03
+T0059,2025-11-04,C36,C36-O08,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2025-11-04
+T0060,2025-11-05,C39,C39-O01,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-11-08
+T0061,2025-11-05,C18,C18-O08,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2025-11-09
+T0062,2025-11-05,C01,C01-O28,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2025-11-07
+T0063,2025-11-05,C12,C12-O21,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2025-11-11
+T0064,2025-11-05,C30,C30-O01,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-11-10
+T0065,2025-11-06,C23,C23-O04,,bug,Sedang,Selesai,4.10,Aplikasi tertutup sendiri,Laporan dari outlet.,,2025-11-11
+T0066,2025-11-07,C27,C27-O16,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2025-11-08
+T0067,2025-11-08,C29,C29-O12,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2025-11-12
+T0068,2025-11-08,C39,C39-O07,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-11-09
+T0069,2025-11-09,C23,C23-O02,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-11-15
+T0070,2025-11-09,C23,C23-O05,,pertanyaan,Rendah,Selesai,4.10,Cara menambah kasir baru,Laporan dari outlet.,,2025-11-13
+T0071,2025-11-09,C27,C27-O14,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2025-11-12
+T0072,2025-11-10,C26,C26-O01,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2025-11-11
+T0073,2025-11-10,C31,C31-O07,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2025-11-13
+T0074,2025-11-12,C16,C16-O01,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-11-12
+T0075,2025-11-13,C37,C37-O04,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-11-16
+T0076,2025-11-13,C07,C07-O14,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2025-11-14
+T0077,2025-11-15,C19,C19-O02,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-11-17
+T0078,2025-11-16,C38,C38-O03,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2025-11-20
+T0079,2025-11-17,C12,C12-O09,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2025-11-17
+T0080,2025-11-17,C06,C06-O28,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-11-18
+T0081,2025-11-18,C21,C21-O03,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-11-20
+T0082,2025-11-19,C18,C18-O07,,bug,Sedang,Selesai,4.10,Aplikasi tertutup sendiri,Laporan dari outlet.,,2025-11-23
+T0083,2025-11-19,C26,C26-O08,,bug,Sedang,Selesai,4.10,Aplikasi tertutup sendiri,Laporan dari outlet.,,2025-11-20
+T0084,2025-11-19,C21,C21-O01,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-11-20
+T0085,2025-11-20,C32,C32-O11,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-11-22
+T0086,2025-11-20,C16,C16-O01,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2025-11-20
+T0087,2025-11-20,C28,C28-O08,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-11-20
+T0088,2025-11-20,C11,C11-O15,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-11-25
+T0089,2025-11-21,C26,C26-O09,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2025-11-22
+T0090,2025-11-22,C30,C30-O14,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-11-22
+T0091,2025-11-23,C36,C36-O04,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-11-26
+T0092,2025-11-25,C17,C17-O02,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2025-11-26
+T0093,2025-11-25,C35,C35-O10,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2025-11-29
+T0094,2025-11-26,C10,C10-O18,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2025-11-28
+T0095,2025-11-26,C20,C20-O03,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2025-11-28
+T0096,2025-11-26,C28,C28-O08,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-11-27
+T0097,2025-11-27,C33,C33-O02,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2025-12-01
+T0098,2025-11-28,C14,C14-O08,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2025-12-01
+T0099,2025-11-28,C36,C36-O02,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-11-30
+T0100,2025-11-29,C28,C28-O01,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2025-11-30
+T0101,2025-11-30,C35,C35-O09,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-12-01
+T0102,2025-11-30,C09,C09-O10,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2025-11-30
+T0103,2025-12-01,C17,C17-O02,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-12-03
+T0104,2025-12-03,C10,C10-O12,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2025-12-03
+T0105,2025-12-03,C06,C06-O16,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-12-03
+T0106,2025-12-03,C37,C37-O01,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2025-12-03
+T0107,2025-12-03,C39,C39-O11,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2025-12-05
+T0108,2025-12-03,C06,C06-O20,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-12-08
+T0109,2025-12-03,C32,C32-O09,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2025-12-04
+T0110,2025-12-04,C27,C27-O04,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-12-06
+T0111,2025-12-04,C09,C09-O11,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-12-10
+T0112,2025-12-05,C28,C28-O04,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2025-12-11
+T0113,2025-12-05,C16,C16-O08,,pertanyaan,Rendah,Selesai,4.10,Cara menambah kasir baru,Laporan dari outlet.,,2025-12-05
+T0114,2025-12-06,C40,C40-O03,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2025-12-07
+T0115,2025-12-06,C37,C37-O07,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2025-12-07
+T0116,2025-12-07,C24,C24-O01,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2025-12-12
+T0117,2025-12-08,C31,C31-O06,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-12-12
+T0118,2025-12-09,C30,C30-O09,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2025-12-15
+T0119,2025-12-09,C25,C25-O01,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2025-12-12
+T0120,2025-12-10,C03,C03-O17,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-12-15
+T0121,2025-12-10,C18,C18-O06,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-12-12
+T0122,2025-12-11,C09,C09-O08,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2025-12-16
+T0123,2025-12-12,C06,C06-O24,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2025-12-17
+T0124,2025-12-12,C05,C05-O17,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-12-17
+T0125,2025-12-12,C33,C33-O04,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-12-12
+T0126,2025-12-16,C25,C25-O09,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2025-12-17
+T0127,2025-12-16,C11,C11-O03,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2025-12-17
+T0128,2025-12-17,C40,C40-O07,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2025-12-22
+T0129,2025-12-18,C16,C16-O03,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2025-12-24
+T0130,2025-12-19,C15,C15-O08,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2025-12-23
+T0131,2025-12-19,C40,C40-O08,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2025-12-20
+T0132,2025-12-20,C35,C35-O15,,pertanyaan,Rendah,Selesai,4.10,Cara menambah kasir baru,Laporan dari outlet.,,2025-12-26
+T0133,2025-12-20,C01,C01-O27,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-12-23
+T0134,2025-12-21,C05,C05-O17,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2025-12-25
+T0135,2025-12-22,C31,C31-O07,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2025-12-25
+T0136,2025-12-22,C09,C09-O07,,pertanyaan,Rendah,Selesai,4.10,Cara menambah kasir baru,Laporan dari outlet.,,2025-12-26
+T0137,2025-12-22,C07,C07-O02,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2025-12-27
+T0138,2025-12-22,C35,C35-O15,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-12-23
+T0139,2025-12-22,C05,C05-O02,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2025-12-28
+T0140,2025-12-22,C14,C14-O05,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2025-12-27
+T0141,2025-12-23,C16,C16-O08,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-12-26
+T0142,2025-12-24,C20,C20-O03,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2025-12-24
+T0143,2025-12-24,C28,C28-O05,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2025-12-28
+T0144,2025-12-24,C03,C03-O11,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2025-12-26
+T0145,2025-12-24,C26,C26-O01,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2025-12-26
+T0146,2025-12-24,C01,C01-O03,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-12-25
+T0147,2025-12-25,C33,C33-O04,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2025-12-26
+T0148,2025-12-25,C33,C33-O02,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2025-12-31
+T0149,2025-12-28,C01,C01-O20,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-01-01
+T0150,2025-12-28,C13,C13-O04,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2025-12-30
+T0151,2025-12-29,C01,C01-O06,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2026-01-01
+T0152,2025-12-29,C32,C32-O14,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-01-04
+T0153,2025-12-30,C40,C40-O07,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-01-03
+T0154,2025-12-30,C40,C40-O07,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-01-04
+T0155,2025-12-30,C37,C37-O03,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2026-01-04
+T0156,2025-12-31,C06,C06-O05,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-01-03
+T0157,2025-12-31,C30,C30-O09,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-01-04
+T0158,2026-01-02,C15,C15-O11,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2026-01-02
+T0159,2026-01-03,C38,C38-O02,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-01-06
+T0160,2026-01-03,C32,C32-O04,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2026-01-07
+T0161,2026-01-04,C13,C13-O13,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-01-10
+T0162,2026-01-04,C20,C20-O03,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2026-01-08
+T0163,2026-01-04,C07,C07-O09,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-01-07
+T0164,2026-01-05,C22,C22-O03,,pertanyaan,Rendah,Selesai,4.10,Cara menambah kasir baru,Laporan dari outlet.,,2026-01-05
+T0165,2026-01-06,C39,C39-O06,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2026-01-07
+T0166,2026-01-07,C11,C11-O15,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-01-13
+T0167,2026-01-07,C01,C01-O14,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-01-13
+T0168,2026-01-07,C14,C14-O03,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2026-01-08
+T0169,2026-01-08,C10,C10-O09,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-01-10
+T0170,2026-01-08,C23,C23-O02,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2026-01-09
+T0171,2026-01-08,C27,C27-O09,,bug,Sedang,Selesai,4.10,Printer struk tidak merespons,Laporan dari outlet.,,2026-01-14
+T0172,2026-01-10,C32,C32-O08,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-01-10
+T0173,2026-01-10,C35,C35-O02,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-01-11
+T0174,2026-01-11,C05,C05-O01,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2026-01-15
+T0175,2026-01-11,C29,C29-O05,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-01-16
+T0176,2026-01-11,C19,C19-O02,,bug,Sedang,Selesai,4.10,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-01-14
+T0177,2026-01-12,C40,C40-O07,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2026-01-15
+T0178,2026-01-12,C36,C36-O11,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-01-16
+T0179,2026-01-13,C27,C27-O11,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-01-17
+T0180,2026-01-13,C20,C20-O01,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2026-01-17
+T0181,2026-01-13,C12,C12-O07,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-01-14
+T0182,2026-01-13,C12,C12-O22,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-01-18
+T0183,2026-01-14,C25,C25-O14,,bug,Sedang,Selesai,4.10,Printer struk tidak merespons,Laporan dari outlet.,,2026-01-16
+T0184,2026-01-15,C35,C35-O02,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-01-18
+T0185,2026-01-17,C30,C30-O02,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-01-17
+T0186,2026-01-17,C24,C24-O02,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2026-01-21
+T0187,2026-01-18,C01,C01-O26,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2026-01-21
+T0188,2026-01-18,C33,C33-O03,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-01-22
+T0189,2026-01-18,C25,C25-O13,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2026-01-20
+T0190,2026-01-19,C25,C25-O12,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2026-01-25
+T0191,2026-01-20,C20,C20-O01,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-01-23
+T0192,2026-01-21,C28,C28-O02,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-01-27
+T0193,2026-01-21,C37,C37-O05,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2026-01-22
+T0194,2026-01-21,C31,C31-O01,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2026-01-21
+T0195,2026-01-21,C40,C40-O04,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-01-22
+T0196,2026-01-22,C18,C18-O08,,pertanyaan,Rendah,Selesai,4.10,Cara menambah kasir baru,Laporan dari outlet.,,2026-01-28
+T0197,2026-01-22,C06,C06-O26,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2026-01-23
+T0198,2026-01-23,C01,C01-O28,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-01-24
+T0199,2026-01-24,C10,C10-O08,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-01-28
+T0200,2026-01-24,C18,C18-O06,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-01-25
+T0201,2026-01-25,C23,C23-O04,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-01-31
+T0202,2026-01-25,C21,C21-O03,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-01-25
+T0203,2026-01-27,C18,C18-O06,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-01-31
+T0204,2026-01-27,C12,C12-O14,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-01-29
+T0205,2026-01-28,C38,C38-O21,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2026-01-31
+T0206,2026-01-28,C05,C05-O03,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-01-28
+T0207,2026-01-28,C05,C05-O04,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-01-30
+T0208,2026-01-29,C27,C27-O10,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2026-01-31
+T0209,2026-01-30,C38,C38-O02,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2026-02-04
+T0210,2026-01-30,C32,C32-O10,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-01-31
+T0211,2026-01-30,C20,C20-O04,,bug,Sedang,Selesai,4.10,Printer struk tidak merespons,Laporan dari outlet.,,2026-01-30
+T0212,2026-01-30,C29,C29-O10,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-02-03
+T0213,2026-01-31,C10,C10-O09,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-02-01
+T0214,2026-01-31,C33,C33-O04,,bug,Sedang,Selesai,4.10,Printer struk tidak merespons,Laporan dari outlet.,,2026-02-04
+T0215,2026-02-01,C19,C19-O03,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-02-01
+T0216,2026-02-01,C21,C21-O05,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2026-02-05
+T0217,2026-02-01,C12,C12-O02,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-02-04
+T0218,2026-02-02,C39,C39-O02,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-02-03
+T0219,2026-02-02,C06,C06-O08,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2026-02-07
+T0220,2026-02-02,C18,C18-O07,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-02-04
+T0221,2026-02-04,C06,C06-O06,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-02-10
+T0222,2026-02-04,C38,C38-O15,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-02-04
+T0223,2026-02-05,C26,C26-O03,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-02-10
+T0224,2026-02-05,C11,C11-O01,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-02-07
+T0225,2026-02-06,C05,C05-O01,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2026-02-12
+T0226,2026-02-07,C03,C03-O17,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-02-09
+T0227,2026-02-07,C13,C13-O12,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-02-07
+T0228,2026-02-08,C31,C31-O02,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-02-12
+T0229,2026-02-09,C12,C12-O03,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-02-11
+T0230,2026-02-09,C08,C08-O10,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2026-02-12
+T0231,2026-02-09,C31,C31-O01,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2026-02-12
+T0232,2026-02-11,C04,C04-O02,,pertanyaan,Rendah,Selesai,4.10,Cara ubah harga promo,Mohon panduan.,,2026-02-11
+T0233,2026-02-11,C12,C12-O18,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-02-17
+T0234,2026-02-12,C25,C25-O14,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-02-18
+T0235,2026-02-12,C13,C13-O14,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-02-16
+T0236,2026-02-13,C20,C20-O02,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-02-17
+T0237,2026-02-13,C36,C36-O10,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-02-14
+T0238,2026-02-13,C25,C25-O02,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-02-18
+T0239,2026-02-14,C40,C40-O10,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-02-15
+T0240,2026-02-15,C29,C29-O11,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-02-17
+T0241,2026-02-15,C20,C20-O05,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2026-02-16
+T0242,2026-02-15,C05,C05-O22,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-02-16
+T0243,2026-02-16,C30,C30-O05,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2026-02-20
+T0244,2026-02-16,C06,C06-O10,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-02-17
+T0245,2026-02-16,C21,C21-O09,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-02-20
+T0246,2026-02-18,C06,C06-O13,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2026-02-18
+T0247,2026-02-19,C07,C07-O19,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-02-21
+T0248,2026-02-20,C20,C20-O02,,pertanyaan,Rendah,Selesai,4.10,Cara menambah kasir baru,Laporan dari outlet.,,2026-02-20
+T0249,2026-02-22,C31,C31-O01,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-02-26
+T0250,2026-02-22,C05,C05-O03,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2026-02-23
+T0251,2026-02-22,C38,C38-O10,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2026-02-23
+T0252,2026-02-23,C19,C19-O01,,perangkat,Sedang,Selesai,4.10,Tablet kasir rusak,Laporan dari outlet.,,2026-03-01
+T0253,2026-02-24,C25,C25-O11,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-02-27
+T0254,2026-02-24,C28,C28-O01,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-02-26
+T0255,2026-02-24,C20,C20-O03,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-02-26
+T0256,2026-02-24,C08,C08-O12,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-02-24
+T0257,2026-02-25,C22,C22-O14,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-02-28
+T0258,2026-02-25,C13,C13-O03,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-03-01
+T0259,2026-02-26,C23,C23-O03,,billing,Rendah,Selesai,4.10,Minta faktur pajak,Laporan dari outlet.,,2026-02-27
+T0260,2026-02-26,C08,C08-O04,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2026-03-01
+T0261,2026-02-26,C31,C31-O02,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-03-01
+T0262,2026-02-27,C18,C18-O03,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2026-03-04
+T0263,2026-02-27,C35,C35-O15,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2026-03-04
+T0264,2026-02-28,C08,C08-O07,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2026-02-28
+T0265,2026-02-28,C36,C36-O10,,pertanyaan,Rendah,Selesai,4.10,Ubah kategori produk,Laporan dari outlet.,,2026-03-02
+T0266,2026-03-01,C22,C22-O17,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-03-04
+T0267,2026-03-01,C24,C24-O06,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-03-06
+T0268,2026-03-02,C20,C20-O05,,pertanyaan,Rendah,Selesai,4.10,Cara menambah kasir baru,Laporan dari outlet.,,2026-03-08
+T0269,2026-03-02,C14,C14-O01,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2026-03-06
+T0270,2026-03-03,C12,C12-O13,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2026-03-05
+T0271,2026-03-03,C32,C32-O04,,pertanyaan,Rendah,Selesai,4.10,Cara cetak ulang struk,Laporan dari outlet.,,2026-03-04
+T0272,2026-03-04,C35,C35-O19,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-03-10
+T0273,2026-03-05,C31,C31-O06,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-03-09
+T0274,2026-03-07,C29,C29-O03,,bug,Sedang,Selesai,4.10,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-03-07
+T0275,2026-03-08,C30,C30-O11,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-03-10
+T0276,2026-03-09,C12,C12-O15,,bug,Sedang,Selesai,4.10,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-03-14
+T0277,2026-03-09,C23,C23-O01,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-03-10
+T0278,2026-03-10,C33,C33-O03,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-03-14
+T0279,2026-03-10,C25,C25-O05,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-03-16
+T0280,2026-03-11,C28,C28-O04,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-03-15
+T0281,2026-03-12,C30,C30-O13,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-03-15
+T0282,2026-03-12,C12,C12-O24,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-03-12
+T0283,2026-03-12,C31,C31-O02,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-03-12
+T0284,2026-03-13,C11,C11-O12,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-03-17
+T0285,2026-03-13,C19,C19-O06,,pertanyaan,Rendah,Selesai,4.10,Cara menambah kasir baru,Laporan dari outlet.,,2026-03-16
+T0286,2026-03-13,C27,C27-O05,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-03-16
+T0287,2026-03-13,C05,C05-O08,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-03-15
+T0288,2026-03-13,C34,C34-O10,,bug,Sedang,Selesai,4.10,Scan barcode lambat,Laporan dari outlet.,,2026-03-16
+T0289,2026-03-16,C03,C03-O12,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-03-19
+T0290,2026-03-17,C39,C39-O08,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2026-03-18
+T0291,2026-03-17,C20,C20-O03,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-03-23
+T0292,2026-03-18,C33,C33-O01,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-03-22
+T0293,2026-03-18,C10,C10-O14,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-03-20
+T0294,2026-03-18,C18,C18-O05,,billing,Rendah,Selesai,4.10,Perubahan alamat penagihan,Laporan dari outlet.,,2026-03-18
+T0295,2026-03-18,C18,C18-O04,,perangkat,Sedang,Selesai,4.10,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-03-22
+T0296,2026-03-19,C14,C14-O03,,pertanyaan,Rendah,Selesai,4.10,Setting pajak restoran,Laporan dari outlet.,,2026-03-22
+T0297,2026-03-20,C16,C16-O04,,bug,Sedang,Selesai,4.10,Gambar produk tidak tampil,Laporan dari outlet.,,2026-03-22
+T0298,2026-03-21,C20,C20-O04,,pelatihan,Rendah,Selesai,4.10,Training laporan stok,Laporan dari outlet.,,2026-03-22
+T0299,2026-03-21,C32,C32-O13,,pelatihan,Rendah,Selesai,4.10,Pelatihan kasir baru,Laporan dari outlet.,,2026-03-23
+T0300,2026-03-22,C24,C24-O01,,billing,Rendah,Selesai,4.10,Konfirmasi pembayaran,Laporan dari outlet.,,2026-03-24
+T0301,2026-03-22,C34,C34-O09,,bug,Sedang,Selesai,4.10,Struk tercetak dua kali,Laporan dari outlet.,BUG-398,2026-03-28
+T0302,2026-03-22,C40,C40-O08,,perangkat,Sedang,Selesai,4.10,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-03-26
+T0303,2026-03-24,C05,C05-O18,,perangkat,Sedang,Selesai,4.11,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-03-26
+T0304,2026-03-24,C03,C03-O17,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-03-30
+T0305,2026-03-25,C18,C18-O05,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-03-28
+T0306,2026-03-25,C35,C35-O08,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-03-30
+T0307,2026-03-25,C36,C36-O03,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-03-31
+T0308,2026-03-26,C28,C28-O12,,pertanyaan,Rendah,Selesai,4.11,Setting pajak restoran,Laporan dari outlet.,,2026-04-01
+T0309,2026-03-26,C05,C05-O07,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-03-29
+T0310,2026-03-27,C40,C40-O07,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-03-29
+T0311,2026-03-28,C13,C13-O11,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-04-03
+T0312,2026-03-28,C16,C16-O07,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-03-31
+T0313,2026-03-29,C15,C15-O18,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-03-29
+T0314,2026-03-29,C05,C05-O21,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-04-04
+T0315,2026-03-31,C27,C27-O18,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-04-03
+T0316,2026-04-01,C29,C29-O04,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-04-03
+T0317,2026-04-01,C29,C29-O09,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-04-07
+T0318,2026-04-02,C29,C29-O01,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-04-07
+T0319,2026-04-02,C23,C23-O01,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-04-03
+T0320,2026-04-03,C17,C17-O06,,perangkat,Sedang,Selesai,4.11,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-04-05
+T0321,2026-04-03,C34,C34-O10,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-04-08
+T0322,2026-04-03,C25,C25-O07,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-04-03
+T0323,2026-04-03,C36,C36-O07,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-04-04
+T0324,2026-04-04,C38,C38-O05,,perangkat,Sedang,Selesai,4.11,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-04-10
+T0325,2026-04-05,C37,C37-O03,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-04-07
+T0326,2026-04-06,C22,C22-O12,,pertanyaan,Rendah,Selesai,4.11,Ubah kategori produk,Laporan dari outlet.,,2026-04-09
+T0327,2026-04-06,C22,C22-O14,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-04-10
+T0328,2026-04-07,C38,C38-O19,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-04-09
+T0329,2026-04-07,C12,C12-O08,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-04-10
+T0330,2026-04-07,C05,C05-O07,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-04-13
+T0331,2026-04-07,C06,C06-O25,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-04-08
+T0332,2026-04-07,C35,C35-O13,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-04-10
+T0333,2026-04-08,C21,C21-O05,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-04-08
+T0334,2026-04-08,C15,C15-O01,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-04-10
+T0335,2026-04-09,C28,C28-O10,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-04-10
+T0336,2026-04-09,C07,C07-O12,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-04-14
+T0337,2026-04-11,C08,C08-O07,,perangkat,Sedang,Selesai,4.11,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-04-13
+T0338,2026-04-11,C22,C22-O06,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-04-14
+T0339,2026-04-12,C06,C06-O11,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-04-14
+T0340,2026-04-12,C18,C18-O01,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-04-13
+T0341,2026-04-12,C25,C25-O05,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-04-18
+T0342,2026-04-12,C39,C39-O18,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-04-14
+T0343,2026-04-13,C23,C23-O01,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-04-15
+T0344,2026-04-14,C34,C34-O08,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-04-14
+T0345,2026-04-16,C06,C06-O05,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-04-22
+T0346,2026-04-16,C40,C40-O03,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-04-19
+T0347,2026-04-16,C01,C01-O17,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-04-21
+T0348,2026-04-17,C05,C05-O09,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-04-20
+T0349,2026-04-17,C01,C01-O07,,perangkat,Sedang,Selesai,4.11,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-04-17
+T0350,2026-04-17,C35,C35-O03,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-04-23
+T0351,2026-04-17,C31,C31-O07,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-04-23
+T0352,2026-04-18,C27,C27-O03,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-04-23
+T0353,2026-04-18,C34,C34-O09,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-04-22
+T0354,2026-04-18,C05,C05-O22,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-04-24
+T0355,2026-04-19,C17,C17-O08,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-04-24
+T0356,2026-04-19,C25,C25-O10,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-04-23
+T0357,2026-04-20,C25,C25-O02,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-04-23
+T0358,2026-04-20,C29,C29-O02,,pertanyaan,Rendah,Selesai,4.11,Setting pajak restoran,Laporan dari outlet.,,2026-04-20
+T0359,2026-04-20,C09,C09-O07,,pertanyaan,Rendah,Selesai,4.11,Ubah kategori produk,Laporan dari outlet.,,2026-04-23
+T0360,2026-04-21,C32,C32-O12,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-04-22
+T0361,2026-04-21,C29,C29-O04,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-04-22
+T0362,2026-04-23,C26,C26-O08,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-04-28
+T0363,2026-04-25,C38,C38-O01,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-04-29
+T0364,2026-04-25,C17,C17-O05,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-04-28
+T0365,2026-04-26,C36,C36-O10,,pertanyaan,Rendah,Selesai,4.11,Setting pajak restoran,Laporan dari outlet.,,2026-04-28
+T0366,2026-04-27,C26,C26-O05,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-04-28
+T0367,2026-04-27,C06,C06-O28,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-05-02
+T0368,2026-04-28,C27,C27-O15,,perangkat,Sedang,Selesai,4.11,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-04-29
+T0369,2026-04-28,C26,C26-O07,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-05-03
+T0370,2026-04-29,C38,C38-O13,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-05-03
+T0371,2026-04-29,C24,C24-O07,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-05-03
+T0372,2026-04-30,C17,C17-O09,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-05-04
+T0373,2026-05-01,C08,C08-O08,,pertanyaan,Rendah,Selesai,4.11,Ubah kategori produk,Laporan dari outlet.,,2026-05-07
+T0374,2026-05-02,C18,C18-O06,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-05-03
+T0375,2026-05-02,C11,C11-O20,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-05-03
+T0376,2026-05-03,C20,C20-O02,,perangkat,Sedang,Selesai,4.11,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-05-04
+T0377,2026-05-04,C14,C14-O07,,pertanyaan,Rendah,Selesai,4.11,Setting pajak restoran,Laporan dari outlet.,,2026-05-05
+T0378,2026-05-05,C24,C24-O06,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-05-07
+T0379,2026-05-05,C22,C22-O13,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-05-05
+T0380,2026-05-05,C40,C40-O05,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-05-08
+T0381,2026-05-06,C29,C29-O01,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-05-06
+T0382,2026-05-06,C01,,K050,integrasi,Tinggi,Terbuka,4.11,Ekspor jurnal ke Accurate gagal,Tim keuangan tidak bisa mengirim jurnal penjualan harian ke Accurate. Menunggu fitur integrasi resmi.,,
+T0383,2026-05-07,C13,C13-O02,,perangkat,Sedang,Selesai,4.11,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-05-10
+T0384,2026-05-09,C27,C27-O21,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-05-09
+T0385,2026-05-10,C10,C10-O17,,perangkat,Sedang,Selesai,4.11,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-05-15
+T0386,2026-05-10,C13,C13-O08,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-05-15
+T0387,2026-05-10,C17,C17-O03,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-05-13
+T0388,2026-05-11,C16,C16-O06,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-05-14
+T0389,2026-05-13,C37,C37-O12,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-05-19
+T0390,2026-05-14,C08,C08-O07,,perangkat,Sedang,Selesai,4.11,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-05-14
+T0391,2026-05-14,C17,C17-O07,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-05-18
+T0392,2026-05-14,C09,C09-O03,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-05-14
+T0393,2026-05-16,C21,C21-O07,,perangkat,Sedang,Selesai,4.11,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-05-22
+T0394,2026-05-16,C30,C30-O16,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-05-19
+T0395,2026-05-17,C18,C18-O07,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-05-19
+T0396,2026-05-18,C35,C35-O10,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-05-23
+T0397,2026-05-19,C33,C33-O03,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-05-19
+T0398,2026-05-19,C40,C40-O02,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-05-21
+T0399,2026-05-20,C19,C19-O06,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-05-21
+T0400,2026-05-22,C37,C37-O04,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-05-25
+T0401,2026-05-22,C38,C38-O07,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-05-28
+T0402,2026-05-23,C08,C08-O10,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-05-27
+T0403,2026-05-24,C25,C25-O02,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-05-30
+T0404,2026-05-24,C33,C33-O02,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-05-30
+T0405,2026-05-26,C22,C22-O02,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-06-01
+T0406,2026-05-27,C29,C29-O10,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-05-30
+T0407,2026-05-27,C01,,K050,integrasi,Tinggi,Terbuka,4.11,Mapping akun COA untuk integrasi,Mohon panduan mapping COA. Kami diberi informasi integrasi akuntansi akan tersedia Q3.,,
+T0408,2026-05-28,C33,C33-O04,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-05-29
+T0409,2026-05-28,C26,C26-O03,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-05-30
+T0410,2026-05-29,C12,C12-O18,,pertanyaan,Rendah,Selesai,4.11,Setting pajak restoran,Laporan dari outlet.,,2026-05-31
+T0411,2026-05-30,C12,C12-O18,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-06-04
+T0412,2026-05-31,C21,C21-O05,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-06-06
+T0413,2026-06-01,C06,C06-O29,,pertanyaan,Rendah,Selesai,4.11,Ubah kategori produk,Laporan dari outlet.,,2026-06-02
+T0414,2026-06-02,C16,C16-O01,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-06-08
+T0415,2026-06-02,C22,C22-O14,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-06-04
+T0416,2026-06-02,C22,C22-O03,,pertanyaan,Rendah,Selesai,4.11,Ubah kategori produk,Laporan dari outlet.,,2026-06-03
+T0417,2026-06-03,C37,C37-O07,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-06-03
+T0418,2026-06-03,C35,C35-O01,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-06-04
+T0419,2026-06-03,C37,C37-O10,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-06-05
+T0420,2026-06-03,C04,C04-O05,,billing,Sedang,Selesai,4.11,Tagihan bulan ini,Mohon perpanjangan waktu bayar.,,2026-06-05
+T0421,2026-06-03,C16,C16-O04,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-06-09
+T0422,2026-06-04,C17,C17-O05,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-06-04
+T0423,2026-06-04,C06,C06-O18,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-06-07
+T0424,2026-06-04,C20,C20-O04,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-06-07
+T0425,2026-06-07,C29,C29-O03,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-06-11
+T0426,2026-06-07,C13,C13-O09,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-06-08
+T0427,2026-06-07,C35,C35-O10,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-06-13
+T0428,2026-06-07,C22,C22-O02,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-06-07
+T0429,2026-06-08,C28,C28-O02,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-06-08
+T0430,2026-06-09,C31,C31-O03,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-06-09
+T0431,2026-06-11,C20,C20-O01,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-06-16
+T0432,2026-06-12,C40,C40-O08,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-06-14
+T0433,2026-06-13,C08,C08-O08,,pertanyaan,Rendah,Selesai,4.11,Ubah kategori produk,Laporan dari outlet.,,2026-06-14
+T0434,2026-06-13,C32,C32-O14,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-06-17
+T0435,2026-06-14,C40,C40-O03,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-06-15
+T0436,2026-06-14,C37,C37-O02,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-06-16
+T0437,2026-06-14,C32,C32-O04,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-06-19
+T0438,2026-06-14,C37,C37-O05,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-06-20
+T0439,2026-06-14,C35,C35-O15,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-06-14
+T0440,2026-06-15,C16,C16-O02,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-06-19
+T0441,2026-06-15,C25,C25-O06,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-06-17
+T0442,2026-06-16,C37,C37-O09,,perangkat,Sedang,Selesai,4.11,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-06-21
+T0443,2026-06-17,C25,C25-O13,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-06-20
+T0444,2026-06-18,C29,C29-O08,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-06-23
+T0445,2026-06-18,C31,C31-O10,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-06-20
+T0446,2026-06-18,C26,C26-O06,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-06-20
+T0447,2026-06-18,C06,C06-O15,,pertanyaan,Rendah,Selesai,4.11,Setting pajak restoran,Laporan dari outlet.,,2026-06-18
+T0448,2026-06-18,C15,C15-O05,,pertanyaan,Rendah,Selesai,4.11,Ubah kategori produk,Laporan dari outlet.,,2026-06-23
+T0449,2026-06-18,C14,C14-O03,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-06-24
+T0450,2026-06-20,C32,C32-O12,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-06-23
+T0451,2026-06-20,C10,C10-O12,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-06-20
+T0452,2026-06-20,C30,C30-O09,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-06-24
+T0453,2026-06-21,C35,C35-O19,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-06-22
+T0454,2026-06-22,C09,C09-O10,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-06-22
+T0455,2026-06-22,C15,C15-O04,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-06-25
+T0456,2026-06-23,C06,C06-O06,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-06-26
+T0457,2026-06-23,C11,C11-O14,,perangkat,Sedang,Selesai,4.11,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-06-24
+T0458,2026-06-23,C31,C31-O07,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-06-27
+T0459,2026-06-23,C18,C18-O08,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-06-29
+T0460,2026-06-25,C37,C37-O07,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-06-26
+T0461,2026-06-25,C34,C34-O10,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-06-27
+T0462,2026-06-26,C06,C06-O27,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-06-27
+T0463,2026-06-27,C09,C09-O10,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-06-27
+T0464,2026-06-28,C40,C40-O08,,pertanyaan,Rendah,Selesai,4.11,Setting pajak restoran,Laporan dari outlet.,,2026-06-28
+T0465,2026-06-28,C12,C12-O09,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-06-30
+T0466,2026-06-28,C22,C22-O07,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-07-03
+T0467,2026-06-28,C10,C10-O08,,perangkat,Sedang,Selesai,4.11,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-06-30
+T0468,2026-06-28,C16,C16-O07,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-07-02
+T0469,2026-06-28,C32,C32-O11,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-07-02
+T0470,2026-06-29,C09,C09-O01,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-06-30
+T0471,2026-06-29,C36,C36-O11,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-06-30
+T0472,2026-06-29,C07,C07-O16,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-07-04
+T0473,2026-07-01,C13,C13-O14,,perangkat,Sedang,Selesai,4.12,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-07-02
+T0474,2026-07-01,C24,C24-O06,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-07-07
+T0475,2026-07-02,C22,C22-O12,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-07-03
+T0476,2026-07-02,C33,C33-O01,,billing,Rendah,Selesai,4.12,Perubahan alamat penagihan,Laporan dari outlet.,,2026-07-06
+T0477,2026-07-03,C16,C16-O06,,billing,Rendah,Selesai,4.12,Minta faktur pajak,Laporan dari outlet.,,2026-07-03
+T0478,2026-07-05,C40,C40-O04,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-07-11
+T0479,2026-07-05,C16,C16-O08,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-07-05
+T0480,2026-07-05,C26,C26-O06,,pelatihan,Rendah,Selesai,4.12,Training laporan stok,Laporan dari outlet.,,2026-07-11
+T0481,2026-07-06,C34,C34-O11,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-07-09
+T0482,2026-07-07,C08,C08-O02,,pertanyaan,Rendah,Selesai,4.12,Setting pajak restoran,Laporan dari outlet.,,2026-07-10
+T0483,2026-07-07,C22,C22-O12,,pertanyaan,Rendah,Selesai,4.11,Setting pajak restoran,Laporan dari outlet.,,2026-07-11
+T0484,2026-07-07,C39,C39-O15,,pertanyaan,Rendah,Selesai,4.12,Ubah kategori produk,Laporan dari outlet.,,2026-07-07
+T0485,2026-07-08,C34,C34-O08,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-07-09
+T0486,2026-07-09,C35,C35-O09,,bug,Sedang,Selesai,4.12,Printer struk tidak merespons,Laporan dari outlet.,,2026-07-14
+T0487,2026-07-09,C10,C10-O20,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-07-13
+T0488,2026-07-10,C33,C33-O02,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-07-11
+T0489,2026-07-10,C33,C33-O04,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-07-12
+T0490,2026-07-10,C27,C27-O15,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-07-14
+T0491,2026-07-11,C27,C27-O04,,billing,Rendah,Selesai,4.12,Konfirmasi pembayaran,Laporan dari outlet.,,2026-07-15
+T0492,2026-07-11,C14,C14-O01,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-07-12
+T0493,2026-07-12,C10,C10-O01,,bug,Sedang,Selesai,4.12,Printer struk tidak merespons,Laporan dari outlet.,,2026-07-13
+T0494,2026-07-13,C36,C36-O04,,pertanyaan,Rendah,Selesai,4.12,Cara menambah kasir baru,Laporan dari outlet.,,2026-07-14
+T0495,2026-07-13,C27,C27-O08,,billing,Rendah,Selesai,4.12,Perubahan alamat penagihan,Laporan dari outlet.,,2026-07-16
+T0496,2026-07-13,C19,C19-O08,,pertanyaan,Rendah,Selesai,4.12,Cara cetak ulang struk,Laporan dari outlet.,,2026-07-15
+T0497,2026-07-13,C32,C32-O12,,perangkat,Sedang,Selesai,4.12,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-07-16
+T0498,2026-07-13,C12,C12-O11,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-07-15
+T0499,2026-07-14,C35,C35-O06,,billing,Rendah,Selesai,4.12,Minta faktur pajak,Laporan dari outlet.,,2026-07-20
+T0500,2026-07-14,C09,C09-O02,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-07-14
+T0501,2026-07-15,C37,C37-O11,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-07-18
+T0502,2026-07-16,C05,C05-O03,K103,pertanyaan,Tinggi,Terbuka,4.12,Laporan tidak sesuai,Transaksi hari ini tidak muncul di laporan pusat setelah koneksi kembali.,,
+T0503,2026-07-17,C23,C23-O01,,bug,Sedang,Selesai,4.12,Gambar produk tidak tampil,Laporan dari outlet.,,2026-07-18
+T0504,2026-07-17,C02,C02-O23,K007,permintaan_fitur,Rendah,Dicatat ke roadmap,4.11,Satuan ganda (sak dan kg),Usulan dari tim toko: satuan ganda (sak dan kg). Akan sangat membantu operasional cabang.,,
+T0505,2026-07-17,C26,C26-O10,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-07-18
+T0506,2026-07-18,C31,C31-O02,,pertanyaan,Rendah,Selesai,4.11,Ubah kategori produk,Laporan dari outlet.,,2026-07-19
+T0507,2026-07-18,C23,C23-O04,,pelatihan,Rendah,Selesai,4.12,Training laporan stok,Laporan dari outlet.,,2026-07-24
+T0508,2026-07-18,C07,C07-O01,,bug,Sedang,Selesai,4.12,Gambar produk tidak tampil,Laporan dari outlet.,,2026-07-18
+T0509,2026-07-18,C24,C24-O08,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-07-23
+T0510,2026-07-19,C24,C24-O04,,pertanyaan,Rendah,Selesai,4.12,Cara menambah kasir baru,Laporan dari outlet.,,2026-07-20
+T0511,2026-07-19,C35,C35-O19,,perangkat,Sedang,Selesai,4.12,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-07-19
+T0512,2026-07-19,C19,C19-O01,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-07-23
+T0513,2026-07-20,C28,C28-O04,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-07-20
+T0514,2026-07-20,C12,C12-O01,,bug,Sedang,Selesai,4.12,Gambar produk tidak tampil,Laporan dari outlet.,,2026-07-21
+T0515,2026-07-21,C10,C10-O17,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-07-27
+T0516,2026-07-21,C25,C25-O12,,bug,Sedang,Selesai,4.12,Gambar produk tidak tampil,Laporan dari outlet.,,2026-07-27
+T0517,2026-07-21,C13,C13-O04,,pelatihan,Rendah,Selesai,4.12,Training laporan stok,Laporan dari outlet.,,2026-07-21
+T0518,2026-07-22,C28,C28-O01,,pelatihan,Rendah,Selesai,4.12,Training laporan stok,Laporan dari outlet.,,2026-07-27
+T0519,2026-07-23,C02,C02-O11,K007,permintaan_fitur,Rendah,Dicatat ke roadmap,4.11,Retur barang ke supplier,Usulan dari tim toko: retur barang ke supplier. Akan sangat membantu operasional cabang.,,
+T0520,2026-07-23,C36,C36-O01,,billing,Rendah,Selesai,4.12,Konfirmasi pembayaran,Laporan dari outlet.,,2026-07-23
+T0521,2026-07-25,C03,C03-O03,K021,pertanyaan,Sedang,Terbuka,4.12,Sinkronisasi,Omzet outlet di dashboard lebih kecil dari catatan kasir.,,
+T0522,2026-07-28,C33,C33-O02,,pertanyaan,Rendah,Selesai,4.12,Ubah kategori produk,Laporan dari outlet.,,2026-07-31
+T0523,2026-07-29,C03,C03-O05,K021,pertanyaan,Sedang,Terbuka,4.12,Selisih transaksi,"Setelah mode offline, sebagian struk tidak terkirim ke server.",,
+T0524,2026-07-29,C32,C32-O04,,pelatihan,Rendah,Selesai,4.12,Training laporan stok,Laporan dari outlet.,,2026-07-29
+T0525,2026-07-29,C39,C39-O13,,bug,Sedang,Selesai,4.12,Scan barcode lambat,Laporan dari outlet.,,2026-07-30
+T0526,2026-07-29,C03,C03-O01,K021,pertanyaan,Sedang,Terbuka,4.12,Sinkronisasi,Data penjualan saat internet mati tidak masuk ke laporan.,,
+T0527,2026-07-29,C19,C19-O02,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-08-03
+T0528,2026-07-30,C38,C38-O08,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-07-31
+T0529,2026-07-30,C35,C35-O05,,perangkat,Sedang,Selesai,4.12,Tablet kasir rusak,Laporan dari outlet.,,2026-08-03
+T0530,2026-07-31,C11,C11-O02,,bug,Sedang,Selesai,4.12,Scan barcode lambat,Laporan dari outlet.,,2026-08-05
+T0531,2026-08-01,C15,C15-O20,,pertanyaan,Rendah,Selesai,4.12,Setting pajak restoran,Laporan dari outlet.,,2026-08-05
+T0532,2026-08-02,C25,C25-O03,,perangkat,Sedang,Selesai,4.12,Tablet kasir rusak,Laporan dari outlet.,,2026-08-07
+T0533,2026-08-02,C12,C12-O15,,pelatihan,Rendah,Selesai,4.12,Pelatihan kasir baru,Laporan dari outlet.,,2026-08-05
+T0534,2026-08-02,C19,C19-O06,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-08-02
+T0535,2026-08-03,C33,C33-O01,,billing,Rendah,Selesai,4.12,Konfirmasi pembayaran,Laporan dari outlet.,,2026-08-04
+T0536,2026-08-03,C35,C35-O16,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-08-05
+T0537,2026-08-03,C01,,K050,integrasi,Kritis,Terbuka,4.12,Rekonsiliasi manual 42 outlet memakan 3 hari,"Tanpa integrasi, tutup buku bulanan dikerjakan manual. Mohon kepastian jadwal integrasi.",,
+T0538,2026-08-03,C26,C26-O10,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-08-03
+T0539,2026-08-03,C22,C22-O12,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-08-07
+T0540,2026-08-04,C16,C16-O05,,perangkat,Sedang,Selesai,4.12,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-08-08
+T0541,2026-08-04,C16,C16-O04,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-08-04
+T0542,2026-08-04,C16,C16-O06,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-08-09
+T0543,2026-08-04,C23,C23-O02,,perangkat,Sedang,Selesai,4.11,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-08-09
+T0544,2026-08-05,C09,C09-O04,,bug,Sedang,Selesai,4.12,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-08-05
+T0545,2026-08-05,C11,C11-O15,,pelatihan,Rendah,Selesai,4.12,Training laporan stok,Laporan dari outlet.,,2026-08-09
+T0546,2026-08-06,C11,C11-O10,,pertanyaan,Rendah,Selesai,4.12,Ubah kategori produk,Laporan dari outlet.,,2026-08-06
+T0547,2026-08-07,C11,C11-O09,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-08-13
+T0548,2026-08-07,C24,C24-O01,,bug,Sedang,Selesai,4.12,Printer struk tidak merespons,Laporan dari outlet.,,2026-08-13
+T0549,2026-08-08,C21,C21-O04,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-08-10
+T0550,2026-08-08,C05,C05-O01,K103,bug,Tinggi,Ditutup - tidak dapat direproduksi,4.12,Data penjualan hilang,Omzet outlet di dashboard lebih kecil dari catatan kasir.,,
+T0551,2026-08-09,C18,C18-O01,,pelatihan,Rendah,Selesai,4.12,Training laporan stok,Laporan dari outlet.,,2026-08-09
+T0552,2026-08-09,C40,C40-O06,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-08-12
+T0553,2026-08-10,C02,C02-O01,K007,permintaan_fitur,Rendah,Dicatat ke roadmap,4.11,Notifikasi stok minimum via WhatsApp,Usulan dari tim toko: notifikasi stok minimum via whatsapp. Akan sangat membantu operasional cabang.,,
+T0554,2026-08-10,C05,C05-O01,K103,pertanyaan,Tinggi,Terbuka,4.12,Laporan tidak sesuai,Jumlah transaksi di kasir dan di dashboard berbeda sejak update.,,
+T0555,2026-08-11,C33,C33-O03,,pelatihan,Rendah,Selesai,4.12,Pelatihan kasir baru,Laporan dari outlet.,,2026-08-13
+T0556,2026-08-11,C20,C20-O05,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-08-17
+T0557,2026-08-11,C10,C10-O10,,perangkat,Sedang,Selesai,4.12,Tablet kasir rusak,Laporan dari outlet.,,2026-08-17
+T0558,2026-08-11,C13,C13-O05,,bug,Sedang,Selesai,4.11,Gambar produk tidak tampil,Laporan dari outlet.,,2026-08-11
+T0559,2026-08-12,C10,C10-O15,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-08-14
+T0560,2026-08-13,C09,C09-O13,,billing,Rendah,Selesai,4.12,Minta faktur pajak,Laporan dari outlet.,,2026-08-13
+T0561,2026-08-13,C08,C08-O12,,perangkat,Sedang,Selesai,4.12,Tablet kasir rusak,Laporan dari outlet.,,2026-08-16
+T0562,2026-08-13,C03,C03-O01,K021,pertanyaan,Tinggi,Ditutup - tidak dapat direproduksi,4.12,Laporan tidak sesuai,Transaksi hari ini tidak muncul di laporan pusat setelah koneksi kembali.,,
+T0563,2026-08-14,C05,C05-O04,K103,bug,Tinggi,Terbuka,4.12,Laporan tidak sesuai,"Setelah mode offline, sebagian struk tidak terkirim ke server.",,
+T0564,2026-08-14,C15,C15-O02,,perangkat,Sedang,Selesai,4.12,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-08-15
+T0565,2026-08-14,C02,C02-O10,K007,permintaan_fitur,Rendah,Terbuka,4.11,Harga grosir bertingkat,Usulan dari tim toko: harga grosir bertingkat. Akan sangat membantu operasional cabang.,,
+T0566,2026-08-14,C03,C03-O02,K021,bug,Sedang,Terbuka,4.12,Laporan tidak sesuai,Data penjualan saat internet mati tidak masuk ke laporan.,,
+T0567,2026-08-15,C39,C39-O03,,bug,Sedang,Selesai,4.12,Printer struk tidak merespons,Laporan dari outlet.,,2026-08-20
+T0568,2026-08-15,C30,C30-O17,,perangkat,Sedang,Selesai,4.12,Tablet kasir rusak,Laporan dari outlet.,,2026-08-19
+T0569,2026-08-16,C06,C06-O17,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-08-20
+T0570,2026-08-16,C37,C37-O02,,pelatihan,Rendah,Selesai,4.12,Pelatihan kasir baru,Laporan dari outlet.,,2026-08-18
+T0571,2026-08-16,C20,C20-O01,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-08-17
+T0572,2026-08-17,C08,C08-O12,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-08-19
+T0573,2026-08-17,C12,C12-O02,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-08-20
+T0574,2026-08-18,C14,C14-O02,,perangkat,Sedang,Selesai,4.12,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-08-20
+T0575,2026-08-18,C12,C12-O23,,perangkat,Sedang,Selesai,4.12,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-08-19
+T0576,2026-08-19,C18,C18-O05,,perangkat,Sedang,Selesai,4.11,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-08-19
+T0577,2026-08-19,C31,C31-O03,,bug,Sedang,Selesai,4.12,Gambar produk tidak tampil,Laporan dari outlet.,,2026-08-24
+T0578,2026-08-19,C37,C37-O10,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-08-25
+T0579,2026-08-19,C24,C24-O06,,bug,Sedang,Selesai,4.12,Scan barcode lambat,Laporan dari outlet.,,2026-08-25
+T0580,2026-08-19,C05,C05-O02,K103,bug,Sedang,Terbuka,4.12,Selisih transaksi,Transaksi hari ini tidak muncul di laporan pusat setelah koneksi kembali.,,
+T0581,2026-08-20,C24,C24-O04,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-08-22
+T0582,2026-08-21,C02,C02-O14,K007,permintaan_fitur,Rendah,Terbuka,4.11,Diskon proyek kontraktor,Usulan dari tim toko: diskon proyek kontraktor. Akan sangat membantu operasional cabang.,,
+T0583,2026-08-22,C29,C29-O09,,billing,Rendah,Selesai,4.11,Minta faktur pajak,Laporan dari outlet.,,2026-08-26
+T0584,2026-08-22,C18,C18-O01,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-08-26
+T0585,2026-08-23,C19,C19-O06,,bug,Sedang,Selesai,4.12,Gambar produk tidak tampil,Laporan dari outlet.,,2026-08-29
+T0586,2026-08-23,C15,C15-O21,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-08-25
+T0587,2026-08-24,C18,C18-O01,,billing,Rendah,Selesai,4.12,Minta faktur pajak,Laporan dari outlet.,,2026-08-30
+T0588,2026-08-25,C02,C02-O22,K007,permintaan_fitur,Rendah,Dicatat ke roadmap,4.11,Laporan margin per kategori barang,Usulan dari tim toko: laporan margin per kategori barang. Akan sangat membantu operasional cabang.,,
+T0589,2026-08-26,C19,C19-O04,,billing,Rendah,Selesai,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,2026-08-26
+T0590,2026-08-26,C22,C22-O03,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-08-31
+T0591,2026-08-28,C10,C10-O19,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-08-28
+T0592,2026-08-28,C23,C23-O05,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-08-31
+T0593,2026-08-29,C12,C12-O24,,pertanyaan,Rendah,Selesai,4.12,Cara cetak ulang struk,Laporan dari outlet.,,2026-09-03
+T0594,2026-08-30,C24,C24-O08,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-09-03
+T0595,2026-08-31,C02,C02-O10,K007,permintaan_fitur,Rendah,Terbuka,4.11,Cetak surat jalan,Usulan dari tim toko: cetak surat jalan. Akan sangat membantu operasional cabang.,,
+T0596,2026-09-01,C30,C30-O06,,perangkat,Sedang,Selesai,4.12,Barcode scanner tidak terbaca,Laporan dari outlet.,,2026-09-06
+T0597,2026-09-01,C37,C37-O04,,billing,Rendah,Selesai,4.12,Perubahan alamat penagihan,Laporan dari outlet.,,2026-09-03
+T0598,2026-09-03,C32,C32-O14,,pertanyaan,Rendah,Selesai,4.11,Ubah kategori produk,Laporan dari outlet.,,2026-09-04
+T0599,2026-09-04,C24,C24-O08,,billing,Rendah,Selesai,4.11,Perubahan alamat penagihan,Laporan dari outlet.,,2026-09-08
+T0600,2026-09-05,C06,C06-O30,,pelatihan,Rendah,Selesai,4.12,Training laporan stok,Laporan dari outlet.,,2026-09-09
+T0601,2026-09-06,C02,C02-O15,K007,permintaan_fitur,Rendah,Dicatat ke roadmap,4.11,Template faktur dengan logo cabang,Usulan dari tim toko: template faktur dengan logo cabang. Akan sangat membantu operasional cabang.,,
+T0602,2026-09-08,C08,C08-O03,,pelatihan,Rendah,Selesai,4.12,Pelatihan kasir baru,Laporan dari outlet.,,2026-09-13
+T0603,2026-09-08,C31,C31-O03,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-09-08
+T0604,2026-09-08,C20,C20-O02,,perangkat,Sedang,Selesai,4.11,Laci kasir tidak terbuka,Laporan dari outlet.,,2026-09-10
+T0605,2026-09-09,C35,C35-O08,,pertanyaan,Rendah,Selesai,4.11,Setting pajak restoran,Laporan dari outlet.,,2026-09-11
+T0606,2026-09-10,C35,C35-O14,,pelatihan,Rendah,Selesai,4.11,Pelatihan kasir baru,Laporan dari outlet.,,2026-09-11
+T0607,2026-09-10,C15,C15-O20,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-09-14
+T0608,2026-09-11,C03,C03-O04,K021,bug,Tinggi,Terbuka,4.12,Laporan tidak sesuai,Data penjualan saat internet mati tidak masuk ke laporan.,,
+T0609,2026-09-12,C16,C16-O02,,pelatihan,Rendah,Selesai,4.12,Pelatihan kasir baru,Laporan dari outlet.,,2026-09-13
+T0610,2026-09-12,C23,C23-O05,,bug,Sedang,Selesai,4.12,Printer struk tidak merespons,Laporan dari outlet.,,2026-09-17
+T0611,2026-09-12,C18,C18-O07,,perangkat,Sedang,Selesai,4.11,Tablet kasir rusak,Laporan dari outlet.,,2026-09-15
+T0612,2026-09-12,C05,C05-O05,K103,bug,Tinggi,Ditutup - tidak dapat direproduksi,4.12,Laporan tidak sesuai,"Setelah mode offline, sebagian struk tidak terkirim ke server.",,
+T0613,2026-09-12,C17,C17-O07,,pelatihan,Rendah,Selesai,4.12,Pelatihan kasir baru,Laporan dari outlet.,,2026-09-12
+T0614,2026-09-12,C19,C19-O08,,bug,Sedang,Selesai,4.11,Scan barcode lambat,Laporan dari outlet.,,2026-09-12
+T0615,2026-09-13,C32,C32-O02,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-09-15
+T0616,2026-09-13,C03,C03-O06,K021,bug,Sedang,Terbuka,4.12,Laporan tidak sesuai,Omzet outlet di dashboard lebih kecil dari catatan kasir.,,
+T0617,2026-09-13,C15,C15-O10,,bug,Sedang,Selesai,4.12,Scan barcode lambat,Laporan dari outlet.,,2026-09-17
+T0618,2026-09-13,C02,C02-O02,K007,permintaan_fitur,Rendah,Dicatat ke roadmap,4.11,Kartu stok per gudang,Usulan dari tim toko: kartu stok per gudang. Akan sangat membantu operasional cabang.,,
+T0619,2026-09-15,C25,C25-O08,,billing,Rendah,Selesai,4.12,Minta faktur pajak,Laporan dari outlet.,,2026-09-20
+T0620,2026-09-16,C39,C39-O01,,bug,Sedang,Selesai,4.12,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-09-19
+T0621,2026-09-16,C20,C20-O01,,pelatihan,Rendah,Selesai,4.11,Training laporan stok,Laporan dari outlet.,,2026-09-18
+T0622,2026-09-16,C11,C11-O16,,billing,Rendah,Selesai,4.12,Perubahan alamat penagihan,Laporan dari outlet.,,2026-09-22
+T0623,2026-09-16,C30,C30-O11,,pertanyaan,Rendah,Selesai,4.12,Setting pajak restoran,Laporan dari outlet.,,2026-09-19
+T0624,2026-09-16,C34,C34-O10,,pertanyaan,Rendah,Selesai,4.11,Cara menambah kasir baru,Laporan dari outlet.,,2026-09-17
+T0625,2026-09-17,C03,C03-O02,K021,bug,Sedang,Ditutup - tidak dapat direproduksi,4.12,Selisih transaksi,Transaksi hari ini tidak muncul di laporan pusat setelah koneksi kembali.,,
+T0626,2026-09-19,C19,C19-O04,,pertanyaan,Rendah,Selesai,4.11,Setting pajak restoran,Laporan dari outlet.,,2026-09-23
+T0627,2026-09-19,C36,C36-O03,,bug,Sedang,Selesai,4.11,Aplikasi tertutup sendiri,Laporan dari outlet.,,2026-09-20
+T0628,2026-09-19,C23,C23-O03,,bug,Sedang,Selesai,4.11,Printer struk tidak merespons,Laporan dari outlet.,,2026-09-24
+T0629,2026-09-23,C30,C30-O14,,pertanyaan,Rendah,Terbuka,4.12,Ubah kategori produk,Laporan dari outlet.,,
+T0630,2026-09-24,C26,C26-O09,,pertanyaan,Rendah,Selesai,4.11,Cara cetak ulang struk,Laporan dari outlet.,,2026-09-26
+T0631,2026-09-24,C33,C33-O03,,pelatihan,Rendah,Selesai,4.12,Pelatihan kasir baru,Laporan dari outlet.,,2026-09-24
+T0632,2026-09-25,C23,C23-O02,,pelatihan,Rendah,Terbuka,4.11,Training laporan stok,Laporan dari outlet.,,
+T0633,2026-09-26,C21,C21-O06,,bug,Sedang,Terbuka,4.12,Ekspor laporan harian gagal,Laporan dari outlet.,BUG-415,
+T0634,2026-09-26,C28,C28-O01,,pertanyaan,Rendah,Terbuka,4.11,Cara menambah kasir baru,Laporan dari outlet.,,
+T0635,2026-09-28,C34,C34-O11,,perangkat,Sedang,Terbuka,4.11,Tablet kasir rusak,Laporan dari outlet.,,
+T0636,2026-09-28,C34,C34-O11,,perangkat,Sedang,Terbuka,4.12,Tablet kasir rusak,Laporan dari outlet.,,
+T0637,2026-09-28,C06,C06-O14,,perangkat,Sedang,Terbuka,4.12,Laci kasir tidak terbuka,Laporan dari outlet.,,
+T0638,2026-09-29,C36,C36-O01,,pelatihan,Rendah,Terbuka,4.12,Training laporan stok,Laporan dari outlet.,,
+T0639,2026-09-30,C39,C39-O02,,perangkat,Sedang,Terbuka,4.11,Tablet kasir rusak,Laporan dari outlet.,,
+T0640,2026-09-30,C26,C26-O04,,billing,Rendah,Terbuka,4.11,Konfirmasi pembayaran,Laporan dari outlet.,,

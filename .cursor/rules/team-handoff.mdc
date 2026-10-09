@@ -1,0 +1,11 @@
+---
+description: Catatan handoff wajib dan scope DealCompass untuk semua pekerjaan
+alwaysApply: true
+---
+Ikuti AGENTS.md dan docs/coordination/API_CONTRACT.md.
+Scope P01-P05; P02 hanya integrasi pertama.
+Setiap PR pekerjaan wajib memperbarui docs/handoffs/<PERAN>.md.
+Catat fungsi, kontrak, uji aktual, fixture, blocker, dan waktu WIB.
+Main saja yang mengubah docs/coordination/ dan memverifikasi status selesai.
+Jangan mengarang sumber bukti, approval, confidence, atau hasil pengujian.
+

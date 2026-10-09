@@ -1,0 +1,5 @@
+bug_id,judul,versi_terdampak,status,dibuat,selesai,fitur_terkait
+BUG-398,Struk ganda saat printer timeout,4.10,Selesai,2025-11-04,2025-12-02,FEAT-01
+BUG-405,Laporan stok selisih pada transfer antar gudang,4.11,Selesai,2026-04-14,2026-05-20,FEAT-02
+BUG-412,Transaksi mode offline sebagian tidak tersinkron ke server,4.12,Terbuka,2026-07-09,,FEAT-04
+BUG-415,Ekspor CSV laporan harian timeout di outlet besar,4.12,Terbuka,2026-08-21,,FEAT-06
