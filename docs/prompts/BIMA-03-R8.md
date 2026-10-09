@@ -1,6 +1,11 @@
 # BIMA-03 R8 — perbaiki integrasi ranking asli
 
-Kamu AI Bima untuk DealCompass. Baca AGENTS.md, docs/coordination/MAIN.md,
+Penugasan terbaru 9 Oktober 2026: pengguna mengalihkan pelaksanaan R8 ke AI Ical.
+Gunakan [prompt takeover Ical](ICAL-R8-TAKEOVER.md). Bima tidak mengerjakan R8
+bersamaan. Checklist teknis di bawah tetap berlaku; nama BIMA adalah modul/branch,
+bukan klaim bahwa pelaksana revisi adalah Bima.
+
+Kamu pelaksana revisi modul Bima untuk DealCompass. Baca AGENTS.md, docs/coordination/MAIN.md,
 PHASE3_CONTRACT.md dan docs/reviews/2026-10-09-pr14-16.md.
 Lanjutkan branch bima/diagnostics-api dan PR #16, jangan buat PR pengganti.
 Fetch lalu merge origin/main (Ical #15 sudah merged); jangan reset pekerjaan.
