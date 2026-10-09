@@ -2,6 +2,26 @@
 
 Pelaksana tugas redesign: Ical, atas penugasan pengguna/Main; area frontend sebelumnya dikerjakan Boy.
 
+## Current update — Agent workspace (Ical), 2026-10-10 02:50 WIB
+Pelaksana: Ical atas permintaan pengguna (pitching full English). Branch `boy/ical-agent-workspace`
+dari main 103cfe0. Status **READY_FOR_REVIEW**; belum merged.
+
+- Shell baru bergaya minimal: sidebar (Agent · Priorities · Deals) + topbar; halaman default **Agent**.
+- **Agent** (`components/AgentView.tsx`, `lib/agent.ts`, `lib/usePipeline.ts`): chat-style, tetapi
+  jawaban hanya dari API DealCompass, bukan teks bebas/LLM. Pertanyaan dirutekan
+  ke: urutan prioritas (GET), deal yang butuh approval (GET), informasi yang belum pasti (GET),
+  atau "next step for <customer>" (GET konteks + **satu POST analyze hanya saat pengguna mengirim
+  pertanyaan**). Pertanyaan lain ditolak dengan saran, tidak ditebak. Label mode dari respons.
+- **Deals** (`components/DealsTable.tsx`): tabel ringkas; klik membuka deal di Priorities
+  (`Dashboard` menerima `initialDeal`).
+- `shell.css` baru; ikon bot/send/table/spark. Tidak ada perubahan backend/kontrak/dependency.
+- Tes: `frontend/tests/agent.test.mjs` (2) baru. Run Ical: build lulus; agent+contracts+graph+
+  session+present+english 35/35, transport 7/7, analysis 8/8, phase3 18/18, redesign 14/14.
+- Browser (desktop 1440×900, backend rules): chip pertanyaan, jawaban prioritas P04→P05,
+  "next step for Teras Kafe" → POST DL-002 dengan approval VP Sales (E01) utuh, Deals → buka
+  Teras Kafe. Free chat ke Jev butuh endpoint backend baru (usulan ke Main, belum dibuat).
+- Belum: uji kegunaan tim, mobile, Jev live.
+
 ## Current update — corporate English desktop, 2026-10-10 02:13 WIB
 
 **READY_FOR_REVIEW** — Main/Codex implementing the user's next design request in
@@ -340,3 +360,4 @@ provenance dan semua gate bisnis. Jangan mengganti saran dengan ringkasan yang m
 2026-10-10 01:29 WIB — iterasi compact desktop READY_FOR_REVIEW pada PR #29. 78/78 frontend,
 build dan pemeriksaan browser desktop; catatan riset Mobbin diperbarui. Belum merged/deployed.
 Implementasi awal Ical, lanjutan Main; riwayat BOY-04 tetap milik Boy.
+2026-10-10 02:50 WIB — Agent workspace READY_FOR_REVIEW (Ical, branch boy/ical-agent-workspace).

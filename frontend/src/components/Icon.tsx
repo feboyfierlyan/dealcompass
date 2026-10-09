@@ -20,6 +20,10 @@ const paths = {
   history: 'M3 12a9 9 0 1 0 3-6.7M3 4v4h4m5-1v5l3 2',
   plus: 'M12 5v14M5 12h14',
   minus: 'M5 12h14',
+  bot: 'M12 4v3M7 7h10a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-6a3 3 0 0 1 3-3Zm2 6v1m6-1v1M9 16h6',
+  send: 'M12 19V5m-6 6 6-6 6 6',
+  table: 'M4 5h16v14H4zM4 10h16M10 10v9',
+  spark: 'M12 3v4m0 10v4M3 12h4m10 0h4M6 6l2.5 2.5m7 7L18 18M6 18l2.5-2.5m7-7L18 6',
 };
 export type IconName = keyof typeof paths;
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

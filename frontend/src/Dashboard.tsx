@@ -14,12 +14,12 @@ import { useMedia } from './lib/useMedia';
 import './style.css';
 import './corporate.css';
 
-export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) {
+export function Dashboard({ api, fixture, initialDeal = null }: { api: DealApi; fixture: boolean; initialDeal?: string | null }) {
   const [data, setData] = useState<DealList | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
-  const [userChoice, setUserChoice] = useState<string | null>(null);
+  const [userChoice, setUserChoice] = useState<string | null>(initialDeal);
   const [showDetail, setShowDetail] = useState(false);
   const narrow = useMedia('(max-width: 899px)');
   const detailRef = useRef<HTMLElement>(null);
