@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>DealCompass · pemeriksaan viewport (dev)</title>
+<style>body{margin:0;padding:4px;background:#d9d9d2;font:13px system-ui,sans-serif;color:#222}p{margin:8px 0 0}iframe{display:block;border:1px solid #777;background:#fff}</style></head>
+<body><iframe id="frame" title="DealCompass dalam viewport uji"></iframe><p id="label">Viewport</p>
+<script>
+// Development-only aid: renders the real app (same origin, real API) inside a fixed-size iframe so
+// media queries see the requested CSS viewport, e.g. ?w=390&h=844 (mobile) or ?w=640&h=360 (1280x720 at 200% zoom).
+const params = new URLSearchParams(location.search);
+const w = Number(params.get('w') || 390), h = Number(params.get('h') || 844);
+const frame = document.getElementById('frame');
+frame.width = String(w); frame.height = String(h); frame.src = params.get('src') || '/';
+document.getElementById('label').textContent = `Viewport ${w}×${h} CSS px · aplikasi nyata, bukan fixture`;
+</script></body></html>

@@ -5,12 +5,13 @@ const path = require('node:path');
 const React = require('react');
 const { renderToStaticMarkup: render } = require('react-dom/server');
 const build = process.env.PHASE3_TEST_BUILD;
-assert.ok(build, 'Compile Phase3Panels, api and resource; set PHASE3_TEST_BUILD');
+assert.ok(build, 'Compile DealTabs, Phase3Panels, api and resource; set PHASE3_TEST_BUILD');
 const p = require(path.join(build, 'lib/phase3.js'));
 const { liveApi } = require(path.join(build, 'lib/api.js'));
 const { createResource } = require(path.join(build, 'lib/resource.js'));
-const { PriorityPanel, DiagnosticPanel, Statistics } = require(path.join(build, 'components/Phase3Panels.js'));
-const { AnalysisReport } = require(path.join(build, 'components/AnalysisReport.js'));
+const { PriorityFactors, DiagnosticPanel, Statistics } = require(path.join(build, 'components/Phase3Panels.js'));
+const { ActionTab, ReasonsTab } = require(path.join(build, 'components/DealTabs.js'));
+const { gateSummary, recommendationView, splitUnknowns } = require(path.join(build, 'lib/present.js'));
 const { evidenceGraphLinks } = require(path.join(build, 'lib/analysisView.js'));
 const { focusTarget, indexGraph, visibleGraph } = require(path.join(build, 'lib/graphView.js'));
 const base = process.env.GRAPH_API_URL || 'http://127.0.0.1:8000';
@@ -45,10 +46,21 @@ for (const id of ['DL-001','DL-002','DL-003','DL-004','DL-005']) test(`${id} REA
   const item = ranking.items.find(i => i.deal_id === id), d = singles.get(id), context = contexts.get(id);
   assert.deepEqual({...d,schema_version:undefined},{...diagnostic.deals.find(d => d.deal_id === id),schema_version:undefined});
   const joined = p.enrichContext(p.enrichContext(context,item),d);
-  const html = render(React.createElement(React.Fragment,null,
-    React.createElement(PriorityPanel,{item,context:joined,onEvidence:()=>{},onGraph:()=>{}}),
-    React.createElement(AnalysisReport,{recommendation:item.recommendation,context:joined,fixture:false,onEvidence:()=>{}}),
-    React.createElement(DiagnosticPanel,{data:d,onEvidence:()=>{}})));
+  // Same composition as the app: ranking recommendation in layer 1, reasons in layer 2, factors/diagnostic in layer 3. No POST.
+  const noop = () => {};
+  const view = recommendationView({ dealId: id, priority: item, session: { status: 'idle', data: null }, preferred: 'priority' });
+  assert.equal(view.source,'priority');
+  const action = render(React.createElement(ActionTab,{context:joined,priority:item,rankingState:'ready',view,fixture:false,snapshot:joined.snapshot_date,session:{status:'idle',error:null,receivedAt:null},onEvidence:noop,onReasons:noop,onShowPaths:noop,onAnalyze:noop,onShowVersion:noop}));
+  const html = action + render(React.createElement(React.Fragment,null,
+    React.createElement(ReasonsTab,{priority:item,view,context:joined,onEvidence:noop,onEdge:noop,onShowPath:noop}),
+    React.createElement(PriorityFactors,{item,onEvidence:noop}),
+    React.createElement(DiagnosticPanel,{data:d,onEvidence:noop})));
+  const gate = gateSummary(item);
+  if (gate) assert.ok(action.includes(escape(gate)),'Ranking gate stays in layer 1');
+  for (const text of [...item.recommendation.approvals_needed,...splitUnknowns(item.recommendation,joined).specific]) assert.ok(action.includes(escape(text)),`Layer 1 keeps approval/unknown: ${text.slice(0,60)}`);
+  assert.ok(action.indexOf('Mengapa perlu diperhatikan') < action.indexOf('Tindakan yang disarankan') && action.indexOf('Tindakan yang disarankan') < action.indexOf('Penanggung jawab'));
+  assert.ok(action.includes('Dari urutan prioritas · data per 1 Okt 2026'));
+  for (const label of ['Status request sesi','GET ranking','POST analisis','Tier acceleration']) assert.ok(!action.includes(label),`No technical label in layer 1: ${label}`);
   for (const text of [...item.rationale,...item.limitations,item.recommendation.action,item.recommendation.milestone,...item.recommendation.approvals_needed,...item.recommendation.unknowns,...item.recommendation.precedent_comparison,...d.boundaries]) assert.ok(html.includes(escape(text)),text);
   for (const f of [...d.findings,...d.reference_candidates]) for (const text of [f.fact,f.interpretation,...f.missing_information,...f.follow_up_implication]) assert.ok(html.includes(escape(text)),text);
   const index = indexGraph(joined);
@@ -64,7 +76,8 @@ for (const id of ['DL-001','DL-002','DL-003','DL-004','DL-005']) test(`${id} REA
   if(id==='DL-002') { assert.match(item.recommendation.approvals_needed.join(' '),/VP Sales.*20%.*Belum ada keputusan sah/); assert.ok(html.includes('DL-002 → P02 ← I0348')); }
   if(id==='DL-003'||id==='DL-004') { assert.match(item.recommendation.action,/memeriksa pengalaman terbaru.*menanyakan kesediaan.*izin kontak.*sebelum perkenalan/); }
   if(id==='DL-004') assert.match(item.recommendation.precedent_comparison.join(' '),/overlap tidak membuktikan saling kenal/);
-  if(id==='DL-005') { assert.equal(item.priority_kind,'discovery'); assert.equal(item.analysis_status,'insufficient_evidence'); assert.equal(item.factors.find(f => f.name==='skor_prioritas').value,null); assert.ok(html.includes('Belum tersedia (null)')); }
+  if(id==='DL-005') { assert.equal(item.priority_kind,'discovery'); assert.equal(item.analysis_status,'insufficient_evidence'); assert.equal(item.factors.find(f => f.name==='skor_prioritas').value,null); assert.ok(html.includes('Belum tersedia (null)')); assert.ok(action.includes('Ini bukan tanda deal gagal, kalah, atau bebas risiko.')); }
+  else assert.ok(!action.includes('Ini bukan tanda deal gagal'),'Discovery wording only for discovery items');
 });
 test('REAL HTTP: not_assessed reason/nulls and graph identity are preserved', () => {
   const html=render(React.createElement(Statistics,{data:diagnostic,onEvidence:()=>{}}));

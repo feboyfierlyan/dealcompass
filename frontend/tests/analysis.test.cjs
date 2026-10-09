@@ -5,7 +5,8 @@ const React = require('react');
 const { renderToStaticMarkup } = require('react-dom/server');
 const build = process.env.ANALYSIS_TEST_BUILD;
 assert.ok(build, 'Compile frontend components and set ANALYSIS_TEST_BUILD first');
-const { AnalysisReport } = require(path.join(build, 'components/AnalysisReport.js'));
+const { ActionTab, ReasonsTab } = require(path.join(build, 'components/DealTabs.js'));
+const { employeeFromContext, recommendationView, splitUnknowns } = require(path.join(build, 'lib/present.js'));
 const { explanationGroups, evidenceGraphLinks } = require(path.join(build, 'lib/analysisView.js'));
 const { indexGraph, focusTarget, visibleGraph } = require(path.join(build, 'lib/graphView.js'));
 const { isContext, isRecommendation } = require(path.join(build, 'lib/contracts.js'));
@@ -33,11 +34,28 @@ for (const [id, acceptance] of cases) test(`${id}: real rules response renders i
   if(id==='DL-002') assert.ok(r.approvals_needed.some(x=>/VP Sales.*20%.*Belum ada keputusan sah/.test(x)));
   if(id==='DL-004') assert.ok(r.precedent_comparison.some(x=>/overlap tidak membuktikan saling kenal/.test(x)));
   if(id==='DL-005') assert.ok(r.unknowns.some(x=>/tidak cukup.*bukan berarti tidak ada risiko/.test(x)));
-  const html=renderToStaticMarkup(React.createElement(AnalysisReport,{recommendation:r, context, fixture:false, onEvidence:()=>{}}));
+  // An explicit re-analysis (POST) result, rendered by the same components the app uses.
+  const view=recommendationView({dealId:id, priority:null, session:{status:'received', data:r}, preferred:'session'});
+  assert.equal(view.source,'session');
+  const noop=()=>{};
+  const action=renderToStaticMarkup(React.createElement(ActionTab,{context, priority:null, rankingState:'unavailable', view, fixture:false, snapshot:context.snapshot_date, session:{status:'received', error:null, receivedAt:'10.00.00'}, onEvidence:noop, onReasons:noop, onShowPaths:noop, onAnalyze:noop, onShowVersion:noop}));
+  const reasons=renderToStaticMarkup(React.createElement(ReasonsTab,{priority:null, view, context, onEvidence:noop, onEdge:noop, onShowPath:noop}));
+  const html=action+reasons;
   for(const text of [r.action,r.milestone,...r.approvals_needed,...r.precedent_comparison,...r.unknowns,...context.unknowns]) assert.ok(html.includes(escape(text)), `Full API text retained: ${text.slice(0,80)}`);
-  const headings=['Tindakan usulan','Penanggung jawab','Milestone','Persetujuan yang diperlukan','Penjelasan &amp; preseden','Informasi belum diketahui','Sumber pendukung'];
-  for(let i=1;i<headings.length;i++) assert.ok(html.indexOf(headings[i-1])<html.indexOf(headings[i]));
-  assert.ok(html.includes('Rules · aturan')); assert.ok(!html.includes('Jev live'));
+  // Layer 1 reads action -> owner -> target -> approvals -> analysis-specific unknowns; reasons follow in the second tab.
+  const order=(markup,headings)=>{for(let i=1;i<headings.length;i++) assert.ok(markup.indexOf(headings[i-1])>=0&&markup.indexOf(headings[i-1])<markup.indexOf(headings[i]),`${headings[i-1]} before ${headings[i]}`);};
+  const specific=splitUnknowns(r,context).specific;
+  order(action,['Tindakan yang disarankan',escape(r.action),'Penanggung jawab','Target langkah berikutnya','Persetujuan yang diperlukan',...(specific.length?['Yang masih perlu dipastikan']:[]),'Lihat alasan &amp; bukti']);
+  for(const text of specific) assert.ok(action.includes(escape(text)),`Analysis-specific unknown stays next to the action: ${text.slice(0,60)}`);
+  for(const text of r.approvals_needed) assert.ok(action.includes(escape(text)),'Approvals stay in layer 1');
+  if(!r.approvals_needed.length) assert.ok(action.includes('Ini tidak berarti tindakan sudah disetujui.'));
+  // The precedent section only appears when the data holds candidate decisions; an empty "none" block is not rendered.
+  order(reasons,['Bukti yang dirujuk saran ini',...(r.precedent_ids.length||context.candidate_decisions.length?['Keputusan terdahulu']:[]),'Penjelasan analisis','Informasi yang belum diketahui']);
+  assert.ok(action.includes('Analisis berbasis aturan')); assert.ok(!html.includes('Jev live'));
+  assert.ok(action.includes('Hasil analisis ulang yang Anda minta pukul 10.00.00 · urutan prioritas tidak dihitung ulang'));
+  const owner=employeeFromContext(context,r.owner_id);
+  if(owner) assert.ok(action.includes(escape(owner.name))&&action.includes(`>${r.owner_id}<`),'Owner name only from the employees.csv record, ID kept');
+  else if(r.owner_id) assert.ok(action.includes(`ID karyawan ${r.owner_id}`),'Owner without a verifiable name stays an ID');
   const index=indexGraph(context);
   for(const evidenceId of r.evidence_ids) {
     const record=context.evidence.find(e=>e.id===evidenceId); assert.ok(record);
