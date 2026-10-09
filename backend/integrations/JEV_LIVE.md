@@ -1,8 +1,54 @@
 # Menjalankan Jev Live di DealCompass
 
-Status 9 Oktober 2026: adapter + launcher + pemeriksaan tersedia. **Provider live
-belum terverifikasi karena tim belum punya API key**. Tes dengan MockTransport
-bukan bukti koneksi Jev. Aplikasi rules P01–P05 tetap dapat dipakai.
+Status 10 Oktober 2026: **provider live VERIFIED**. Smoke Choice/Noul/Score
+lulus memakai `jev-1.13.0`; analisis P01–P04 lulus invariant, P02 juga diverifikasi
+dari UI. P05 tetap rules dengan nol request karena bukti kurang. Pada akhir uji:
+31 request, 17.840 input token, 1.657 output token; tidak ada usage tertunda.
+
+## Monitoring dan batas tim 100.000.000 input token
+
+Setiap request nyata wajib melalui `UsageLedger` SQLite, termasuk CLI smoke,
+analisis dan backend. MockTransport/replay tidak masuk tagihan. Ledger menyimpan
+waktu, ID lokal, status HTTP serta objek usage input/output yang tervalidasi;
+tidak menyimpan key, state, jawaban atau header. Angka output dicatat terpisah,
+tidak mengurangi kuota input. Tidak ada retry otomatis.
+
+Di host demo, `.env` menunjuk `.local/typesafe-usage.sqlite3` dengan path absolut.
+File `.env` dan SQLite diabaikan Git; credential/DB dibuat dengan izin 0600.
+Default path bagi setup baru adalah `~/.local/share/dealcompass/typesafe-usage.sqlite3`.
+Jangan membuat ledger baru untuk tiap anggota/worktree, menghapusnya, atau meresetnya.
+
+Inisialisasi **sekali** dengan pemakaian sebelumnya yang sudah dikonfirmasi:
+
+```bash
+python -m backend.integrations.jev_live --env-file .env init-budget --prior-input-tokens 0
+python -m backend.integrations.jev_live --env-file .env usage
+```
+
+Host demo sudah diinisialisasi dari 0 setelah pengguna mengonfirmasi key belum dipakai.
+`init-budget` menolak menimpa file lama. `usage` tidak mengirim request provider atau
+memerlukan key. `recorded_input_tokens` adalah usage asli; `accounted_input_tokens`
+juga memasukkan baseline dan reservasi yang belum selesai.
+
+Sebelum kirim, transaksi SQLite mengunci dan menyisihkan **1.000.000 input token**
+untuk satu request. Payload dibatasi 64 KiB dan 16 pertanyaan. Ini reservasi
+konservatif, **bukan hitungan tokenizer atau batas billing yang dijamin TypeSafe**.
+Request baru ditolak jika saldo tidak cukup untuk reservasi, jika ada request
+pending, atau ada usage hilang/invalid/melebihi reservasi. Setelah respons, usage
+asli direkonsiliasi sebelum jawaban dipakai. Bahkan respons dengan jawaban invalid
+tetap dicatat. Timeout/crash/storage error tidak mengembalikan saldo menjadi nol;
+request berikutnya berhenti dan aplikasi kembali ke rules berlabel jelas.
+
+Jika terblokir, cek provider console dan ledger, lalu rekonsiliasi receipt dengan
+bantuan Main. Jangan menghapus DB atau memulai ulang counter untuk melewati blokir.
+Tidak ada tombol reset/release otomatis, sebab request timeout mungkin tetap ditagih.
+
+**Cakupan satu tim:** semua anggota harus mengirim lewat backend pada satu host
+pemilik ledger. SQLite ini tidak menggabungkan tiga laptop, penggunaan console,
+atau script lain yang langsung memakai key. Untuk host lain, pindahkan layanan
+beserta ledger yang sama, jangan menggandakan counter. Key cukup di backend.
+Batas provider-side/account yang benar-benar global perlu pengaturan di provider;
+dokumentasi API yang diperiksa tidak memberi parameter hard cap token per request.
 
 ## Fungsi Jev dalam produk
 

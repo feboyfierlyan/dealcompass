@@ -9,11 +9,12 @@ import math
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+from backend.integrations.usage import UsageLedger, UsageError
 
 from backend.integrations.jev import DEFAULT_BASE_URL, DEFAULT_MODEL, JevClient, JevError, choice, noul, score
 
 KEYS = {'TYPESAFE_API_KEY', 'TYPESAFE_MODEL', 'TYPESAFE_BASE_URL', 'TYPESAFE_TIMEOUT_S',
-        'DEALCOMPASS_ENGINE_MODE', 'DEALCOMPASS_ANALYSIS_BUDGET_S'}
+        'DEALCOMPASS_ENGINE_MODE', 'DEALCOMPASS_ANALYSIS_BUDGET_S', 'TYPESAFE_USAGE_DB'}
 
 
 def load_env_file(path):
@@ -155,7 +156,8 @@ class SafeParser(argparse.ArgumentParser):
 def main(argv=None):
     parser = SafeParser(description=__doc__)
     parser.add_argument('--env-file')
-    parser.add_argument('action', choices=['check', 'smoke', 'analyze', 'serve'])
+    parser.add_argument('action', choices=['check', 'smoke', 'analyze', 'serve', 'usage', 'init-budget'])
+    parser.add_argument('--prior-input-tokens', type=int)
     parser.add_argument('--deal', choices=[f'DL-{i:03}' for i in range(1, 6)], default='DL-002')
     parser.add_argument('--port', type=int, default=8001)
     args = parser.parse_args(argv)
@@ -163,6 +165,12 @@ def main(argv=None):
     result = {'status': 'BLOCKED', 'request_count': 0}
     try:
         load_env_file(args.env_file)
+        if args.action in ('usage', 'init-budget'):
+            ledger = UsageLedger()
+            if args.action == 'init-budget':
+                ledger.initialize(args.prior_input_tokens)
+            print(json.dumps({'status': 'USAGE', **ledger.summary()}))
+            return 0
         config, budget = configuration()
         os.environ['TYPESAFE_API_KEY'] = config['api_key']
         os.environ['DEALCOMPASS_ENGINE_MODE'] = 'jev'
@@ -182,6 +190,8 @@ def main(argv=None):
         else:
             client = JevClient(**config)
             result = smoke(client) if args.action == 'smoke' else analyze(client, args.deal)
+    except UsageError as e:
+        result = {'status': 'BLOCKED', 'error': str(e), 'request_count': 0}
     except JevError as e:
         result = {'status': 'BLOCKED' if client is None else 'FAIL', 'error': e.code,
                   **(receipt(client) if client else {'request_count': 0})}

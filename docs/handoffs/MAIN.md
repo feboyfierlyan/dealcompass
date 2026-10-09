@@ -1,60 +1,81 @@
 # Handoff MAIN
 
 ## Task dan status
-MAIN-JEV-LIVE: implementasi dan tes lokal VERIFIED; PR/CI menyusul. Provider live
-BLOCKED: pengguna mengonfirmasi belum punya akses/API key TypeSafe. Tidak ada
-request provider nyata. Status bonus terpisah dari kesiapan inti92/100.
+MAIN-JEV-USAGE: implementasi dan provider live VERIFIED lokal; siap review PR/CI.
+Pengguna memberikan credential untuk testing dengan batas tim 100.000.000 input token,
+dan mengonfirmasi belum pernah dipakai. Smoke, P01–P04, dan UI P02 berhasil memakai Jev.
+P05 tetap rules karena insufficient evidence; tidak diklaim sebagai live.
 
 ## Branch dan commit
-integrator/jev-live dari main2f1a79b6a799ef8bffb5290de9402c0f73223d08. Main
-mengerjakan aktivasi Jev atas instruksi langsung pengguna. Repo tidak memiliki
-PR terbuka lain saat pemeriksaan sebelum pengiriman perubahan.
+`integrator/jev-usage-live` dari main b766770. PR terpisah dari redesign UI #29.
+Backend live berjalan dari checkout utama; frontend 5174 tetap dari worktree PR #29.
+Tidak mengubah atau menggabungkan branch UI.
 
 ## File dan fungsi
-backend/integrations/jev_live.py: loader .env eksplisit, konfigurasi endpoint resmi,
-check tanpa network, smoke satu request Choice/Score/Noul, analyze P02 dengan
-invariant/policy checks, serve loopback dan receipt metadata aman.
-backend/decision/analyze.py: nol request baru tidak boleh berlabel Jev; trace hanya
-mencatat panggilan analisis saat ini meski client dipakai ulang. JEV_LIVE.md,
-.env.example, README, koordinasi Main dan14tes baru melengkapi perubahan.
+- `backend/integrations/usage.py`: SQLite ledger, initialize eksklusif, summary,
+  reserve atomik, finish receipt input/output; unknown/pending menghentikan spending.
+- `jev.py`: wajib ledger untuk transport nyata, pencatatan sebelum validasi jawaban,
+  endpoint resmi saja, error/fallback tetap eksplisit.
+- `jev_live.py`: CLI init-budget dan usage; loader TYPESAFE_USAGE_DB.
+- `.env.example`, `.gitignore`: contoh setting non-secret, abaikan DB lokal.
+- `tests/ical/test_usage.py`: 12 uji guard/storage/concurrency/HTTP tanpa provider.
+- `JEV_LIVE.md`, koordinasi Main: prosedur satu ledger tim dan batas keandalannya.
 
 ## Kontrak dan dependency
-Kontrak APIv1, ranking, formula, policy approval dan dataset tidak berubah.
-Tidak ada dependency baru. Base URL launcher dibatasi endpoint resmi TypeSafe.
-Env budget launcher maksimal15detik untuk UI timeout20detik; batas per operasi
-HTTP bukan jaminan waktu dinding mutlak. Key hanya backend/env, tidak dicommit.
+Tidak ada dependency atau kontrak v1/ranking/dataset baru. SQLite stdlib.
+Cap 100 juta input; output dicatat terpisah. Reservasi konservatif 1 juta per request,
+payload max64KiB/16questions. Ini guard lokal, bukan tokenizer/provider hard cap.
+Satu request in-flight; permintaan paralel lain fallback rules. Semua proses/anggota
+harus melalui host dan ledger yang sama. Pemakaian di luar jalur ini tidak terukur.
 
 ## Cara menjalankan
-Dari root repo terbaru dengan requirements terpasang:
-python -m backend.integrations.jev_live --env-file .env check
-Lalu smoke, analyze --deal DL-002 dan serve --port 8000. Panduan lengkap: backend/integrations/JEV_LIVE.md. Backend/frontend
-Boy yang sedang berjalan tidak dihentikan atau diganti pada pekerjaan ini.
+Host demo telah dikonfigurasi `.env` backend-only (0600), ledger absolut di
+`.local/typesafe-usage.sqlite3` (0600). Keduanya ignored Git. Jangan ulang inisialisasi.
+
+```bash
+python -m backend.integrations.jev_live --env-file .env usage
+python -m backend.integrations.jev_live --env-file .env serve --port 8000
+```
+
+Backend rules milik Main PID72643 dihentikan dan diganti backend live PID28657.
+Preview http://127.0.0.1:5174/ → P02 → Jalankan analisis ulang. GET ranking tetap rules;
+POST eksplisit memakai Jev. Tidak menyimpan key di frontend/PR/log maupun pesan tim.
 
 ## Pengujian aktual
-Main menjalankan188/188 unittest PASS dalam38.069detik pada venv bersih yang
-dipakai review BIMA-04. Empat belas tes baru memakai MockTransport, tanpa
-provider: missing key/endpoint/timeout/env, format dan semantik respons, receipt,
-P02 approval pending/fallback dan P05 nol request termasuk client reuse.
-Pengecekan lokal9Oktober21:15WIB: BLOCKED missing_key, request_count0, exit1.
-Git diff --check PASS. Handoff/CI diverifikasi saat pengiriman PR.
+- 26 targeted tests PASS (12 usage +14 live mock).
+- Seluruh backend `python -m unittest discover -s tests -v`: 200/200 PASS, 46.565s.
+  Run awal menemukan non-JSON HTTP error berubah menjadi invalid_response; sudah
+  diperbaiki dan suite diulang. Unit tests tidak memuat .env / tidak memanggil provider.
+- LIVE smoke: 1 request, model jev-1.13.0, 475ms, input550/output77. Choice harga,
+  Noul approval0.04, Score kejelasan2.0. Semantic/shape PASS.
+- LIVE P02 CLI: 10 request, invariant valid dan VP Sales pending, PASS.
+- LIVE P02 browser: tombol analisis menghasilkan Analisis dengan Jev; request selesai,
+  target keputusan VP Sales dan persetujuan yang diperlukan tetap terlihat.
+- LIVE P01:6 request PASS; P03:1 PASS; P04:3 PASS; P05:0, rules,
+  NOT_LIVE_SUCCESS yang diharapkan (insufficient evidence). Semua invariant true.
+- Total ledger setelah seluruh tes live:31 request, input17.840/output1.657,
+  remaining99.982.160 input; pending0, reserved0, blockedfalse.
+- Screenshot UI lokal: `/tmp/dealcompass-jev-live/p02-live.png`.
+- Receipt operasional lokal P01/P03/P04/P05 di `.local/live-proof/`, ignored Git.
 
 ## Fixture dan keterbatasan
-Semua respons Jev pada tes baru adalah MOCK, bukan akses provider. Belum ada
-latency/token usage provider nyata atau verifikasi browser mode live. Adapter
-dasar telah ada; perubahan ini menyiapkan aktivasi dan pembuktian yang eksplisit.
-Benchmark sebelumnya34/35 denganE15known limitation tidak diklaim menjadi35/35.
-P05 tidak punya pertanyaan eligible sehingga rules/insufficient_evidence benar.
+Unit guard memakai MockTransport; hasil live disebut terpisah. Rules ranking tidak
+berubah menjadi ranking Jev. Jev tidak memberi approval bisnis atau probabilitas closing.
+Ledger menyimpan whitelist usage, bukan body provider. Reservasi bukan tokenisasi resmi;
+usage di luar backend bersama tidak dapat dipantau. Tidak ada jaminan biaya global dari
+provider hanya melalui counter lokal. Benchmark kualitas semua kasus belum dijalankan
+ulang ke provider berbayar; invariant lima deal bukan klaim akurasi sempurna.
 
 ## Blocker
-Pengguna belum punya akses/key TypeSafe. Perlu panitia atau console.typesafe.ai.
-Tidak ada pembelian/pendaftaran otomatis, dan tidak meminta key dikirim ke chat.
-File .env lokal ignored tersedia di checkout utama untuk diisi melalui editor.
+Tidak ada blocker live saat uji. Pemakaian tim selanjutnya harus lewat backend/ledger
+bersama; tidak ada deploy/public access baru. Tidak ada reset otomatis untuk receipt
+unknown/pending: perlu rekonsiliasi berdasarkan usage provider agar tidak menghapus biaya.
 
 ## Tugas berikutnya
-Boy memperoleh key lalu mengisi.env lokal. Main menjalankan smoke satu request;
-jika PASS, uji P02 lengkap dan browser sebelum menyatakan Jev live VERIFIED.
-Bima menjaga backend yang dipakai UI port8000, Ical memeriksa makna/policy hasil
-live. Tidak ada pesan otomatis ke anggota. Rehearsal/submission inti tetap lanjut.
+1. Review dan integrasikan PR Jev ini secara terpisah dari UI #29.
+2. Tim memakai backend bersama; cek usage sebelum/sesudah sesi demo/testing.
+3. Rehearsal/demo/submission; jangan rerun batch evaluasi besar tanpa kebutuhan.
+4. Jika provider gagal, tampilkan fallback rules; jangan klaim live dari label ranking.
 
 ## Update WIB
-2026-10-09 21:16 WIB — implementasi diuji lokal; live menunggu kredensial.
+2026-10-10 01:10 WIB — live verified dengan monitoring persisten. Key/DB tidak masuk Git.
