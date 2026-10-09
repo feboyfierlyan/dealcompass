@@ -1,21 +1,32 @@
-"""Fondasi daftar deal asli. Bima memperluas ingest seluruh sumber."""
-import csv
-from datetime import date
-from pathlib import Path
-from backend.contracts import DealSummary
+"""Deal summaries from the shared typed source snapshot."""
 
-DATA_DIR = Path(__file__).resolve().parents[2] / 'dataset_kasirnusa'
-SNAPSHOT_DATE = date(2026, 10, 1)
+from datetime import date
+
+from backend.contracts import DealSummary
+from backend.ingestion.dataset import Dataset, SNAPSHOT_DATE, SourceRecord, get_dataset
+
+
+def deal_summary(
+    record: SourceRecord, dataset: Dataset, snapshot_date: date = SNAPSHOT_DATE,
+) -> DealSummary:
+    deal = record.values
+    account = dataset.by_id['crm_accounts.csv'][deal['account_id']].values
+    return DealSummary(
+        deal_id=deal['deal_id'],
+        account_id=deal['account_id'],
+        account_name=account['nama'],
+        stage=deal['stage'],
+        stage_age_days=(snapshot_date - deal['stage_sejak']).days,
+        annual_value=deal['nilai_tahunan'],
+        owner_id=deal['owner_id'],
+    )
+
 
 def list_deals() -> list[DealSummary]:
-    with (DATA_DIR / 'crm_accounts.csv').open(encoding='utf-8-sig', newline='') as f:
-        accounts = {r['account_id']: r for r in csv.DictReader(f)}
-    with (DATA_DIR / 'crm_deals.csv').open(encoding='utf-8-sig', newline='') as f:
-        rows = list(csv.DictReader(f))
-    return [DealSummary(
-        deal_id=r['deal_id'], account_id=r['account_id'],
-        account_name=accounts[r['account_id']]['nama'], stage=r['stage'],
-        stage_age_days=(SNAPSHOT_DATE - date.fromisoformat(r['stage_sejak'])).days,
-        annual_value=int(r['nilai_tahunan']), owner_id=r['owner_id'],
-    ) for r in rows if r['status'] == 'Terbuka' and accounts[r['account_id']]['tipe'] == 'prospek']
-
+    dataset = get_dataset()
+    return [
+        deal_summary(record, dataset)
+        for record in dataset.tables['crm_deals.csv']
+        if record.values['status'] == 'Terbuka'
+        and dataset.by_id['crm_accounts.csv'][record.values['account_id']].values['tipe'] == 'prospek'
+    ]
