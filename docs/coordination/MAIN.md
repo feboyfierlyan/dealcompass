@@ -13,15 +13,17 @@ Priorities dan seluruh diagnostic asli200; unknown deal404. API siap dipakai UI.
 UI ranking/diagnostic BOY-04 sudah VERIFIED/MERGED #22 (ea96e23). Main mengulang
 52/52 frontend, build, API nyata dan sampling browser; [review BOY-04](../reviews/2026-10-09-boy04.md).
 [Review R8](../reviews/2026-10-09-ical-r8.md). Jev live belum diuji.
+BIMA-04 VERIFIED/MERGED #23 (2585bb3): 164/164 backend, setup bersih dan
+smoke15/15 cold/warm sebelum/sesudah restart lulus. [Review BIMA-04](../reviews/2026-10-09-bima04.md).
 Tidak ada komunikasi otomatis antar-chat AI.
 
 ## Progres kesiapan tim
 
-Snapshot mentor 9 Oktober20:28WIB: **tim81/100; Boy100/100, Bima90/100, Ical85/100**.
-Baseline sebelumnya75; tambahan6 berasal dari integrasi UI BOY-04 yang terverifikasi.
+Snapshot mentor 9 Oktober20:43WIB: **tim86/100; Boy100/100, Bima100/100, Ical85/100**.
+Riwayat75→81 dari UI BOY-04, lalu81→86 dari kesiapan operasional BIMA-04.
 Bukan rubric panitia atau peluang menang. Bobot, bukti, batas dan target berikutnya
 ada di [TEAM_PROGRESS.md](TEAM_PROGRESS.md). Angka anggota bukan rata-rata total.
-BOY-04 selesai. BIMA-04 PR #23 menunggu review; ICAL-04 belum diverifikasi.
+BOY-04 dan BIMA-04 selesai. ICAL-04, rehearsal tim dan submission belum diverifikasi.
 
 ## Checklist tugas
 
@@ -38,9 +40,9 @@ BOY-04 selesai. BIMA-04 PR #23 menunggu review; ICAL-04 belum diverifikasi.
 | ICAL-03 | Ical | MERGED #15 | Ranking rules, sumber/path dan referensi terbaru; evaluasi 15/15 |
 | BIMA-03 / R8 | Bima; revisi oleh Ical | MERGED #16; R8 VERIFIED | Priorities/diagnostic asli200; 144 backend dan 34 frontend lulus |
 | BOY-04 | Boy | MERGED #22; VERIFIED | Ranking/diagnostic API, sumber→graph; 52 frontend/build dan sampling browser lulus |
-| BIMA-04 | Bima | PR #23 menunggu review | Runbook/smoke/restart demo dan ringkasan fenomena data |
+| BIMA-04 | Bima | MERGED #23; VERIFIED | 164backend, setup bersih, smoke15/15 cold/warm + restart, temuan sumber diperiksa |
 | ICAL-04 | Ical | TODO; prompt siap | Baseline/pembuktian metode/bahan mentor; Jev live conditional terpisah |
-| MAIN-02 | Main | IN_PROGRESS | Integrasi UI terverifikasi; runbook/pitch, rehearsal, kecocokan brief dan submission tersisa |
+| MAIN-02 | Main | IN_PROGRESS | UI dan runbook terverifikasi; paket pitch, rehearsal, kecocokan brief dan submission tersisa |
 
 Status: TODO / IN_PROGRESS / BLOCKED / READY_FOR_REVIEW / VERIFIED / MERGED.
 Centang selesai hanya setelah verifikasi. Jangan otomatis mengubah status
@@ -61,6 +63,7 @@ ketika anggota hanya mengatakan selesai.
 | rank_deals | Ical | MERGED #15 | P04/P01/P02/P03/P05; heuristik, bukan probabilitas closing |
 | GET initial-analysis / priorities | Bima; revisi Ical | MERGED #16 | Asli200; source/path valid, pending P02 dan discovery P05 terjaga |
 | phase3 validators/resource, Phase3Panels, Dashboard dan DealWorkspace | Boy | MERGED #22; VERIFIED | Ranking/diagnostic nyata, sumber dan error isolation; review BOY-04 |
+| backend.api.smoke_demo, DEMO_RUNBOOK, DATA_FINDINGS | Bima | MERGED #23; VERIFIED | GET15endpoint, stop harus gagal, PID baru lulus, fakta dibanding sumber asli |
 | scripts/check_handoff.py | Main | Implementasi awal | tests/test_handoff.py |
 
 ## Coverage wajib sebelum produk final selesai
@@ -81,10 +84,11 @@ yang sudah VERIFIED pada inventaris fungsi dan review BOY-04.
 
 - Boy: BOY-04 selesai. Sync main, latihan demo3–5menit memakai frontend/TESTING.md;
   catat bug nyata bila ditemukan, jangan membuka ulang #22 atau menambah fitur.
-- Bima: PR #23 untuk BIMA-04 menunggu review Main. Belum diberi kredit hasil.
+- Bima: BIMA-04 selesai. Sync main; jalankan runbook/smoke di mesin demo bersama
+  Boy, siapkan pemulihan dan penjelasan data. Catat masalah latihan bila ada.
 - Ical: lanjut [ICAL-04](../prompts/ICAL-04.md), baseline/bukti/jawaban mentor;
   Jev conditional/timebox, keberhasilan live tidak diasumsikan.
-- Main: review runbook Bima dan paket Ical saat siap, lalu rehearsal akhir,
+- Main: review paket Ical saat siap, lalu rehearsal akhir,
   kecocokan brief dan submission. UI kini tidak lagi menghalangi latihan demo.
 - Semua: WAJIB handoff .md pada PR sendiri; status maksimal READY_FOR_REVIEW.
   Pengguna meneruskan prompt; tidak ada pesan otomatis antar-chat AI.
@@ -134,3 +138,5 @@ prompt ke chat Claude Ical; penugasan tertulis bukan bukti chat itu sudah bekerj
 2026-10-09 19:36 WIB: baseline kesiapan75/100 ditetapkan beserta bobot terbuka. BIMA-04 dan ICAL-04 ditugaskan paralel dengan BOY-04; penugasan bukan klaim pekerjaan telah dimulai.
 
 2026-10-09 20:28 WIB: #22 merged ea96e23, BOY-04 VERIFIED. Main52/52frontend, build, CI dan sampling browser lulus; review BOY-04 membedakan tes Main/Boy. Kesiapan81/100, Boy100/Bima90/Ical85. PR Bima#23 belum direview.
+
+2026-10-09 20:43 WIB: #23 merged2585bb3, BIMA-04 VERIFIED. Main164/164backend, setup bersih/pip check, empat15/15socket dan exit1 saat server mati. Fakta DATA_FINDINGS dicocokkan produsen/row asli. Kesiapan86/100; Boy100/Bima100/Ical85.

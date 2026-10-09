@@ -12,10 +12,11 @@ Tim: **Boy (@feboyfierlyan), Bima (@bimadji), Ical (@IXALS)**.
 
 ## Status saat ini
 
-Analisis rules P01–P05, context graph, sumber yang dapat ditelusuri, ranking dan
-API diagnostic sudah merged/verified. Review gabungan terakhir:144tes backend,
-52tes frontend terbaru, build lulus; priorities/diagnostic asli200. UI ranking,
-diagnostic dan bukti→graph sudah VERIFIED/MERGED #22; backend144 merujuk review R8. Jev live belum diuji.
+Analisis rules P01–P05, context graph, ranking, diagnostic dan UI sudah merged/verified.
+Review BIMA-04 #23:164/164 backend, setup bersih dan smoke15/15 cold/warm serta
+restart lulus. Review BOY-04 #22:52/52 frontend, build dan sampling browser lulus.
+Jev live, rehearsal tim dan submission belum terverifikasi.
+[Runbook demo](backend/api/DEMO_RUNBOOK.md) · [Fenomena data](backend/graph/DATA_FINDINGS.md).
 
 Pantau [progres berbobot](docs/coordination/TEAM_PROGRESS.md) dan [checklist Main](docs/coordination/MAIN.md).
 Tugas paralel: [Boy04](docs/prompts/BOY-04.md), [Bima04](docs/prompts/BIMA-04.md),
