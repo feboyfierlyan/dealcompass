@@ -3,6 +3,7 @@ from backend.contracts import DealContext, Recommendation
 from backend.ingestion.deals import list_deals
 from backend.graph.context import build_deal_context
 from backend.decision.analyze import analyze_deal
+from backend.api.phase3 import deal_initial_analysis, pipeline_initial_analysis, pipeline_priorities
 
 app = FastAPI(title='DealCompass', version='0.1.0')
 
@@ -34,3 +35,16 @@ def analyze(deal_id: str):
     except NotImplementedError as e:
         raise HTTPException(501, detail={'code': 'NOT_IMPLEMENTED', 'message': str(e)}) from e
 
+
+@app.get('/api/deals/{deal_id}/initial-analysis')
+def initial_analysis(deal_id: str):
+    require_deal(deal_id)
+    return deal_initial_analysis(deal_id)
+
+@app.get('/api/pipeline/initial-analysis')
+def pipeline_diagnostics():
+    return pipeline_initial_analysis()
+
+@app.get('/api/pipeline/priorities')
+def priorities():
+    return pipeline_priorities()
