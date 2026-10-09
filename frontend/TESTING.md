@@ -1,4 +1,4 @@
-# Verifikasi frontend Boy — BOY-03
+# Verifikasi frontend Boy — BOY-04
 
 Jalankan dari root repo, dengan Node 24+ dan dependency dari lockfile yang sudah ada.
 Tidak ada perubahan dependency atau kontrak API.
@@ -97,7 +97,7 @@ Enam tes sesi menggunakan promise terkontrol (mock), termasuk respons yang senga
 mengabaikan abort. Delapan tes analisis mencakup lima GET/POST nyata + render React
 server atas komponen yang sama; seluruh action/milestone/approval/penjelasan/unknowns
 harus tetap utuh. Tiga tes lainnya memeriksa prefix, sumber tanpa node, dan batas
-jalur panjang secara sintetis. Total **34 tes frontend**. Tes real API mengharuskan
+jalur panjang secara sintetis. Subtotal **34 tes lama**. BOY-04 menambah 18 tes di bawah sehingga total 52. Tes real API mengharuskan
 mode rules; tidak diam-diam mengganti respons dengan fixture.
 
 ### Acceptance P01–P05
@@ -159,28 +159,112 @@ produksi yang sama**, dengan transport sintetis. Ini bukan hasil bisnis/backend 
 Build produksi hanya memakai index.html; harness dan fixture development tidak
 masuk dist. Tidak ada dependency atau endpoint tambahan.
 
+## Fase3 BOY-04 — ranking dan diagnostic
+
+Backend dan Vite sama seperti di atas, rules tanpa key Jev. Tambahkan suite ini:
+
+```bash
+frontend/node_modules/.bin/tsc frontend/src/components/Phase3Panels.tsx frontend/src/components/AnalysisReport.tsx frontend/src/lib/graphView.ts frontend/src/lib/api.ts frontend/src/lib/resource.ts --target ES2022 --module commonjs --jsx react-jsx --outDir /tmp/dealcompass-boy04-tests --skipLibCheck --strict
+NODE_PATH="$PWD/frontend/node_modules" PHASE3_TEST_BUILD=/tmp/dealcompass-boy04-tests node --test frontend/tests/phase3.test.cjs
+```
+
+Total **52 tes** = kontrak5 + transport7 + graph8 + sesi6 + analisis8 + fase3 18.
+Suite fase3 memanggil GET priorities, pipeline initial-analysis, diagnostic setiap
+deal dan detail konteks secara nyata melalui liveApi. Tujuh kasus real HTTP/render
+memeriksa urutan/join, lima acceptance dan statistik. Sebelas lainnya memakai
+corruption dari payload fetched, sumber tambahan sintetis, transport/lifecycle mock.
+Tidak ada fallback fixture saat backend gagal. GRAPH_API_URL mengganti host tes.
+
+### Acceptance ranking/diagnostic P01–P05
+
+Urutan ini adalah ekspektasi tes snapshot, **bukan konstanta komponen**:
+
+| Deal | Prioritas API | Gate yang harus tetap terlihat |
+| --- | --- | --- |
+| P04 | #1 acceleration / ready | Referensi C06 perlu verifikasi pengalaman terbaru, kesediaan dan izin. Overlap K028/K116 bukan kenalan terkonfirmasi. |
+| P01 | #2 acceleration / ready | Identitas Rina inferensi; konfirmasi wewenang dan status fitur sebelum janji. |
+| P02 | #3 acceleration / ready | I0348 request20%, belum approval VP Sales. Preseden bukan approval sekarang. |
+| P03 | #4 acceleration / ready | Kandidat bukan izin; catatan C03 bertiket/bermasalah tidak hilang. |
+| P05 | #5 discovery / insufficient_evidence | Skor null bukan0, bukan kalah/low risk; lakukan discovery. |
+
+Pada desktop1440x1000 dan mobile390x844:
+
+1. Muat dashboard: daftar sumber tetap tersedia saat ranking loading. Setelah
+   respons valid, kartu diurutkan rank1..5 dari API, join berdasarkan ID/snapshot.
+   Buka Metode & keterbatasan; formula, bobot, aturan/tie-break dan sensitivitas ada.
+2. Pilih setiap deal: alasan/rationale → faktor/value/effect → tindakan/owner →
+   milestone → approval → unknowns. Label sumber **GET ranking pipeline · rules**.
+   Status CRM not_analyzed tetap dibedakan dari readiness priorities.
+3. Jalankan tombol analisis sesi secara eksplisit, periksa label **POST analisis sesi**,
+   empat status request lama serta rank yang tidak berubah. Gunakan tombol versi
+   untuk kembali ke rekomendasi yang dipakai ranking. Tidak ada POST otomatis lima deal.
+4. Buka Jalur bukti ranking. P02 harus **DL-002 → P02 ← I0348**; tombol relasi
+   menampilkan **I0348 → P02**, interaction_for/direct, tanggal28Sep dan sumber asli.
+   Traversal terbalik tidak membalik source/target. Periksa juga preseden D-2025-02/06.
+5. Ranking → Sumber → pilih I0343(P01), I0348(P02), I0334(P03), I0335(P04),
+   DL-005(P05). Record/JSON tepat lalu Fokus graph. Coba Enter di mobile.
+   Cap24, jumlah terlihat/total, search/expand/filter dan seluruh evidence tetap tersedia.
+6. Diagnostic memakai pipeline response yang sama saat berganti deal; tidak otomatis
+   mengulang request satu deal. Tombol **Muat ulang diagnostic deal** melakukan GET
+   satu deal saat diminta. Metrics lengkap/cakupan/sumber tersedia pada disclosure.
+7. Buka temuan: fact, interpretation/inferred, missing_information, follow_up_implication
+   terpisah. Implikasi diagnostic bukan Recommendation Ical. Kandidat P03/P04 dan
+   semua provenance turunannya tetap bisa dibuka, termasuk consent/willingness null.
+8. Diagnostic P04 → sumber employment K028 → overlapping_employment K028/K116,
+   inferred, 1Feb2015–30Nov2019 dan kedua record. Sumber tanpa node tetap terbaca;
+   hubungan baru tidak dibuat. Sumber statistik milik deal lain tetap record saja
+   jika graph terpilih tidak mempunyai node/edge terkait.
+9. Statistik: **not_assessed** beserta reason API. Method/threshold/outlier IDs null.
+   Anomali bisnis bukan outlier statistik/SLA. Interaksi eksternal terakhir termasuk
+   outbound, bukan otomatis balasan pelanggan. Missing bukan nol atau bebas risiko.
+10. Periksa tidak overflow; action panjang, unknowns, source ID/locator dan disclosure
+    tetap terbaca pada mobile. Kembalikan viewport sesudah smoke.
+
+### Failure isolation dan stale response — browser MOCK terpisah
+
+`http://127.0.0.1:5173/tests/phase3-harness.html` (Vite dev saja). Banner
+**MOCK TRANSPORT TEST** wajib terlihat. Dashboard produksi sama; error503 dan delay
+2,5 detik sintetis, respons sukses mengambil backend lokal nyata. Jangan menyebut
+skenario ini outage backend. Harness tidak termasuk entry build produksi.
+
+- Target Ranking, Gagal503, Muat ulang ranking: rank lama hilang; lima deal sumber
+  tetap bisa dipilih dan diagnostic valid tetap tersedia. Sukses API → Coba lagi pulih.
+- Target Diagnostic, Gagal503, Muat ulang diagnostic deal: diagnostic gagal tanpa
+  menghapus ranking/rekomendasi. Sukses API → Coba lagi pulih.
+- Diagnostic Gagal terlambat → refresh satu deal → segera ganti deal: error lama
+  tidak tampil. Sukses terlambat → Muat ulang konteks: hasil lama tidak menimpa reset.
+- Ranking Sukses terlambat → Muat ulang ranking → segera ganti deal: rank unavailable
+  selama loading; respons baru dipasang per deal_id, bukan pada posisi pilihan lama.
+- Muat ulang dashboard/reset halaman membersihkan hasil request lama. Validasi
+  nonfinite/schema/snapshot/duplikat/mismatch, konflik registry, fake edge, source
+  hilang dan timeout/501/network diuji otomatis; jangan klaim semuanya smoke browser.
+
 ## Naskah demo mentor (sekitar 4 menit)
 
-**0:00–0:30 — masalah dan batas.** “Lima deal punya hambatan berbeda. DealCompass
-menampilkan usulan tindakan dan bukti yang dapat ditelusuri. Ini snapshot 1 Oktober,
-mode rules; ranking masih belum tersedia.” Pilih P02 dan jalankan analisis.
+**0:00–0:40 — prioritas pipeline.** “Ini lima deal dengan urutan perhatian dari
+aturan deterministik: P04, P01, P02, P03, P05. Ranking bukan probabilitas closing.”
+Buka metode: skor, tie-break dan keterbatasan berasal dari API, belum tervalidasi
+terhadap closing historis. Semua deal tetap masuk, termasuk discovery.
 
-**0:30–1:15 — mulai dari permintaan.** Buka sumber I0348 dari bagian Sumber pendukung.
-“Ini email permintaan diskon 20%, belum persetujuan.” Tunjukkan tanggal, record dan
-JSON asli, lalu Fokus graph: I0348. Jelaskan jumlah terlihat/total; graph sengaja fokus.
+**0:40–1:30 — mengapa P04/P01.** Pilih P04, baca alasan di atas P01 dan faktor
+hambatan. “Pelanggan menunda sampai ada referensi. Langkahnya memeriksa pengalaman,
+kesediaan dan izin kandidat C06.” Tunjukkan owner/milestone. Pilih P01: “Rina masih
+identitas inferensi yang perlu dikonfirmasi; jabatan saja bukan kepastian.”
 
-**1:15–2:15 — preseden dan usulan.** Kembali ke analisis, buka D-2025-02 dan D-2025-06
-pada preseden. “Ada keputusan historis menolak diskon dan contoh pilot tanpa diskon,
-namun itu tidak otomatis berlaku di P02.” Buka interpretasi/skenario bila dibutuhkan.
-Tunjukkan action, E07 sebagai owner, milestone dan pending approval VP Sales.
-Bila mentor bertanya asal hubungan, buka sumber preseden → graph inferred.
+**1:30–2:20 — gate P02.** Pilih P02. “Request20% belum approval. Nilai/skor/preseden
+historis tidak menggantikan keputusan VP Sales dan pencatatan.” Tampilkan approval
+terbuka. Buka jalur DL-002 → P02 ← I0348 lalu klik edge asli I0348 → P02. Periksa
+28Sep, kutipan dan JSON. Graph fokus menyebut jumlah terlihat dari total1305node.
 
-**2:15–3:30 — cakupan lima deal.** Jalankan P01: “Identitas Rina masih perlu
-konfirmasi.” P03/P04: “Calon referensi perlu verifikasi dan izin; overlap kerja
-bukan bukti saling kenal.” P05: “Informasi belum cukup, sehingga langkahnya discovery.”
-Tunjukkan unknowns P05 agar respons 200 tidak disalahartikan sebagai bukti cukup.
+**2:20–3:20 — diagnostic dan bukti.** Kembali ringkasan, buka temuan diagnostic.
+“Fakta sumber, interpretasi, informasi kurang, dan implikasi pemeriksaan dipisah.”
+Tunjukkan alasan statistical not_assessed: umur beda tahap bukan distribusi/SLA.
+Opsional P04 employment → overlap inferred; bukan kenalan terkonfirmasi. P03 catatan
+kandidat bermasalah tetap terlihat, kandidat bukan izin.
 
-**3:30–4:00 — tutup dengan batas yang jelas.** “Respons diterima adalah status
-request sesi, bukan status bisnis. Semua usulan tetap perlu ditinjau orang terkait.
-Jev live belum diuji; ranking dan diagnostic Bima belum terintegrasi di layar ini.”
-Tidak mengklaim peningkatan closing, efisiensi persen, atau akurasi yang belum diukur.
+**3:20–4:00 — discovery dan batas.** Pilih P05: skor null, insufficient_evidence,
+discovery dengan unknowns. “Data kosong bukan berarti tidak ada risiko.” Bila menjalankan
+POST, tunjukkan label analisis sesi vs ranking dan rank yang tetap. “Demo ini rules,
+bukan Jev live. Usulan memerlukan tinjauan manusia; kami belum mengukur dampak closing.”
+
+Hasil aktual, screenshot lokal, keterbatasan dan waktu WIB ada di docs/handoffs/BOY.md.

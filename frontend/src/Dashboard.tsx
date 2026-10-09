@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { ApiError } from './lib/api';
 import type { DealApi } from './lib/api';
 import type { DealList } from './lib/contracts';
 import { dateLabel, rupiah, statusLabel } from './lib/format';
 import { Icon } from './components/Icon';
 import { DealWorkspace, ErrorNotice } from './components/DealWorkspace';
+import { createResource } from './lib/resource';
+import { matchPipeline, rankedDeals } from './lib/phase3';
+import { Methodology } from './components/Phase3Panels';
 import './style.css';
 
 export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) {
@@ -24,7 +27,21 @@ export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) 
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [api, refresh]);
-  const deals = data?.items ?? [];
+  const priorities = useMemo(() => createResource(async (signal: AbortSignal) => {
+    if (!api.priorities || !data) throw new ApiError(501, 'Ranking belum tersedia.');
+    const result = await api.priorities(signal); matchPipeline(data, result); return result;
+  }), [api, data]);
+  const diagnostics = useMemo(() => createResource(async (signal: AbortSignal) => {
+    if (!api.diagnostics || !data) throw new ApiError(501, 'Diagnostic belum tersedia.');
+    const result = await api.diagnostics(signal); matchPipeline(data, result); return result;
+  }), [api, data]);
+  const priorityState = useSyncExternalStore(priorities.subscribe, priorities.getSnapshot);
+  const diagnosticState = useSyncExternalStore(diagnostics.subscribe, diagnostics.getSnapshot);
+  useEffect(() => {
+    if (data && !fixture) { void priorities.run(); void diagnostics.run(); }
+    return () => { priorities.reset(); diagnostics.reset(); };
+  }, [data, fixture, priorities, diagnostics]);
+  const deals = data ? priorityState.data ? rankedDeals(data, priorityState.data) : data.items.map(d => ({ ...d, rank: null })) : [];
   const visible = deals.filter(d => `${d.account_name} ${d.account_id} ${d.deal_id}`.toLowerCase().includes(search.toLowerCase().trim()));
   const active = deals.find(d => d.deal_id === selected);
   const rankCount = deals.filter(d => d.rank !== null).length;
@@ -32,15 +49,21 @@ export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) 
   return <>
     <header className="topbar"><div><span className="breadcrumb">Ruang kerja sales</span><Icon name="chevron" size={12}/><strong>Deal acceleration</strong></div><span className="snapshot"><Icon name="clock" size={14}/>{data ? `Snapshot ${dateLabel(data.snapshot_date)}` : 'Snapshot belum dimuat'}</span></header>
     <main id="main-content"><div className="page-heading"><div><p className="eyebrow orange">PIPELINE INTELLIGENCE</p><h1>Langkah tepat.<br/><span>Deal bergerak.</span></h1><p>Hubungkan konteks, periksa bukti, tentukan langkah berikutnya.</p></div><div className="page-heading-aside"><span className="live-label"><i/>{fixture ? 'Fixture pengembangan' : 'Sumber data CRM'}</span><button className="button secondary" disabled={loading} onClick={() => setRefresh(v => v + 1)}><Icon name="refresh" size={15}/>Muat ulang</button></div></div>
-      <div className="metrics"><div className="metric"><span>Potensi pipeline tahunan</span><strong>{data ? rupiah(total) : '—'}</strong><small>Nilai peluang, belum menjadi pendapatan</small></div><div className="metric"><span>Deal dalam cakupan</span><strong>{data ? String(deals.length).padStart(2, '0') : '—'}<em> / P01–P05</em></strong><small>Setiap prospek punya konteksnya sendiri</small></div><div className="metric"><span>Prioritas dari analisis</span><strong className="metric-text">{data ? rankCount ? `${rankCount} deal memiliki ranking` : 'Belum tersedia' : 'Menunggu data'}</strong><small>Urutan kartu mengikuti sumber data</small></div></div>
+      <div className="metrics"><div className="metric"><span>Potensi pipeline tahunan</span><strong>{data ? rupiah(total) : '—'}</strong><small>Nilai peluang, belum menjadi pendapatan</small></div><div className="metric"><span>Deal dalam cakupan</span><strong>{data ? String(deals.length).padStart(2, '0') : '—'}<em> / P01–P05</em></strong><small>Setiap prospek punya konteksnya sendiri</small></div><div className="metric"><span>Prioritas dari analisis</span><strong className="metric-text">{data ? rankCount ? `${rankCount} deal memiliki ranking` : 'Belum tersedia' : 'Menunggu data'}</strong><small>{priorityState.data ? 'Urutan perhatian sales dari API rules, bukan peluang closing' : 'Urutan sumber; ranking belum tersedia'}</small></div></div>
+      {!fixture && <section className="phase3-status" aria-label="Status ranking">
+        <div className="row-between"><strong>Ranking pipeline · rules</strong><button className="text-button" disabled={!data || priorityState.status === 'loading'} onClick={() => void priorities.run()}>Muat ulang ranking</button></div>
+        {(priorityState.status === 'loading' || priorityState.status === 'idle') && <p role="status">Memuat prioritas; daftar sumber tetap dapat dipilih.</p>}
+        {priorityState.status === 'error' && <ErrorNotice error={priorityState.error instanceof ApiError ? priorityState.error : new ApiError(502, priorityState.error instanceof Error ? priorityState.error.message : 'Ranking tidak valid.')} retry={() => void priorities.run()} subject="Ranking"/>}
+        {priorityState.data && <><p className="small muted">Acceleration: percepatan tindakan. Discovery: melengkapi informasi. Status ready bukan approval atau janji closing.</p><Methodology data={priorityState.data}/></>}
+      </section>}
       <section className="pipeline" aria-labelledby="pipeline-title"><div className="section-heading"><div><h2 id="pipeline-title">Pilih deal untuk ditelusuri <span>{data ? String(deals.length).padStart(2, '0') : '—'}</span></h2><p className="muted small">Periksa konteks dan tindakan berikutnya untuk setiap prospek.</p></div><label className="search"><Icon name="search" size={17}/><input aria-label="Cari deal" placeholder="Cari nama atau ID deal" value={search} onChange={e => setSearch(e.target.value)}/>{search && <button aria-label="Hapus pencarian" onClick={() => setSearch('')}>×</button>}</label></div>
         {loading && <div className="deal-grid" role="status" aria-label="Memuat daftar deal">{Array.from({ length: 5 }, (_, i) => <div className="skeleton-card" key={i}><i/><i/><i/></div>)}</div>}
         {error && <ErrorNotice error={error} retry={() => setRefresh(v => v + 1)} subject="Daftar deal"/>}
         {!loading && !error && !deals.length && <div className="panel empty-state"><Icon name="grid" size={30}/><h3>Belum ada deal dalam daftar</h3><p>Layanan mengembalikan daftar kosong. Muat ulang setelah data tersedia.</p><button className="button secondary" onClick={() => setRefresh(v => v + 1)}>Muat ulang</button></div>}
         {!loading && !!deals.length && !visible.length && <div className="search-empty" role="status">Tidak ada deal yang cocok dengan “{search}”. <button className="text-button" onClick={() => setSearch('')}>Tampilkan semua</button></div>}
-        <div className="deal-grid">{visible.map(deal => <button key={deal.deal_id} className={`deal-card ${selected === deal.deal_id ? 'active' : ''}`} aria-pressed={selected === deal.deal_id} aria-label={`${deal.account_id} ${deal.account_name}`} onClick={() => setSelected(deal.deal_id)}><span className="row-between"><span className="account-id">{deal.account_id}</span><span className="stage">{deal.stage}</span></span><strong className="deal-name">{deal.account_name}</strong><span className="deal-value">{rupiah(deal.annual_value)}<small> / tahun</small></span><span className="deal-age"><Icon name="clock" size={13}/>{deal.stage_age_days} hari di tahap ini</span><span className="card-footer"><span><span className="rank-label">{deal.rank === null ? 'Prioritas belum tersedia' : `Prioritas #${deal.rank}`}</span><small>Status API: {statusLabel[deal.analysis_status]}</small></span><span className="card-arrow"><Icon name="arrow" size={16}/></span></span></button>)}</div>
+        <div className="deal-grid">{visible.map(deal => <button key={deal.deal_id} className={`deal-card ${selected === deal.deal_id ? 'active' : ''}`} aria-pressed={selected === deal.deal_id} aria-label={`${deal.account_id} ${deal.account_name}`} onClick={() => setSelected(deal.deal_id)}><span className="row-between"><span className="account-id">{deal.account_id}</span><span className="stage">{deal.stage}</span></span><strong className="deal-name">{deal.account_name}</strong><span className="deal-value">{rupiah(deal.annual_value)}<small> / tahun</small></span><span className="deal-age"><Icon name="clock" size={13}/>{deal.stage_age_days} hari di tahap ini</span><span className="card-footer"><span><span className="rank-label">{deal.rank === null ? 'Prioritas belum tersedia' : `Prioritas #${deal.rank}`}</span><small>{priorityState.data?.items.find(i => i.deal_id === deal.deal_id)?.priority_kind ?? 'Sumber CRM'} · {statusLabel[deal.analysis_status]}</small></span><span className="card-arrow"><Icon name="arrow" size={16}/></span></span></button>)}</div>
       </section>
-      {active && !loading && <DealWorkspace key={`${fixture}-${active.deal_id}-${refresh}`} deal={active} api={api} fixture={fixture}/>}
+      {active && !loading && <DealWorkspace key={`${fixture}-${active.deal_id}-${refresh}`} deal={active} api={api} fixture={fixture} snapshot={data!.snapshot_date} priority={priorityState.data?.items.find(i => i.deal_id === active.deal_id) ?? null} diagnosticState={diagnosticState} retryDiagnostics={() => void diagnostics.run()}/>}
       <footer className="page-footer"><span>DEALCOMPASS <span> / </span> KasirNusa</span><span>Keputusan yang bisa ditelusuri.</span></footer>
     </main>
   </>;
