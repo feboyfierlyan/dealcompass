@@ -78,7 +78,7 @@ export function RecommendationSources({ ids, context, onEvidence }: { ids: strin
   const size = 4, shown = records.slice(page * size, (page + 1) * size);
   return <section className="reason-section" aria-label="Bukti yang dirujuk saran">
     <h3>Bukti yang dirujuk saran ini <span className="count">{unique.length}</span></h3>
-    <p className="note">Percakapan ditampilkan lebih dulu. Pilih untuk membaca record aslinya.</p>
+
     {!unique.length && <p className="inline-warning">Analisis belum menautkan sumber.</p>}
     {!!missing.length && <p className="inline-warning">Sumber belum ditemukan dalam data deal: {missing.join(', ')}.</p>}
     <ul className="evidence-list">{shown.map(e => {
@@ -87,7 +87,7 @@ export function RecommendationSources({ ids, context, onEvidence }: { ids: strin
         <span className="evidence-item-head"><span className="tag">{kind}</span><span className="muted">{dateLabel(e.date)}</span></span>
         <strong>{title}</strong>
         {meta?.message && <span className="evidence-quote preview-quote">“{meta.message}”</span>}
-        <span className="evidence-item-foot"><span className="muted small">Record asli</span><span className="link-text">Buka bukti <Icon name="arrow" size={14}/></span></span>
+        <span className="evidence-item-foot"><span className="link-text">Buka bukti <Icon name="arrow" size={14}/></span></span>
       </button></li>;
     })}</ul>
     {records.length > size && <div className="pagination"><button disabled={!page} onClick={() => setPage(p => p - 1)}>Bukti sebelumnya</button><span>{page * size + 1}–{Math.min((page + 1) * size, records.length)} dari {records.length}</span><button disabled={(page + 1) * size >= records.length} onClick={() => setPage(p => p + 1)}>Bukti berikutnya</button></div>}

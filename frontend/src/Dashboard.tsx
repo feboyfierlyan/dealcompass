@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'reac
 import { ApiError } from './lib/api';
 import type { DealApi } from './lib/api';
 import type { DealList } from './lib/contracts';
-import { dateLabel } from './lib/format';
 import { Icon } from './components/Icon';
 import { DealWorkspace } from './components/DealWorkspace';
 import type { RankingState } from './components/DealTabs';
@@ -22,7 +21,6 @@ export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) 
   const [refresh, setRefresh] = useState(0);
   const [userChoice, setUserChoice] = useState<string | null>(null);
   const [showDetail, setShowDetail] = useState(false);
-  const [showGuide, setShowGuide] = useState(true);
   const narrow = useMedia('(max-width: 899px)');
   const detailRef = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -78,21 +76,16 @@ export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) 
   const listOnly = narrow && !detailOnly;
 
   return <main id="main-content" className={`layout ${detailOnly ? 'show-detail' : ''} ${listOnly ? 'show-list' : ''}`}>
-    <div className="workflow-guide" hidden={detailOnly}>
-      <div><span className="eyebrow">DEAL ACCELERATION</span><h1>Fokus pada langkah berikutnya.</h1></div>
-      <button className="text-button small" aria-expanded={showGuide} onClick={() => setShowGuide(value => !value)}>{showGuide ? 'Tutup panduan' : 'Cara menggunakan'}<Icon name="info" size={16}/></button>
-      {showGuide && <ol className="guide-steps"><li><span>1</span><div><strong>Pilih deal</strong><p>Mulai dari urutan teratas di kiri.</p></div></li><li><span>2</span><div><strong>Pahami langkahnya</strong><p>Cek target dan hal yang perlu dipastikan.</p></div></li><li><span>3</span><div><strong>Siapkan tindak lanjut</strong><p>Periksa rencana, lalu salin untuk digunakan.</p></div></li></ol>}
-    </div>
+    <h1 className="visually-hidden">DealCompass · Prioritas tindak lanjut</h1>
     <section className="queue" aria-labelledby="queue-title" hidden={detailOnly}>
       <div className="queue-workspace"><span className="workspace-avatar">KN</span><div><strong>KasirNusa</strong><span>Ruang kerja sales</span></div><Icon name="compass" size={17}/></div>
       <div className="queue-section-label"><Icon name="grid" size={15}/>PIPELINE · P01–P05</div>
       <div className="queue-head">
         <h2 id="queue-title">Deal prioritas <span className="count">{deals.length || '—'}</span></h2>
-        <p>Urutan yang perlu perhatian sales.</p>
+        <button className="icon-button" title="Muat ulang daftar" aria-label="Muat ulang daftar" disabled={loading} onClick={() => setRefresh(v => v + 1)}><Icon name="refresh" size={15}/></button>
       </div>
       <div className="queue-status">
         {rankingState === 'loading' && <p role="status" className="status-line"><span className="spinner"/>Menyusun urutan prioritas…</p>}
-        {rankingState === 'ready' && <p className="status-line">Data{data ? ` per ${dateLabel(data.snapshot_date)}` : ''}. Bukan peluang closing.</p>}
         {rankingState === 'unavailable' && <p className="status-line">Urutan prioritas tidak tersedia pada mode ini. Daftar mengikuti urutan CRM.</p>}
         {rankingState === 'error' && <ErrorNotice error={asApiError(priorityState.error, 'Urutan prioritas tidak valid.')} retry={() => void priorities.run()} subject="Urutan prioritas" retryLabel="Muat ulang urutan"/>}
         {rankingState === 'error' && <p className="status-line">Daftar di bawah mengikuti urutan CRM, bukan prioritas. Deal tetap bisa dibuka.</p>}
@@ -115,7 +108,7 @@ export function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) 
         </button></li>;
       })}</ol>}
       {priorityState.data && <Methodology data={priorityState.data}/>}
-      {data && <button className="text-button small" disabled={loading} onClick={() => setRefresh(v => v + 1)}><Icon name="refresh" size={14}/>Muat ulang daftar</button>}
+      <details className="queue-help"><summary><Icon name="info" size={15}/>Panduan singkat</summary><ol><li>Pilih deal dari urutan teratas.</li><li>Periksa tindakan dan syaratnya.</li><li>Siapkan rencana untuk disalin.</li></ol><p>Prioritas menunjukkan urutan perhatian, bukan peluang closing.</p></details>
     </section>
     <section className="detail-col" ref={detailRef} aria-label="Detail deal" hidden={listOnly}>
       {active && data ? <DealWorkspace key={`${fixture}-${active.deal_id}-${refresh}`} deal={active} api={api} fixture={fixture} snapshot={data.snapshot_date}

@@ -14,6 +14,19 @@ export function taskHeading(priority: PriorityItem | null, source: 'priority' | 
   return labels[gateSummary(priority) ?? ''] ?? { title: 'Siapkan langkah berikutnya', note: gateSummary(priority) ?? 'Syarat tindakan belum dirangkum. Baca usulan lengkap sebelum melanjutkan.' };
 }
 
+/** Short visible gate; full conditions stay in the disclosure and follow-up plan. */
+export function gateLabel(priority: PriorityItem | null, source: 'priority' | 'session' | null, approvals: string[]) {
+  if (approvals.length) return 'Persetujuan diperlukan';
+  if (source !== 'priority') return 'Periksa syarat tindakan';
+  const labels: Record<string, string> = {
+    'kesediaan/izin kandidat referensi belum ada': 'Izin kontak belum dikonfirmasi',
+    'identitas pengambil keputusan masih inferred': 'Pengambil keputusan belum terkonfirmasi',
+    'approval VP Sales tertunda': 'Persetujuan VP Sales tertunda',
+    'discovery belum dilakukan': 'Kebutuhan pelanggan belum diketahui',
+  };
+  return labels[gateSummary(priority) ?? ''] ?? 'Periksa syarat tindakan';
+}
+
 /** A reviewable handoff, not an email or a CRM mutation. Preserve all business conditions verbatim. */
 export function buildFollowUpBrief(r: Recommendation, context: DealContext | null, snapshot: string | null) {
   const owner = employeeFromContext(context, r.owner_id);

@@ -50,7 +50,7 @@ test('REAL HTTP guided layer: goal and gate precede preparation, full API action
     const context = joined(item.deal_id), r = item.recommendation;
     const { view, html } = action({ id: item.deal_id, priority: item, context });
     assert.equal(view.source, 'priority');
-    const steps = ['Langkah berikutnya', 'Hasil yang ingin dicapai', 'Pastikan sebelum bertindak', 'Siapkan tindak lanjut', 'Baca usulan lengkap dan batasannya', 'Tindakan yang disarankan', escape(r.action), 'Target langkah berikutnya', 'Lihat alasan &amp; bukti'];
+    const steps = ['Langkah berikutnya', 'Target', 'class="move-boundary"', 'Siapkan tindak lanjut', 'Rincian tindakan', 'Tindakan yang disarankan', escape(r.action), 'Target langkah berikutnya', 'Lihat alasan &amp; bukti'];
     for (let i = 1; i < steps.length; i++) assert.ok(html.indexOf(steps[i - 1]) >= 0 && html.indexOf(steps[i - 1]) < html.indexOf(steps[i]), `${item.deal_id}: ${steps[i - 1]} before ${steps[i]}`);
     for (const pattern of acceptance[item.deal_id]) assert.match(html, pattern, `${item.deal_id} acceptance`);
     for (const label of ['Status request sesi', 'GET ', 'POST ', 'Tier acceleration', 'tier acceleration', 'Status konteks CRM']) assert.ok(!html.includes(label), `${item.deal_id}: no technical label ${label}`);
@@ -87,7 +87,7 @@ test('MOCK session result: an explicit re-analysis is labelled with its own mode
   assert.ok(html.includes('Hasil analisis ulang yang Anda minta pukul 10.00.00 · urutan prioritas tidak dihitung ulang'));
   assert.ok(html.includes('Saran dari urutan prioritas') && html.includes('Hasil analisis ulang · 10.00.00'));
   const back = action({ id: 'DL-004', priority: item, context, snapshot: { status: 'received', data: posted }, session: { status: 'received', error: null, receivedAt: '10.00.00' }, preferred: 'priority' }).html;
-  assert.ok(back.includes(escape(item.recommendation.action)) && back.includes('Hasil analisis ulang sudah diterima; pilih versinya di atas untuk melihat.'));
+  assert.ok(back.includes(escape(item.recommendation.action)) && back.includes('Hasil analisis ulang tersedia di Versi &amp; analisis ulang.'));
 });
 
 test('REAL HTTP evidence drawer: I0348 opens its own record verbatim, closable, with a route to the graph and its original edge', () => {
@@ -210,9 +210,23 @@ test('REAL HTTP plan dialog keeps approval and consent text visible while origin
     const c = joined(id), r = ranking.items.find(x => x.deal_id === id).recommendation;
     const html = render(React.createElement(FollowUpPlan, { recommendation:r, context:c, snapshot:'2026-10-01', onClose:noop }));
     assert.ok(html.includes('aria-labelledby=') && html.includes('aria-describedby='));
-    assert.ok(html.includes('Salin rencana') && html.includes('Menyalin tidak mengirim pesan atau mengubah CRM.'));
-    for (const gate of r.approvals_needed) assert.ok(html.indexOf(escape(gate)) < html.indexOf('Lihat teks yang akan disalin'));
-    if (id === 'DL-004') assert.ok(html.indexOf('kandidat bukan izin') < html.indexOf('Lihat teks yang akan disalin'));
+    assert.ok(html.includes('Salin rencana') && html.includes('Belum dikirim atau disimpan ke CRM.'));
+    for (const gate of r.approvals_needed) assert.ok(html.indexOf(escape(gate)) < html.indexOf('Teks lengkap &amp; sumber'));
+    if (id === 'DL-004') assert.ok(html.indexOf('kandidat bukan izin') < html.indexOf('Teks lengkap &amp; sumber'));
     assert.ok(html.includes('readOnly=""') && html.includes(escape(r.action)));
   }
+});
+
+
+test('compact gates remain visible and never borrow priority conditions for a session result', () => {
+  const { gateLabel } = require(path.join(build, 'lib/planning.js'));
+  for (const item of ranking.items) {
+    const label = gateLabel(item, 'priority', item.recommendation.approvals_needed);
+    const html = action({ id: item.deal_id, priority: item, context: joined(item.deal_id) }).html;
+    const gate = html.match(/<details class="move-boundary">([\s\S]*?)<\/details>/)[1];
+    assert.ok(gate.includes(`<span>${escape(label)}</span>`));
+    assert.ok(gate.indexOf(escape(label)) < gate.indexOf('</summary>'), 'Condition visible while details are closed');
+    assert.equal(gateLabel(item, 'session', []), 'Periksa syarat tindakan');
+  }
+  assert.equal(gateLabel(null, 'session', ['approval pending']), 'Persetujuan diperlukan');
 });

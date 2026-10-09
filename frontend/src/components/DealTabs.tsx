@@ -52,7 +52,7 @@ export function ActionTab({ context, priority, rankingState, view, fixture, snap
       </section>}
 
     {r && <section className="origin" aria-label="Asal saran">
-      <div className="origin-row">
+      <details className="analysis-options"><summary><Icon name="history" size={14}/>Versi & analisis ulang</summary><div className="origin-row">
         <p><Icon name="history" size={16}/>{view.source === 'session'
           ? `Hasil analisis ulang yang Anda minta${session.receivedAt ? ` pukul ${session.receivedAt}` : ''} · urutan prioritas tidak dihitung ulang`
           : `Dari urutan prioritas${snapshot ? ` · data per ${dateLabel(snapshot)}` : ''}`}</p>
@@ -63,7 +63,8 @@ export function ActionTab({ context, priority, rankingState, view, fixture, snap
         <button aria-pressed={view.source === 'priority'} onClick={() => onShowVersion('priority')}>Saran dari urutan prioritas</button>
         <button aria-pressed={view.source === 'session'} onClick={() => onShowVersion('session')}>Hasil analisis ulang{session.receivedAt ? ` · ${session.receivedAt}` : ''}</button>
       </div>}
-      <p className="status-line small" role="status">{running ? 'Analisis ulang sedang berjalan. Saran yang tampil belum berubah.' : session.status === 'received' && view.source === 'priority' ? 'Hasil analisis ulang sudah diterima; pilih versinya di atas untuk melihat.' : ''}</p>
+      </details>
+      <p className="status-line small" role="status">{running ? 'Analisis ulang sedang berjalan. Saran yang tampil belum berubah.' : session.status === 'received' && view.source === 'priority' ? 'Hasil analisis ulang tersedia di Versi & analisis ulang.' : ''}</p>
       {session.status === 'failed' && session.error && <ErrorNotice error={session.error} retry={onAnalyze} subject="Analisis ulang"/>}
     </section>}
   </div>;
@@ -72,7 +73,7 @@ export function ActionTab({ context, priority, rankingState, view, fixture, snap
 export function ReasonsTab({ priority, view, context, onEvidence, onEdge, onShowPath }: { priority: PriorityItem | null; view: View; context: DealContext; onEvidence: OpenEvidence; onEdge: (id: string) => void; onShowPath: (path: EvidencePath) => void }) {
   const r = view.recommendation;
   return <div className="tab-stack">
-    <div className="section-intro"><span className="eyebrow">Dari konteks ke keputusan</span><h3>Periksa alasan di balik saran.</h3><p>Mulai dari percakapan pelanggan, lalu periksa sumber dan hubungan yang mendukungnya.</p></div>
+
     <WhyBlock priority={priority} context={context} rankingState={priority ? 'ready' : 'unavailable'} onEvidence={onEvidence}/>
     {r && view.hasPriority && view.hasSession && <p className="version-note">Bukti dan penjelasan di bawah mengikuti <strong>{view.source === 'session' ? 'hasil analisis ulang' : 'saran dari urutan prioritas'}</strong>.</p>}
     {r && <RecommendationSources ids={r.evidence_ids} context={context} onEvidence={onEvidence}/>}

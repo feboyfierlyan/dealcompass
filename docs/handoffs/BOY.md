@@ -58,6 +58,32 @@ metrik dikembalikan sebagai kartu ringkas; masalah utama tetap diselesaikan deng
 langkah, owner, target, syarat dan satu CTA. Halaman dapat scroll vertikal; tidak mengklaim
 seluruh informasi/CTA muat tanpa scroll di semua ukuran. Status READY_FOR_REVIEW; PR #29.
 
+### Iterasi compact berdasarkan feedback terbaru — Main/Codex, 10 Oktober 01:29 WIB
+
+Iterasi ini menggantikan keputusan tiga kartu metrik/panel bukti di iterasi 00:57 di atas.
+
+- [x] Riset Mobbin MCP: Linear issue detail + flow, Attio company records; tautan,
+  observasi, batas riset dan seluruh perubahan di `frontend/UX_COMPACT_RESEARCH.md`.
+- [x] `Dashboard`: hapus banner panduan permanen dan teks sidebar berulang; refresh ikon,
+  bantuan opsional. `DealWorkspace`: properti inline, tab pendek, intro graph ringkas.
+- [x] `ActionOverview`, `gateLabel`: satu tindakan, owner inline, syarat ringkas tetap
+  terlihat, rincian utuh dapat dibuka. Session tidak mewarisi gate prioritas.
+- [x] `DealTabs`: kontrol versi/analisis dikelompokkan; pending/error tetap terlihat.
+  `AnalysisReport`/`EvidenceBrowser`: daftar sumber ringkas tanpa JSON/ID komposit di preview.
+- [x] `ContextGraph`: legenda garis visual; `FollowUpPlan`: dialog singkat, seluruh syarat
+  dan sumber tetap utuh. Tidak mengubah ranking/API/graph/dependency/backend.
+- [x] 78/78 frontend tests (31 ESM + 47 CJS), build PASS. HTTP regression menggunakan server
+  rules sendiri port 8001; tidak memanggil Jev live untuk pekerjaan redesign ini.
+- [x] Browser desktop 1280×720 dan 1440×900: tanpa overflow horizontal, CTA default P04
+  terlihat tanpa scroll (batas bawah sekitar 620px); kelima deal/gate diperiksa.
+- [x] P02 approval lengkap, sumber I0348 → graph fokus 3 titik/2 relasi; P04 modal dengan
+  consent, Tab/Escape/focus return; pencarian kosong → hapus → hasil pulih.
+- [x] Screenshot `frontend/tests/screenshots/compact-desktop-{1280,1440}.png`.
+- [ ] Uji kegunaan manusia dan copy lintas aplikasi belum diverifikasi; mobile di luar scope.
+
+Fungsi baru: `gateLabel(priority, source, approvals)` menerjemahkan syarat API ke label
+singkat; teks kondisi asli tetap tersedia. Status **READY_FOR_REVIEW**, PR #29 belum merge.
+
 ### Masalah UX utama dan perbaikannya
 
 1. Prioritas tertutup hero, tiga metrik dan kotak ranking; detail deal di bawah lipatan →
@@ -278,12 +304,13 @@ Tidak ada blocker implementasi. Menunggu review Main; tidak merge sendiri.
    lalu buka bukti; catat waktu dan kebingungan. Target 10/30 detik belum diukur.
 3. Setelah review dan CI lulus, integrasikan melalui alur Main; rehearsal 90 detik dan
    submission tetap pekerjaan tim. Tidak ada pekerjaan mobile tambahan untuk tugas ini.
-4. Jev live masih memerlukan akses/key; bukan blocker redesign atau alasan melabeli rules live.
+4. Integrasi Jev live dilanjutkan terpisah pada PR #30; perubahan frontend di sini tidak
+   mengubah integrasi atau ledger tersebut. Riwayat belum-live di atas merujuk run terdahulu.
 
 Catatan pelanjut: pertahankan pendingFocus + useEffect, POST hanya melalui analyze(),
 provenance dan semua gate bisnis. Jangan mengganti saran dengan ringkasan yang membuang syarat.
 
 ## Update WIB
-2026-10-10 00:57 WIB — iterasi Mixpanel desktop READY_FOR_REVIEW pada PR #29. 77/77 frontend,
-build, uji browser terarah; riset Mobbin dan handoff diperbarui. Belum merged/deployed.
+2026-10-10 01:29 WIB — iterasi compact desktop READY_FOR_REVIEW pada PR #29. 78/78 frontend,
+build dan pemeriksaan browser desktop; catatan riset Mobbin diperbarui. Belum merged/deployed.
 Implementasi awal Ical, lanjutan Main; riwayat BOY-04 tetap milik Boy.

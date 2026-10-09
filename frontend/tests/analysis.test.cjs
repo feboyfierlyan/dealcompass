@@ -45,7 +45,7 @@ for (const [id, acceptance] of cases) test(`${id}: real rules response renders i
   // Guided overview precedes the full unmodified proposal; business gates remain accessible and are included in the plan.
   const order=(markup,headings)=>{for(let i=1;i<headings.length;i++) assert.ok(markup.indexOf(headings[i-1])>=0&&markup.indexOf(headings[i-1])<markup.indexOf(headings[i]),`${headings[i-1]} before ${headings[i]}`);};
   const specific=splitUnknowns(r,context).specific;
-  order(action,['Langkah berikutnya','Siapkan tindak lanjut','Baca usulan lengkap dan batasannya','Tindakan yang disarankan',escape(r.action),'Target langkah berikutnya','Lihat alasan &amp; bukti']);
+  order(action,['Langkah berikutnya','Siapkan tindak lanjut','Rincian tindakan','Tindakan yang disarankan',escape(r.action),'Target langkah berikutnya','Lihat alasan &amp; bukti']);
   for(const text of specific) assert.ok(action.includes(escape(text)),`Analysis-specific unknown stays next to the action: ${text.slice(0,60)}`);
   for(const text of r.approvals_needed) assert.ok(action.includes(escape(text)),'Approvals stay in layer 1');
   if(!r.approvals_needed.length) assert.ok(action.includes('Ini tidak berarti tindakan sudah disetujui.'));

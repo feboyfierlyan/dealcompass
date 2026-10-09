@@ -25,9 +25,9 @@ type Tab = 'action' | 'reasons' | 'explore';
 type ExploreView = 'graph' | 'evidence' | 'method' | 'diagnostic' | 'technical';
 type GraphRequest = { target?: GraphTarget; paths?: GraphPath[]; sequence: number };
 const TABS: { id: Tab; label: string; icon: 'target' | 'file' | 'graph' }[] = [
-  { id: 'action', label: 'Saran tindakan', icon: 'target' },
+  { id: 'action', label: 'Tindakan', icon: 'target' },
   { id: 'reasons', label: 'Alasan & bukti', icon: 'file' },
-  { id: 'explore', label: 'Jelajahi data', icon: 'graph' },
+  { id: 'explore', label: 'Peta & data', icon: 'graph' },
 ];
 
 export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, rankTotal = null, rankingState = 'unavailable', methodology = null, diagnosticState, retryDiagnostics, onBack }: {
@@ -148,9 +148,9 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
       </div>
       <div className="tab-panel" role="tabpanel" id={`${ids.panel}-${tab}`} aria-labelledby={`${ids.panel}-tab-${tab}`} tabIndex={-1} aria-busy={loading}>
         {tab === 'action' && <dl className="deal-metrics" aria-label="Ringkasan deal">
-          <div><dt><Icon name="flag" size={15}/>Tahap deal</dt><dd>{shownDeal.stage}</dd><span>Posisi saat ini di pipeline</span></div>
-          <div><dt><Icon name="clock" size={15}/>Waktu di tahap ini</dt><dd>{shownDeal.stage_age_days}<small>hari</small></dd><span>Hingga snapshot data</span></div>
-          <div><dt><Icon name="target" size={15}/>Potensi tahunan</dt><dd>{rupiah(shownDeal.annual_value)}</dd><span>Nilai deal, belum pendapatan</span></div>
+          <div><dt><Icon name="flag" size={15}/>Tahap</dt><dd>{shownDeal.stage}</dd></div>
+          <div><dt><Icon name="clock" size={15}/>Di tahap ini</dt><dd>{shownDeal.stage_age_days}<small>hari</small></dd></div>
+          <div><dt title="Potensi nilai deal per tahun, belum pendapatan"><Icon name="target" size={15}/>Potensi / tahun</dt><dd>{rupiah(shownDeal.annual_value)}</dd></div>
         </dl>}
         {loading && <div className="loading-line" role="status"><span className="spinner"/>Memuat data deal…</div>}
         {contextError && <ErrorNotice error={contextError} retry={() => setRefresh(v => v + 1)} subject="Data deal"/>}
@@ -162,7 +162,7 @@ export function DealWorkspace({ deal, api, fixture, snapshot, priority = null, r
           onEdge={id => showGraph({ target: { kind: 'edge', id } })} onShowPath={path => showGraph({ paths: [path] })}/>}
         {tab === 'explore' && <div className="tab-stack">
           <div className="subnav" role="group" aria-label="Bagian data">{exploreViews.map(item => <button key={item.id} aria-pressed={explore === item.id} onClick={() => setExplore(item.id)}>{item.label}</button>)}</div>
-          {explore === 'graph' && (context ? <section className="explore-panel" aria-labelledby={ids.graph}><div className="section-intro"><span className="eyebrow">CONTEXT GRAPH</span><h3 id={ids.graph} tabIndex={-1}>Peta hubungan</h3><p>Pilih orang, percakapan, atau relasi untuk membaca sumbernya. Garis putus-putus berarti dugaan, bukan fakta terkonfirmasi.</p></div>
+          {explore === 'graph' && (context ? <section className="explore-panel" aria-labelledby={ids.graph}><div className="section-intro"><h3 id={ids.graph} tabIndex={-1}>Peta hubungan</h3></div>
             <ContextGraph key={graphRequest?.sequence ?? 0} initialFocus={graphRequest?.target} initialPaths={graphRequest ? graphRequest.paths : (allPaths.length ? allPaths : undefined)} context={context} selection={selection} onSelect={value => select(value, false)}/></section>
             : !loading && <p className="muted">Peta hubungan tampil setelah data deal tersedia.</p>)}
           {explore === 'evidence' && <EvidenceBrowser records={context?.evidence ?? []} selection={selection} onSelect={value => select(value)}/>}
