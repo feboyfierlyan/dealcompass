@@ -28,3 +28,9 @@ Main mengelola requirements.txt, package manifests dan lockfile. Anggota
 mengusulkan dependency di handoff agar pemasangan lintas branch konsisten.
 Email undangan anggota tidak disimpan di repo; gunakan username GitHub.
 
+
+## D007 — Konteks nyata menjadi acuan integrasi
+9 Oktober 2026, Main. PR #6 merged setelah review. Excerpt row berbentuk JSON,
+relasi mengikuti vocabulary produsen, dan analisis wajib memisahkan akun fokus
+dari akun preseden. Kontrak v1 diperjelas tanpa mengubah schema. PR #5/#7 perlu
+perbaikan sebelum merge; CI unit yang hijau belum membuktikan integrasi bisnis.

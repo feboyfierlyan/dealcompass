@@ -1,31 +1,31 @@
 # Handoff MAIN
 
 ## Task dan status
-MAIN-00: VERIFIED. Repo private, akses kolaborator, tiga branch, tiga issue, kontrak, handoff, CI dan proteksi main tersedia.
+MAIN-01 IN_PROGRESS. Review tiga PR selesai untuk SHA yang dicatat; BIMA-01 MERGED #6. BOY-01 dan ICAL-01 perlu revisi. Aplikasi akhir belum selesai.
 
 ## Branch dan commit
-Fondasi: 76eda95 pada main. Pelaporan hasil: branch integrator/finalize-bootstrap melalui PR; hash PR dapat dilihat di GitHub.
+integrator/team-review-notes dari main 73fb045 (merge Bima). Review gabungan terpisah memakai Boy 2a8d988, Bima c5e8820, Ical 9557c83.
 
 ## File dan fungsi
-Fondasi FastAPI, list_deals, frontend React, kontrak, checker handoff, aturan AI, workflow dan catatan. Koreksi branch Main menjadi integrator/* karena Git tidak dapat membuat main/* saat main sudah ada; checker memetakannya ke handoff MAIN.md.
+Review tersimpan di docs/reviews/2026-10-09-pr5-7.md; checklist, kontrak semantik dan keputusan diperbarui. Tidak mengubah kode anggota pada PR catatan ini.
 
 ## Kontrak dan dependency
-API v1 ditetapkan pada API_CONTRACT.md dan backend/contracts.py. Node/npm serta Python dependencies dicatat dalam manifest.
+Schema v1 tetap. Excerpt row JSON dan vocabulary graph Bima menjadi acuan. Sinyal prospek dipisah dari preseden lintas akun. Environment review terpisah memakai dependency repo; NetworkX 3.7. Tidak ada dependency baru di manifest.
 
 ## Cara menjalankan
-Lihat README.md. python3 -m unittest discover -s tests -v; python3 scripts/check_handoff.py --all; npm --prefix frontend run build.
+README untuk main. Untuk mereproduksi bug, gabungkan ketiga SHA pada checkout terpisah lalu jalankan contoh di dokumen review, tes repo dan frontend/TESTING.md. Jangan mengganti hasil nyata dengan fixture.
 
 ## Pengujian aktual
-10 tes unittest lulus setelah penambahan uji pemetaan branch integrator; validasi empat handoff lulus; TypeScript dan Vite production build lulus. GitHub Actions fondasi 37907339161 juga sukses. Pemeriksaan diff handoff akan berjalan pada PR pelaporan ini.
+Gabungan: 42 unittest backend/handoff lulus; 5 tes kontrak + 7 tes transport frontend lulus; production build lulus. Kelima konteks dianalisis rules menggunakan data asli. Browser memverifikasi P02 menampilkan diskon lintas akun dan graph 1305 node yang tidak terbaca. R5 divalidasi dengan respons numerik string yang keliru diterima adapter. CI masing-masing PR sukses pada SHA review.
 
 ## Fixture dan keterbatasan
-Daftar CRM nyata tersedia; detail/analyze 501, rank null. Belum ada graph, rekomendasi, Jev live, atau uji UI browser.
+Jev live tidak diuji. Evaluasi penuh 20/21 adalah laporan penulis Ical; Main menjalankan kasus inti yang masuk unittest. Ranking belum tersedia. Pada main, kode Boy/Ical belum merged, analyze masih 501. Gabungan lokal bukan deployment resmi.
 
 ## Blocker
-Tidak ada blocker setup. Akses write bimadji dan IXALS terverifikasi. Proteksi main aktif (required verify, PR, strict, enforce admins). Approval reviewer tidak diwajibkan GitHub; review Main merupakan prosedur tim.
+R1 kontaminasi bukti antarakun; R2 format JSON vs CSV; R3 nama/arah relasi; R4 graph tidak terbaca; R5 validasi respons Jev. Detail, baris kode, reproduksi dan acceptance ada pada review.
 
 ## Tugas berikutnya
-Boy mulai issue #1, Bima #2, Ical #3. Sinkronkan main ke branch sendiri. Selanjutnya Main memeriksa P02 end-to-end dan cakupan semua P01-P05; belum ada pekerjaan implementasi anggota yang ditandai selesai.
+BOY-02, ICAL-02, BIMA-02 tercatat di MAIN.md. Boy meneruskan instruksi ke chat anggota. Main review ulang setelah revisi dan mengelola ranking/analysis_status berikutnya.
 
 ## Update WIB
-2026-10-09 15:51 WIB
+2026-10-09 17:10 WIB
