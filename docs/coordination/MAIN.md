@@ -5,14 +5,13 @@ Deadline: 10 Oktober 2026 09.00 WIB. CP2 20.00-22.00, CP3 08.00-09.00.
 
 ## Status produk
 
-PR #6 Bima MERGED (73fb045): ingestion dan konteks P01-P05 tersedia.
-PR #5 Boy MERGED (3b8cc87): frontend dan graph fokus lulus review ulang R4.
-Main memverifikasi 20 tes frontend, 27 tes backend/handoff, production build,
-serta UI kelima deal pada desktop/mobile memakai data asli.
-[Review Boy](../reviews/2026-10-09-pr5-r2.md).
-PR #7 Ical belum merged pada pemeriksaan terakhir: R1-R3/R5 lulus pada 7919550,
-R6/R7 approval masih menunggu revisi. [Review Ical](../reviews/2026-10-09-pr7-r2.md).
-Jev live, ranking, dan integrasi analisis nyata belum selesai. Analyze main masih 501.
+PR Boy #5, Ical #7, dan Bima #10 sudah MERGED. Main pada 41cee67 memiliki
+frontend graph, analisis keputusan rules P01-P05, serta fungsi internal diagnostic Bima.
+Gabungan 99/99 unittest lulus; evaluasi Ical 34/35 (inti 34/34), E15 dikenal terbatas.
+R6/R7 approval sudah diperbaiki dan diverifikasi independen. POST analyze P01-P05
+200 dan smoke browser kelima rekomendasi berhasil. [Review final](../reviews/2026-10-09-pr7-pr10-final.md).
+Jev live, ranking lintas deal, pemetaan analysis_status, API diagnostic dan UX final
+belum selesai. Diagnostic Bima masih internal, belum otomatis tampil di UI.
 Tidak ada komunikasi otomatis antar-chat AI.
 
 ## Checklist tugas
@@ -22,8 +21,10 @@ Tidak ada komunikasi otomatis antar-chat AI.
 | MAIN-00 | Main | VERIFIED | Repo, dataset, kontrak, CI, branch, undangan dan task issues |
 | BOY-01/02 | Boy | MERGED #5; R4 VERIFIED | UI lima deal, detail, graph klik, panel bukti, uji UI dan handoff |
 | BIMA-01 | Bima | MERGED #6 | Ingest seluruh sumber, graph temporal dan konteks P02, API dan handoff |
-| ICAL-01 | Ical | READY_FOR_REVIEW; revisi R6/R7 | Analisis P02, policy gate, adapter Jev, evaluasi dan handoff |
-| MAIN-01 | Main | IN_PROGRESS; ditemukan blocker | Verifikasi satu alur P02 dari frontend sampai keputusan dan sumber |
+| ICAL-01/02 | Ical | MERGED #7; R6/R7 VERIFIED | Analisis rules P01-P05, policy gate, adapter Jev mock/replay dan evaluasi |
+| BIMA-02 | Bima | MERGED #10 | Metrik, diagnosis bersumber dan verifikasi identitas/referensi internal P01-P05 |
+| BOY-03 | Boy | TODO; prompt siap | Penyajian analisis nyata, alur sumber ke graph, status sesi dan demo |
+| MAIN-01 | Main | VERIFIED untuk smoke rules | HTTP dan browser P01-P05 menghasilkan analisis; persiapan demo final lanjut |
 | TEAM-02 | Semua | TODO | Analisis P01-P05 dan ranking lintas deal, bukti terverifikasi |
 | MAIN-02 | Main | TODO | Pertanyaan baru, cross-track, fallback, restart, demo dan submission |
 
@@ -39,8 +40,9 @@ ketika anggota hanya mengatakan selesai.
 | GET /health | Bima | Dasar teruji | tests/test_bootstrap.py |
 | GET /api/deals | Bima | Implementasi dasar | Lima prospek, total Rp667.800.000, umur stage |
 | build_deal_context | Bima | MERGED; P01-P05 teruji | 17 tes Bima dan review konteks nyata |
-| analyze_deal | Ical | PR #7; belum merged | R1-R3/R5 lulus pada 7919550; R6/R7 perlu revisi |
-| GET detail / POST analyze | Bima + Ical | Detail 200; analyze main masih 501 | Review gabungan P02 menemukan R1 |
+| analyze_deal | Ical | MERGED #7 | R1-R3/R5/R6/R7 lulus; evaluasi inti 34/34 |
+| GET detail / POST analyze | Bima + Ical | 200 untuk P01-P05; mode rules teruji | Evidence IDs resolvable; HTTP dan browser sukses |
+| analyze_deal_initial / analyze_pipeline_initial | Bima | MERGED #10; fungsi internal | JSON strict dan setiap excerpt cocok sumber; belum endpoint |
 | frontend/src/main.tsx dan graphView.ts | Boy | MERGED #5; R4 VERIFIED | 20 tes frontend; UI nyata desktop/mobile P01-P05 |
 | scripts/check_handoff.py | Main | Implementasi awal | tests/test_handoff.py |
 
@@ -58,11 +60,11 @@ ketika anggota hanya mengatakan selesai.
 
 ## Tugas sekarang dan dependency
 
-- Boy / BOY-03: BOY-02 selesai dan merged. Sambil menunggu Ical, siapkan checklist demo di frontend/TESTING.md: P01 identitas, P02 harga/approval, P03-P04 referensi, P05 bukti kurang. Setelah Ical merged, uji tampilan action/owner/milestone/approval/preseden dan tautan sumber P01-P05, lalu perbaiki masalah frontend pada branch/PR baru dengan handoff. Rank null tetap belum tersedia sampai Main menyepakati ranking; jangan menanam skor di UI.
-- Ical / ICAL-02: R1-R3/R5 sudah diverifikasi pada 7919550. Revisi PR #7 yang sama untuk R6 (approval deal lain pada akun sama) dan R7 (persentase approval kosong/tidak terbaca). Tambahkan regresi dan perbarui evaluasi/handoff. Detail di review ulang PR #7.
-- Bima / BIMA-02: pertahankan ingestion yang sudah merged; bantu jalur bukti identitas P01 dan kandidat referensi P03/P04. Siapkan temuan anomali bersumber (umur tahap, kelengkapan interaksi, status request vs approval); jangan menganggap outlier hanya dari lima deal beda tahap. Endpoint/schema baru dibahas dengan Main dahulu.
-- Main: kontrak semantik diperjelas di API_CONTRACT.md. Review ulang SHA baru, lalu merge PR yang memenuhi acceptance. Ranking lintas deal dan pemetaan analysis_status tetap tugas bersama berikutnya.
-- Semua: fetch dan sinkron origin/main, isi handoff masing-masing. Ical merevisi PR #7; Boy/Bima memakai branch dan PR baru untuk pekerjaan berikutnya karena PR awal sudah merged. Main belum mengirim pesan ke chat AI lain; Boy meneruskan instruksi ini.
+- Boy / BOY-03: kerjakan [prompt lengkap](../prompts/BOY-03.md) sekarang pada branch baru boy/analysis-demo. Rapikan analisis nyata, telusuri sumber ke graph, bedakan status request sesi dari status bisnis, uji P01-P05 dan siapkan demo. Tidak perlu menunggu endpoint Bima untuk cakupan ini.
+- Bima / BIMA-02: selesai merged #10. Berikutnya koordinasikan bentuk API diagnostic dengan Main, lalu implementasikan endpoint beserta validasi/tes setelah kontrak ditetapkan; jangan mengubah schema bersama sendiri.
+- Ical / ICAL-02: selesai merged #7. Berikutnya koordinasikan ranking transparan lintas deal dan pemakaian verifikasi referensi terbaru Bima dengan Main; Jev live masih perlu uji terpisah. Jangan menyamakan skor heuristik dengan probabilitas closing.
+- Main: prioritas berikutnya menetapkan kontrak diagnostic, ranking lintas deal dan analysis_status; membagikan implementasi setelah acceptance disepakati. Ranking adalah output wajib Deal Acceleration yang belum selesai.
+- Semua: fetch origin/main; PR lama selesai, pekerjaan baru memakai branch/PR baru serta handoff masing-masing. Boy meneruskan prompt ke AI anggota; tidak ada pesan otomatis antar-chat.
 
 ## Integrasi dan akses
 
@@ -90,3 +92,5 @@ UI, ranking dan uji acceptance bisnis tetap belum selesai.
 2026-10-09 17:38 WIB: review ulang Ical 7919550 selesai; 48 tes dan 29 kasus inti lulus. R6/R7 menahan merge; dataset asli P02 tetap meminta approval dengan benar. Main tidak menganggap kasus sintetis sebagai anomali dataset.
 
 2026-10-09 17:53 WIB: PR #5 Boy merged 3b8cc87; R4 ditutup. Graph/bukti dan UI detail P01-P05 dicentang berdasarkan review nyata. Centang UI tidak berarti analisis, ranking, atau keseluruhan acceptance bisnis sudah selesai.
+
+2026-10-09 18:05 WIB: #7/#10 merged. R6/R7 ditutup; 99 tes gabungan dan smoke rules P01-P05 lulus. Coverage uji bisnis final tetap terbuka; kolom UI sebelumnya hanya detail/graph, bukan seluruh acceptance BOY-03.

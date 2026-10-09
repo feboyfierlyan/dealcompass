@@ -13,8 +13,11 @@ Jangan menukar keduanya pada path endpoint.
 - `POST /api/deals/{deal_id}/analyze`: tanpa body, respons `Recommendation`.
 - `POST /api/ask`: fase berikutnya; belum menjadi endpoint v1 dan belum diimplementasikan.
 
-Setelah PR #6, health, daftar deal dan detail graph tersedia di main. Endpoint
-analyze masih 501 sampai implementasi Ical lolos review integrasi. ID tidak dikenal memberi 404.
+Setelah PR #7 dan #10 merged, health, daftar deal, detail graph dan POST analyze
+tersedia di main. Main memverifikasi analyze 200 untuk P01-P05 dalam mode rules.
+ID tidak dikenal memberi 404; analyzer yang tidak tersedia tetap dapat memberi 501.
+Fungsi diagnostic BIMA-02 masih internal; belum ada endpoint initial-analysis.
+analysis_status daftar belum dipetakan ke hasil analisis dan rank masih null.
 Error berbentuk `{detail: {code, message}}`. Jangan mengembalikan 200 berisi
 analisis palsu ketika mesin belum tersedia. Gangguan layanan berikutnya harus
 memakai error yang jelas atau mode fallback yang eksplisit.
