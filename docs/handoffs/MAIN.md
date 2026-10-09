@@ -1,55 +1,42 @@
 # Handoff MAIN
 
 ## Task dan status
-Baseline kesiapan tim ditetapkan sebagai estimasi mentor: tim75/100, Boy70,
-Bima90, Ical85. BOY-04/BIMA-04/ICAL-04 ditugaskan paralel, masih TODO saat snapshot.
-Tidak ada PR terbuka pada pemeriksaan 9Oktober19:36WIB; pekerjaan lokal tidak diketahui.
+BOY-04 VERIFIED/MERGED PR #22. Kesiapan tim81/100, Boy100 pada scope UI,
+Bima90/Ical85. PR Bima#23 terlihat tetapi belum direview.
 
 ## Branch dan commit
-integrator/team-progress-parallel dari main92eb0ce. Penugasan baru tidak mengubah
-branch/kode anggota. Bukti terakhir diterima: #14/#15/#16 merged, R9/R8 verified.
+integrator/review-boy04-notes dari main ea96e23. PR Boy head a392907,
+merge ea96e2300a99b5cf10788ba585757aaf8198cffb. Tidak mengubah kode anggota.
 
 ## File dan fungsi
-TEAM_PROGRESS.md menetapkan bobot/definisi100, progres anggota, dependency dan
-jadwal target. BIMA-04.md/ICAL-04.md berisi scope/acceptance/handoff wajib.
-MAIN.md dan README menghilangkan status lama yang sudah tidak sesuai. Handoff Main
-ini diperbarui. Papan progres percakapan disimpan terpisah dari repo sebagai snapshot.
+Review BOY-04 menyimpan bukti/ruang lingkup/batas pengujian. MAIN dan
+TEAM_PROGRESS mencatat status/inventaris/next, README mengoreksi status UI.
 
 ## Kontrak dan dependency
-Tidak mengubah API/ranking/CI/dependency. Bobot progres adalah alat koordinasi
-internal, bukan rubric resmi atau peluang juara. API/metode dibekukan selama Boy
-mengintegrasikan; Bima/Ical bekerja di area masing-masing dengan PR baru.
-Jev live dipantau terpisah; credential/akses yang belum tersedia tidak menghambat
-rules maupun penyerahan paket evaluasi utama.
+Tidak ada perubahan API/CI/dependency/dataset. P01–P05, snapshot2026-10-01.
 
 ## Cara menjalankan
-Pengguna meneruskan prompt BOY-04/BIMA-04/ICAL-04 ke AI masing-masing. Checkout
-sendiri, sync main, branch/PR baru, WAJIB handoff peran. Main review PR saat siap;
-tidak harus menunggu tiga PR sekaligus. Rehearsal final membutuhkan BOY-04 selesai.
+frontend/TESTING.md memuat perintah dan alur demo. Review mencatat command HTTP
+Main; jalankan backend rules tanpa key. Boy latihan demo; Bima/Ical tetap tugas04.
 
 ## Pengujian aktual
-Perubahan ini dokumentasi saja. Handoff semua peran, ownership branch Main, diff
-checks dan konsistensi penjumlahan bobot dilakukan; CI menjadi gate merge.
-Bukti 144backend/34frontend/build/API200 berasal dari review R8 yang sudah dicatat,
-bukan pengujian ulang pada penugasan ini. Papan progres statis dibaca ulang/struktur
-HTML diperiksa, tanpa klaim pengujian aplikasi atau monitor otomatis.
+Main mengulang52/52 frontend, build, handoff/ownership/diff. Sampling browser nyata
+P01/P02 desktop, P03/P04/P05 mobile; P02 source→graph, P04 refresh, harness error
+isolation/retry. CI PR22 lulus. Perubahan PR catatan ini dokumentasi saja;
+handoff --all, ownership/diff diperiksa, CI wajib sebelum merge.
 
 ## Fixture dan keterbatasan
-Angka baseline merupakan estimasi bobot mentor baru, bukan ukuran objektif yang
-sudah ada. Total tidak berasal dari rata-rata anggota karena demo/pitch/submission
-juga dinilai. Jev live, baseline CRM-only, restart/rehearsal final dan submission
-belum diverifikasi. Nilai persentase tidak boleh digunakan sebagai janji juara.
+HTTP nyata dibedakan dari mock corruption/transport/lifecycle. Smoke lengkap Boy
+ditandai sebagai laporan Boy, bukan semuanya diulang Main. Jev live, runbook final,
+rehearsal dan submission belum terverifikasi. 144backend lokal adalah hasil R8
+historis. Kesiapan berbobot bukan nilai resmi atau probabilitas juara.
 
 ## Blocker
-Tidak ada dependency yang mengharuskan Bima/Ical menunggu Boy untuk tugas baru.
-Kesiapan Jev conditional pada credential/akses resmi; jangan mengarang keberhasilan.
-Acceptance browser final dan rehearsal menyusul integrasi UI BOY-04.
+Tidak ada blocker BOY-04 yang ditemukan. PR Bima#23 menunggu review terpisah.
 
 ## Tugas berikutnya
-Main review setiap PR, perbarui progres berdasarkan bukti, cocokkan paket final
-ke brief panitia. Tim latihan CP2 sesuai slot 20–22WIB, CP3 08–09WIB, deadline
-10Oktober09.00 sesuai pengguna. Jadwal internal di TEAM_PROGRESS bukan perubahan
-jadwal panitia. Tidak ada pesan otomatis ke chat anggota.
+Boy latihan demo3–5menit; Bima runbook, Ical paket evaluasi/mentor. Main review PR
+berikutnya, cocokkan brief dan rehearsal, lalu submission sesuai panitia.
 
 ## Update WIB
-2026-10-09 19:36 WIB (snapshot baseline progres dan status repo)
+2026-10-09 20:28 WIB — review BOY-04 dan snapshot kesiapan.

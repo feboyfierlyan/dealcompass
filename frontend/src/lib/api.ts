@@ -1,5 +1,7 @@
 import { isContext, isDealList, isRecommendation } from './contracts';
 import type { DealContext, DealList, Recommendation } from './contracts';
+import { isPriorities, isPipelineDiagnostic, isDealDiagnostic } from './phase3';
+import type { Priorities, PipelineDiagnostic, Diagnostic } from './phase3';
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); this.name = 'ApiError'; }
@@ -8,6 +10,9 @@ export interface DealApi {
   list(signal: AbortSignal): Promise<DealList>;
   context(id: string, signal: AbortSignal): Promise<DealContext>;
   analyze(id: string, signal: AbortSignal): Promise<Recommendation>;
+  priorities?(signal: AbortSignal): Promise<Priorities>;
+  diagnostics?(signal: AbortSignal): Promise<PipelineDiagnostic>;
+  diagnostic?(id: string, signal: AbortSignal): Promise<Diagnostic>;
 }
 async function request<T>(path: string, signal: AbortSignal, valid: (v: unknown) => v is T, method = 'GET'): Promise<T> {
   const controller = new AbortController();
@@ -34,6 +39,13 @@ async function request<T>(path: string, signal: AbortSignal, valid: (v: unknown)
   }
 }
 export const liveApi: DealApi = {
+  priorities: signal => request('/api/pipeline/priorities', signal, isPriorities),
+  diagnostics: signal => request('/api/pipeline/initial-analysis', signal, isPipelineDiagnostic),
+  diagnostic: async (id, signal) => {
+    const data = await request(`/api/deals/${encodeURIComponent(id)}/initial-analysis`, signal, isDealDiagnostic);
+    if (data.deal_id !== id) throw new ApiError(502, 'Diagnostic yang diterima tidak sesuai deal yang dipilih.');
+    return data;
+  },
   list: signal => request('/api/deals', signal, isDealList),
   context: async (id, signal) => {
     const data = await request(`/api/deals/${encodeURIComponent(id)}`, signal, isContext);
