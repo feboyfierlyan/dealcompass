@@ -1,3 +1,4 @@
+import { englishText, fieldLabel } from '../lib/english';
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { DealContext, Evidence } from '../lib/contracts';
@@ -26,7 +27,7 @@ function SourceGraphLinks({ evidence, context, onGraph }: { evidence: Evidence; 
 export function SourceContent({ evidence }: { evidence: Evidence }) {
   const excerpt = evidenceExcerpt(evidence.excerpt);
   const meta = interactionMeta(evidence);
-  if (meta?.message || !excerpt.structured) return <blockquote>{meta?.message || excerpt.text || 'No excerpt available.'}</blockquote>;
+  if (meta?.message || !excerpt.structured) return <blockquote>{englishText(meta?.message || excerpt.text || 'No excerpt available.')}</blockquote>;
   let data: unknown;
   try { data = JSON.parse(evidence.excerpt); } catch { return <blockquote>{excerpt.text}</blockquote>; }
   if (!data || typeof data !== 'object' || Array.isArray(data)) return <blockquote>{excerpt.text}</blockquote>;
@@ -34,7 +35,7 @@ export function SourceContent({ evidence }: { evidence: Evidence }) {
     contact_id:'Contact ID', account_id:'Account ID', employee_id:'Employee ID', decision_id:'Decision ID', deal_id:'Deal ID',
     tanggal:'Date', alasan:'Reason', keputusan:'Decision', nilai:'Value', tipe:'Type', diputuskan_oleh:'Decided by', diminta_oleh:'Requested by' };
   const value = (v: unknown): string => v === null || v === '' ? 'Not provided' : typeof v === 'object' ? JSON.stringify(v) : String(v);
-  return <dl className="source-fields">{Object.entries(data).map(([key, v]) => <div key={key}><dt>{labels[key] ?? key.replaceAll('_', ' ')}</dt><dd>{value(v)}</dd></div>)}</dl>;
+  return <dl className="source-fields">{Object.entries(data).map(([key, v]) => <div key={key}><dt>{labels[key] ?? fieldLabel(key)}</dt><dd>{englishText(value(v))}</dd></div>)}</dl>;
 }
 export function EvidenceCard({ evidence, context, onGraph, hideTitle = false }: { evidence: Evidence; context: DealContext; onGraph: (target: GraphTarget) => void; hideTitle?: boolean }) {
   const url = sourceUrl(evidence.source_file);
@@ -42,9 +43,9 @@ export function EvidenceCard({ evidence, context, onGraph, hideTitle = false }: 
   const { kind, title } = evidenceTitle(evidence), meta = interactionMeta(evidence);
   return <article className="evidence-card">
     <div className="evidence-card-head"><span className="tag">{kind}</span><span className={`tag ${evidence.evidence_type}`}>{kindLabel[evidence.evidence_type]}</span></div>
-    {!hideTitle && <h4>{title}</h4>}
+    {!hideTitle && <h4>{englishText(title)}</h4>}
     <p className="evidence-date"><Icon name="clock" size={14}/>{dateLabel(evidence.date)}{meta?.from && <span> · from {meta.from}</span>}{meta?.to && <span> · to {meta.to}</span>}</p>
-    <p className="source-language">Original source · original language</p><SourceContent evidence={evidence}/>
+    <p className="source-language">Source record · English translation where available</p><SourceContent evidence={evidence}/>
     <details className="raw-source"><summary>Source details · {evidence.source_id}</summary>
       <dl className="source-details"><div><dt>Source file</dt><dd>{url ? <a href={url} target="_blank" rel="noreferrer">{evidence.source_file}<span className="visually-hidden"> (opens a new tab)</span></a> : evidence.source_file}</dd></div><div><dt>Record ID</dt><dd className="mono">{evidence.source_id}</dd></div><div><dt>Evidence ID</dt><dd className="mono">{evidence.id}</dd></div></dl>
       {excerpt.structured && <><p className="small muted">Original record (JSON)</p><pre>{evidence.excerpt}</pre></>}
@@ -64,7 +65,7 @@ export function EvidenceInspector({ context, selection, titleId, onGraph }: { co
   let title = selection.id, subtitle = '', ids: string[] = [];
   const edge = selection.kind === 'edge' ? context.graph.edges.find(e => e.id === selection.id) ?? null : null;
   const related = selection.kind === 'node' ? context.graph.edges.filter(e => e.source === selection.id || e.target === selection.id) : edge ? [edge] : [];
-  const nodeLabel = (id: string) => { const node = context.graph.nodes.find(n => n.id === id); return node ? nodeName(node, context) : id; };
+  const nodeLabel = (id: string) => { const node = context.graph.nodes.find(n => n.id === id); return node ? englishText(nodeName(node, context)) : id; };
   if (selection.kind === 'evidence') {
     const record = context.evidence.find(e => e.id === selection.id);
     ids = [selection.id];
@@ -77,15 +78,15 @@ export function EvidenceInspector({ context, selection, titleId, onGraph }: { co
   if (selection.kind === 'node') {
     const node = context.graph.nodes.find(n => n.id === selection.id);
     title = node ? nodeName(node, context) : selection.id;
-    subtitle = `${node ? nodeTypeLabel(node.type) : 'Node'} · ${related.length} relasi terkait · ${selection.id}`;
+    subtitle = `${node ? nodeTypeLabel(node.type) : 'Node'} · ${related.length} related relationships · ${selection.id}`;
     ids = related.flatMap(e => e.evidence_ids);
   }
   const resolved = resolveEvidence(ids, context.evidence);
   return <>
-    <h3 id={titleId} tabIndex={-1} className="drawer-title">{title}</h3>
+    <h3 id={titleId} tabIndex={-1} className="drawer-title">{englishText(title)}</h3>
     {subtitle && <p className="muted small">{subtitle}</p>}
     {edge && <div className="edge-meta"><span className={`tag ${edge.evidence_type}`}>{kindLabel[edge.evidence_type]}</span><dl><div><dt>Relationship code</dt><dd className="mono">{edge.relation}</dd></div><div><dt>Original direction</dt><dd className="mono">{edge.source} → {edge.target}</dd></div><div><dt>Valid from</dt><dd>{dateLabel(edge.valid_from)}</dd></div><div><dt>Valid until</dt><dd>{edge.valid_to ? dateLabel(edge.valid_to) : 'Not provided'}</dd></div></dl></div>}
-    {!ids.length && <p className="inline-warning">None yet bukti yang ditautkan{selection.kind === 'node' ? ' pada relasi titik ini' : ''}.</p>}
+    {!ids.length && <p className="inline-warning">No evidence linked{selection.kind === 'node' ? ' to this node’s relationships' : ''}.</p>}
     {!!resolved.missing.length && <p role="status" className="inline-warning">Unverified source IDs: {resolved.missing.join(', ')}.</p>}
     {!!resolved.records.length && <EvidenceStack key={`${selection.kind}:${selection.id}`} records={resolved.records} context={context} onGraph={onGraph} hideTitle={selection.kind === 'evidence'}/>}
     {(resolved.records.some(e => e.evidence_type === 'inferred') || related.some(e => e.evidence_type === 'inferred')) && <p className="drawer-footnote"><Icon name="info" size={15}/><span>Inferred relationships are interpretations, not direct facts. Check the source before acting.</span></p>}

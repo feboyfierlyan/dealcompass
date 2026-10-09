@@ -70,3 +70,11 @@ test('active analysis uses POST /analysis, refresh only when asked, and rejects 
   body = { ...body, deal_id: 'DL-001', recommendation: { ...rec, deal_id: 'DL-001' }, analysis: meta };
   await assert.rejects(liveApi.analysis('DL-002', false, new AbortController().signal), error => error.status === 502);
 });
+
+test('missing local analysis route is not reported as a TypeSafe outage or unknown deal', async t => {
+  t.mock.method(global, 'fetch', async () => response({ detail: 'Not Found' }, 404));
+  await assert.rejects(liveApi.analysis('DL-002', false, new AbortController().signal), e => e.status === 404 && /endpoint is missing/.test(e.message) && /Restart the backend/.test(e.message));
+  t.mock.restoreAll();
+  t.mock.method(global, 'fetch', async () => response({ detail: { code: 'DEAL_NOT_FOUND' } }, 404));
+  await assert.rejects(liveApi.analysis('DL-999', false, new AbortController().signal), e => e.status === 404 && /deal was not found/.test(e.message));
+});

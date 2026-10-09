@@ -1,3 +1,4 @@
+import { englishText } from '../lib/english';
 import { useId } from 'react';
 import { ApiError } from '../lib/api';
 import type { DealContext } from '../lib/contracts';
@@ -27,10 +28,10 @@ export function WhyBlock({ priority, context, rankingState, onEvidence }: { prio
     {priority.priority_kind === 'discovery' && <p className="lead">There is not enough information to assess blockers. Start with discovery. This does not mean the deal is lost or risk-free.</p>}
     {quotes.map(e => {
       const meta = interactionMeta(e), { kind, title } = evidenceTitle(e);
-      return <figure className="quote" key={e.id}><blockquote>{meta?.message ? `“${meta.message}”` : title}</blockquote>
-        <figcaption><span>{kind} · {dateLabel(e.date)}{meta?.from ? ` · from ${meta.from}` : ''}</span><button className="link-button" onClick={() => onEvidence(e.id)}>View source {e.source_id}</button></figcaption></figure>;
+      return <figure className="quote" key={e.id}><blockquote>{meta?.message ? `“${englishText(meta.message)}”` : title}</blockquote>
+        <figcaption><span>{meta?.message && englishText(meta.message) !== meta.message ? 'Translated · ' : ''}{kind} · {dateLabel(e.date)}{meta?.from ? ` · from ${meta.from}` : ''}</span><button className="link-button" onClick={() => onEvidence(e.id)}>View source {e.source_id}</button></figcaption></figure>;
     })}
-    {gate && <p className="gate-line"><Icon name="flag" size={16}/><span>Original priority condition: <strong>{gate}</strong></span></p>}
+    {gate && <p className="gate-line"><Icon name="flag" size={16}/><span>Priority condition: <strong>{englishText(gate)}</strong></span></p>}
   </section>;
 }
 
@@ -55,7 +56,7 @@ export function ActionTab({ context, priority, rankingState, view, fixture, snap
 
     {(r || view.status === 'checking') && <section className="origin" aria-label="Analysis source">
       <p className="status-line small" role="status">{busy && <span className="spinner"/>}{status}</p>
-      {failed && r && <p className="status-line small">Jev unavailable: {view.error!.message} Rules-based recommendation shown.</p>}
+      {failed && r && <p className="status-line small">Analysis service unavailable: {view.error!.message} Rules-based recommendation shown.</p>}
       <details className="analysis-options"><summary><Icon name="history" size={14}/>About this analysis</summary>
         <div className="origin-row">
           <div>{provenance(view).map((line, i) => <p key={i}>{line}</p>)}</div>

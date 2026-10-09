@@ -555,3 +555,54 @@ details.precedent > :not(summary), details.path-card > :not(summary) { margin: 0
 .graph-view-options[open] > .scope-buttons { margin: 10px 0; }
 .graph-view-options > label { margin-bottom: 8px; }
 @media (min-width: 900px) { .tab-panel, .explore-panel h3 { scroll-margin-top: 145px; } }
+
+/* Graph exploration stays next to the canvas, using the same recorded nodes and edges. */
+.graph-explorer { padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper-2); display: grid; gap: 12px; }
+.graph-explorer .graph-disclosure, .graph-explorer .graph-selection { margin: 0; color: var(--muted); font-size: 12px; }
+.graph-explorer .graph-search { grid-template-columns: minmax(220px, 1fr) 190px; }
+.graph-explorer .graph-search label { font-size: 12px; }
+.graph-explorer .graph-search input, .graph-explorer .graph-search select { min-height: 38px; }
+.graph-explorer .graph-actions button { font-size: 12px; min-height: 34px; }
+.graph-explorer .graph-results { max-height: 270px; overflow: auto; }
+.focus-node { transition: opacity 150ms ease; }
+
+/* Explanations: a short overview, then progressively disclosed evidence. */
+.insight-panel { max-width: 880px; padding: 6px 0 0; }
+.insight-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+.insight-heading h3 { margin: 0 0 6px; font-size: 22px; letter-spacing: -.4px; }
+.insight-heading p, .insight-context { color: var(--muted); font-size: 14px; line-height: 1.6; max-width: 66ch; }
+.insight-rank { font-size: 24px; font-weight: 650; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.insight-context { margin-bottom: 18px; }
+.factor-rows, .finding-list { border-top: 1px solid var(--line); }
+.factor-row { border-bottom: 1px solid var(--line); }
+.factor-row > summary { display: grid; grid-template-columns: 150px minmax(0,1fr) 16px; align-items: center; gap: 20px; padding: 17px 10px; cursor: pointer; list-style: none; font-size: 14px; transition: background 150ms ease; }
+.factor-row > summary > span { color: var(--muted); }
+.factor-row > summary strong { font-weight: 550; line-height: 1.5; }
+.factor-row > summary svg, .finding-row > summary > svg { color: var(--muted); transition: transform 160ms ease; }
+.factor-row[open] > summary svg, .finding-row[open] > summary > svg { transform: rotate(90deg); }
+.factor-row > summary:hover, .finding-row > summary:hover { background: var(--paper-2); }
+.factor-explanation { padding: 0 16px 16px 180px; color: var(--ink-2); font-size: 13px; line-height: 1.65; }
+.factor-explanation > p { margin-bottom: 12px; }
+.insight-gate { display: flex; align-items: flex-start; gap: 10px; padding: 18px 10px; font-size: 13px; }
+.insight-gate > svg { flex-shrink: 0; margin-top: 2px; color: var(--muted); }
+.insight-gate small { display: block; margin-top: 4px; color: var(--muted); line-height: 1.5; }
+.insight-details { border-top: 1px solid var(--line); padding: 0; font-size: 13px; }
+.insight-details > summary { padding: 15px 2px; cursor: pointer; color: var(--ink-2); font-weight: 550; }
+.insight-detail-body { padding: 4px 0 20px; display: grid; gap: 16px; line-height: 1.65; }
+.insight-footnote { color: var(--muted); font-size: 12px; padding-top: 14px; }
+.finding-row { border-bottom: 1px solid var(--line); }
+.finding-row > summary { display: flex; align-items: center; gap: 14px; padding: 19px 10px; cursor: pointer; list-style: none; transition: background 150ms ease; }
+.finding-row-title { flex: 1; min-width: 0; display: grid; gap: 5px; }
+.finding-row-title strong { font-size: 15px; font-weight: 600; }
+.finding-row-title small { font-size: 12px; color: var(--muted); }
+.finding-row-icon { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); flex-shrink: 0; }
+.finding-detail { padding: 4px 20px 24px 56px; display: grid; gap: 22px; font-size: 14px; line-height: 1.7; }
+.finding-detail h4 { margin: 0 0 7px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.finding-detail .finding-next { border-left: 2px solid var(--line-strong); padding: 2px 16px; }
+.finding-detail .finding-next h4 { color: var(--ink); }
+.finding-detail .text-list li { padding: 3px 0; border: 0; }
+.finding-detail .tag { margin-left: 6px; }
+.reference-disclosure { margin-top: 20px; }
+.insight-panel + .methodology, .explore-panel > .statistics { max-width: 880px; }
+.factor-row > summary::-webkit-details-marker, .finding-row > summary::-webkit-details-marker { display: none; }
+@media (prefers-reduced-motion: reduce) { .factor-row > summary, .finding-row > summary, .factor-row > summary svg, .finding-row > summary > svg { transition: none; } }

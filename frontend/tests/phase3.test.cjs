@@ -58,13 +58,13 @@ for (const id of ['DL-001','DL-002','DL-003','DL-004','DL-005']) test(`${id} REA
     React.createElement(PriorityFactors,{item,onEvidence:noop}),
     React.createElement(DiagnosticPanel,{data:d,onEvidence:noop})));
   const gate = gateSummary(item);
-  if (gate) assert.ok(action.includes(escape(gate)),'Ranking gate stays in layer 1');
+  if (gate) assert.ok(action.includes(escape(englishText(gate))),'Ranking gate stays in layer 1');
   for (const text of [...item.recommendation.approvals_needed,...splitUnknowns(item.recommendation,joined).specific]) assert.ok(action.includes(escape(englishText(text))),`Layer 1 keeps approval/unknown: ${text.slice(0,60)}`);
   assert.ok(action.indexOf('Next step') < action.indexOf('Owner') && action.indexOf('Owner') < action.indexOf('Prepare follow-up'));
   assert.ok(action.includes('From the priority ranking (rules). The ranking order never changes because of an analysis.'));
   for (const label of ['Status request sesi','GET ranking','POST analisis','Tier acceleration']) assert.ok(!action.includes(label),`No technical label in layer 1: ${label}`);
-  for (const text of [...item.rationale,...item.limitations,item.recommendation.action,item.recommendation.milestone,...item.recommendation.approvals_needed,...item.recommendation.unknowns,...item.recommendation.precedent_comparison,...d.boundaries]) assert.ok(html.includes(escape(text)),text);
-  for (const f of [...d.findings,...d.reference_candidates]) for (const text of [f.fact,f.interpretation,...f.missing_information,...f.follow_up_implication]) assert.ok(html.includes(escape(text)),text);
+  for (const text of [...item.rationale,...item.limitations,item.recommendation.action,item.recommendation.milestone,...item.recommendation.approvals_needed,...item.recommendation.unknowns,...item.recommendation.precedent_comparison,...d.boundaries]) assert.ok(html.includes(escape(text === item.recommendation.action ? text : englishText(text))),text);
+  for (const f of [...d.findings,...d.reference_candidates]) for (const text of [f.fact,f.interpretation,...f.missing_information,...f.follow_up_implication]) assert.ok(html.includes(escape(text === item.recommendation.action ? text : englishText(text))),text);
   const index = indexGraph(joined);
   for (const evidenceId of new Set([...p.evidenceIds(item),...p.evidenceIds(d)])) {
     assert.ok(joined.evidence.some(e => e.id === evidenceId), evidenceId);
@@ -83,7 +83,7 @@ for (const id of ['DL-001','DL-002','DL-003','DL-004','DL-005']) test(`${id} REA
 });
 test('REAL HTTP: not_assessed reason/nulls and graph identity are preserved', () => {
   const html=render(React.createElement(Statistics,{data:diagnostic,onEvidence:()=>{}}));
-  assert.ok(html.includes(escape(diagnostic.statistical_assessment.reason)));
+  assert.ok(html.includes(escape(englishText(diagnostic.statistical_assessment.reason))));
   assert.ok(html.includes('not_assessed')); assert.ok(html.includes('Unknown / unavailable'));
   for(const item of ranking.items) {
     const c=contexts.get(item.deal_id), merged=p.enrichContext(c,item);

@@ -1,0 +1,127 @@
+{
+  "generated_at": "2026-10-09T22:29:04.841559+00:00",
+  "synthetic": true,
+  "scope": "12 synthetic message classifications using the production obstacle prompt",
+  "limitations": [
+    "Developer-labelled diagnostic set, not independent holdout.",
+    "One observation per case; no stability or production accuracy claim.",
+    "E15 rules benchmark remains separate; no closing-time claim."
+  ],
+  "prompt": "Klasifikasikan hambatan penjualan utama yang dinyatakan pesan ini. Pilih bukti_kurang bila pesan tidak cukup jelas.",
+  "criteria": {
+    "harga": "Keberatan harga, tekanan harga kompetitor, atau permintaan diskon.",
+    "pengambil_keputusan": "Pengambil keputusan berubah, belum dilibatkan, atau tidak jelas.",
+    "referensi": "Calon pelanggan meminta referensi atau bukti dari pengguna serupa.",
+    "kebutuhan_produk": "Menyebut kebutuhan fitur/produk tanpa keberatan eksplisit.",
+    "tanpa_hambatan": "Pesan netral/positif tanpa hambatan.",
+    "bukti_kurang": "Pesan tidak cukup jelas untuk menyimpulkan hambatan."
+  },
+  "live": false,
+  "cases": [
+    {
+      "id": "PAR-01",
+      "group": "E15 idiom",
+      "text": "Pak Teddy merasa KasirPro lebih ramah di kantong.",
+      "expected": "harga",
+      "rules": "bukti_kurang",
+      "rules_pass": false
+    },
+    {
+      "id": "PAR-02",
+      "group": "Budget paraphrase",
+      "text": "Biaya langganan ini sulit masuk alokasi dana kami.",
+      "expected": "harga",
+      "rules": "bukti_kurang",
+      "rules_pass": false
+    },
+    {
+      "id": "PAR-03",
+      "group": "Competitor paraphrase",
+      "text": "Paket pesaing lebih terjangkau untuk usaha kami.",
+      "expected": "harga",
+      "rules": "bukti_kurang",
+      "rules_pass": false
+    },
+    {
+      "id": "PAR-04",
+      "group": "Literal price control",
+      "text": "Harganya terlalu mahal dibanding KasirPro.",
+      "expected": "harga",
+      "rules": "harga",
+      "rules_pass": true
+    },
+    {
+      "id": "PAR-05",
+      "group": "Negated price / reference",
+      "text": "Harga sudah cocok, tinggal menunggu referensi pelanggan serupa.",
+      "expected": "referensi",
+      "rules": "referensi",
+      "rules_pass": true
+    },
+    {
+      "id": "PAR-06",
+      "group": "Negated price / authority",
+      "text": "Bukan anggaran yang menghambat. Kami masih menunggu pengambil keputusan yang baru.",
+      "expected": "pengambil_keputusan",
+      "rules": "harga",
+      "rules_pass": false
+    },
+    {
+      "id": "PAR-07",
+      "group": "Positive price control",
+      "text": "Harganya sudah sesuai dan kami tidak punya keberatan. Terima kasih.",
+      "expected": "tanpa_hambatan",
+      "rules": "tanpa_hambatan",
+      "rules_pass": true
+    },
+    {
+      "id": "PAR-08",
+      "group": "Product requirement",
+      "text": "Kami membutuhkan modul apotek untuk sembilan klinik.",
+      "expected": "kebutuhan_produk",
+      "rules": "kebutuhan_produk",
+      "rules_pass": true
+    },
+    {
+      "id": "PAR-09",
+      "group": "Ambiguous message",
+      "text": "Kami masih mempertimbangkannya.",
+      "expected": "bukti_kurang",
+      "rules": "bukti_kurang",
+      "rules_pass": true
+    },
+    {
+      "id": "PAR-10",
+      "group": "Discount request, not approval",
+      "text": "Saya mengusulkan diskon 20%. Mohon keputusan VP Sales; belum ada persetujuan.",
+      "expected": "harga",
+      "rules": "harga",
+      "rules_pass": true
+    },
+    {
+      "id": "PAR-11",
+      "group": "Reference paraphrase",
+      "text": "Bisa pertemukan kami dengan pelanggan yang sudah memakai sistem ini?",
+      "expected": "referensi",
+      "rules": "bukti_kurang",
+      "rules_pass": false
+    },
+    {
+      "id": "PAR-12",
+      "group": "Authority paraphrase",
+      "text": "Saya hanya mengecek teknis; keputusan pembelian ada pada kepala operasional.",
+      "expected": "pengambil_keputusan",
+      "rules": "bukti_kurang",
+      "rules_pass": false
+    }
+  ],
+  "e15_workflow": {
+    "status": "not_run",
+    "reason": "No dataset-derived context transmitted. This run evaluates message classification only."
+  },
+  "summary": {
+    "tested": 12,
+    "rules_pass": 6,
+    "jev_pass": null
+  }
+}

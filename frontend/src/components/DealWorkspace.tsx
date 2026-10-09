@@ -130,7 +130,7 @@ export function DealWorkspace({ deal, api, fixture, snapshot, store = null, prio
   const drawerOpen = !!(selection && context);
   const exploreViews: { id: ExploreView; label: string }[] = [
     { id: 'graph', label: 'Relationships' }, { id: 'evidence', label: `All sources${context ? ` (${context.evidence.length.toLocaleString('en-GB')})` : ''}` },
-    { id: 'method', label: 'Priority methodology' }, { id: 'diagnostic', label: 'Data findings' }, { id: 'technical', label: 'Technical details' },
+    { id: 'method', label: 'Why this priority' }, { id: 'diagnostic', label: 'What to check' }, { id: 'technical', label: 'Technical details' },
   ];
 
   return <div className={`workspace ${drawerOpen && wide ? 'with-drawer' : ''}`}>
@@ -169,7 +169,7 @@ export function DealWorkspace({ deal, api, fixture, snapshot, store = null, prio
           {explore === 'evidence' && <EvidenceBrowser records={context?.evidence ?? []} selection={selection} onSelect={value => select(value)}/>}
           {explore === 'method' && <section className="explore-panel">{joined.validPriority ? <PriorityFactors item={joined.validPriority} onEvidence={id => select({ kind: 'evidence', id })}/> : <p className="muted">Priority factors are not available for this deal.</p>}{methodology && <Methodology data={methodology}/>}</section>}
           {explore === 'diagnostic' && (fixture ? <p className="muted">Findings are unavailable in fixture mode.</p> : <section className="explore-panel" aria-label="Data findings">
-            <div className="row-between"><p className="note">Findings from the pipeline audit. Refresh this deal if needed.</p><button className="button secondary small" disabled={!baseContext || loadingDiagnostic} onClick={() => void diagnosticRequest.run()}><Icon name="refresh" size={15}/>Refresh deal findings</button></div>
+            <div className="row-between"><span className="note">Data findings · {dateLabel(context?.snapshot_date ?? null)}</span><button className="button secondary small" disabled={!baseContext || loadingDiagnostic} onClick={() => void diagnosticRequest.run()}><Icon name="refresh" size={15}/>Refresh</button></div>
             {loadingDiagnostic && <p className="loading-line" role="status"><span className="spinner"/>Loading findings. Your recommendation remains available.</p>}
             {!!localDiagnosticError && <ErrorNotice error={asApiError(localDiagnosticError, 'Invalid findings response.')} retry={() => void diagnosticRequest.run()} subject="Findings"/>}
             {joined.validDiagnostic && !localDiagnosticError && <DiagnosticPanel data={joined.validDiagnostic} onEvidence={id => select({ kind: 'evidence', id })}/>}

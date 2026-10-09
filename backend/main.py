@@ -17,7 +17,7 @@ def deals():
 
 def require_deal(deal_id: str):
     if deal_id not in {d.deal_id for d in list_deals()}:
-        raise HTTPException(404, detail={'code': 'DEAL_NOT_FOUND', 'message': 'Deal tidak ditemukan.'})
+        raise HTTPException(404, detail={'code': 'DEAL_NOT_FOUND', 'message': 'Deal not found.'})
 
 @app.get('/api/deals/{deal_id}', response_model=DealContext)
 def detail(deal_id: str):

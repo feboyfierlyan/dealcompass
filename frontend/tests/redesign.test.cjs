@@ -78,7 +78,7 @@ test('MOCK states: rules stay readable while checking; a failed analysis falls b
   assert.ok(checking.includes('Rules-based recommendation shown while the deal context is checked.'));
   const failedEntry = { status: 'failed', envelope: null, refreshing: false, error: new ApiError(503, 'MOCK 503 for testing.') };
   const fallback = action({ id: 'DL-002', priority: item, context, service: true, entry: failedEntry }).html;
-  assert.ok(fallback.includes('Jev unavailable · rules shown') && fallback.includes('MOCK 503 for testing.'));
+  assert.ok(fallback.includes('Analysis unavailable · rules shown') && fallback.includes('MOCK 503 for testing.'));
   assert.ok(fallback.includes(escape(item.recommendation.action)) && fallback.includes('VP Sales (E01)'));
   const nothing = action({ id: 'DL-002', priority: null, context, rankingState: 'error', service: true, entry: failedEntry }).html;
   assert.ok(nothing.includes('Analysis could not be loaded') && nothing.includes('Refresh analysis') && nothing.includes('Priorities could not be loaded'));
@@ -183,7 +183,7 @@ test('structured evidence reads as source fields; missing is not zero and raw so
   assert.ok(card.includes(escape(record.excerpt)), 'Full raw record remains in source details');
   const message = joined('DL-002').evidence.find(e => e.source_id === 'I0348');
   const quote = render(React.createElement(SourceContent, {evidence:message}));
-  assert.ok(quote.includes(escape(interactionMeta(message).message)));
+  assert.ok(quote.includes(escape(englishText(interactionMeta(message).message))));
 });
 
 

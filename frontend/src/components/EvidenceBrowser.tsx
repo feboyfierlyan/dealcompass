@@ -1,3 +1,4 @@
+import { englishText, fieldLabel } from '../lib/english';
 import { useState } from 'react';
 import type { Evidence } from '../lib/contracts';
 import { dateLabel, kindLabel } from '../lib/format';
@@ -18,7 +19,7 @@ export function EvidenceBrowser({ records, selection, onSelect }: { records: Evi
     <ul className="evidence-rows">{filtered.slice(page * 12, (page + 1) * 12).map(e => {
       const { kind, title } = evidenceTitle(e), active = selection?.kind === 'evidence' && selection.id === e.id;
       return <li key={e.id}><button className={`evidence-row ${active ? 'active' : ''}`} aria-pressed={active} onClick={() => onSelect({ kind: 'evidence', id: e.id })}>
-        <span className="evidence-row-main"><span className="evidence-item-head"><span className="tag">{kind}</span><span className={`tag ${e.evidence_type}`}>{kindLabel[e.evidence_type]}</span><span className="muted small">{dateLabel(e.date)}</span></span><strong>{title}</strong><span className="excerpt-preview">{interactionMeta(e)?.message}</span></span><Icon name="chevron" size={18}/></button></li>;
+        <span className="evidence-row-main"><span className="evidence-item-head"><span className="tag">{kind}</span><span className={`tag ${e.evidence_type}`}>{kindLabel[e.evidence_type]}</span><span className="muted small">{dateLabel(e.date)}</span></span><strong>{englishText(title)}</strong><span className="excerpt-preview">{englishText(interactionMeta(e)?.message ?? '')}</span></span><Icon name="chevron" size={18}/></button></li>;
     })}</ul>
     <div className="pagination"><button disabled={!page} onClick={() => setPage(p => p - 1)}>Previous page</button><span>Page {page + 1} of {pages}</span><button disabled={(page + 1) * 12 >= filtered.length} onClick={() => setPage(p => p + 1)}>Next page</button></div>
   </section>;
