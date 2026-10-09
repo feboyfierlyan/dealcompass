@@ -247,6 +247,7 @@ class AnalysisService:
         self._lock = threading.Lock()
         self._inflight: dict[str, _Flight] = {}
         self._failures: dict[str, tuple[float, dict]] = {}
+        self._failure_lock = threading.Lock()  # separate: _stored() also runs while _lock is held
         self.workflows = 0  # jumlah workflow provider yang benar-benar dijalankan (observasi tes)
 
     def analyze(self, deal_id: str, refresh: bool = False, context: DealContext | None = None,
@@ -271,19 +272,20 @@ class AnalysisService:
                 'provider_requests': 0, 'fallback_reason': None if mode == 'rules' else 'insufficient_evidence'})
 
         if not refresh:
-            hit = self.cache.get(key)
-            if hit is not None:
-                return self._served(hit, 'hit')
-            with self._lock:
-                failed = self._failures.get(key)
-            if failed and failed[0] > self._monotonic():
-                return self._served(failed[1], 'hit')
+            stored = self._stored(key)  # fast path without the service lock
+            if stored is not None:
+                return self._served(stored, 'hit')
 
+        # Leader election and the cache recheck are one atomic step: a workflow that completed between the
+        # fast-path miss and this lock is served from its stored result, never run again.
         with self._lock:
             flight = self._inflight.get(key)
-            leader = flight is None
+            stored = None if refresh or flight is not None else self._stored(key)
+            leader = flight is None and stored is None
             if leader:
                 flight = self._inflight[key] = _Flight(threading.Event())
+        if stored is not None:
+            return self._served(stored, 'hit')
         if not leader:
             if not flight.done.wait(SHARED_WAIT_S):
                 return self._envelope(context, rules_rec, rules_trace, {
@@ -302,6 +304,15 @@ class AnalysisService:
             flight.done.set()
             with self._lock:
                 self._inflight.pop(key, None)
+
+    def _stored(self, key: str) -> dict | None:
+        """Validated result or a still-valid failure for this key. Leaders write both before leaving in-flight."""
+        hit = self.cache.get(key)
+        if hit is not None:
+            return hit
+        with self._failure_lock:
+            failed = self._failures.get(key)
+        return failed[1] if failed and failed[0] > self._monotonic() else None
 
     def _run(self, context, diagnostic, mode, key, base, rules_rec, rules_trace) -> dict:
         self.workflows += 1
@@ -325,7 +336,7 @@ class AnalysisService:
         else:
             result = self._envelope(context, rec, trace, {**meta, 'engine_mode': 'rules',
                                                            'outcome': 'jev_unavailable', 'fallback_reason': reason})
-            with self._lock:
+            with self._failure_lock:
                 self._failures[key] = (self._monotonic() + retry_after_s(), result)
         return result
 
