@@ -8,7 +8,7 @@
 ## Branch dan commit
 Branch baru **`bima/demo-readiness`** dari `origin/main` **`be628d7`** setelah fetch; checkout awal bersih. Branch lama `bima/diagnostics-api` dan pekerjaan lokal dipertahankan. Prompt BIMA-04 dibaca dari fetched main sebelum branch dibuat, lalu koordinasi/TEAM_PROGRESS/kontrak/review/handoff dibaca di checkout terbaru.
 
-Tes dan lifecycle di bawah dijalankan pada base tersebut + perubahan BIMA-04 yang akan dicommit; tidak ada perubahan kode setelah suite final. SHA kode dan receipt PR ditambahkan sesudah publikasi berhasil. Tidak cherry-pick, force push, deploy atau merge sendiri.
+Tes dan lifecycle di bawah dijalankan pada base tersebut + perubahan BIMA-04, kemudian dicommit tanpa perubahan kode sebagai **`5ac6821062f0cfa4a4013ccc3446b391aa705041`**. Branch telah dipush; **[PR baru #23](https://github.com/feboyfierlyan/dealcompass/pull/23)** dibuka 2026-10-09 20:25:41 WIB ke main, reviewer **feboyfierlyan** benar-benar diminta melalui GitHub. Receipt ini commit handoff tersendiri; head aktual tersedia pada PR. Tidak cherry-pick, force push, deploy atau merge sendiri.
 
 ## File dan fungsi
 | File/fungsi | Input → output / tanggung jawab |
@@ -72,7 +72,7 @@ BIMA-04, 2026-10-09 WIB, venv baru + mode rules; bukan klaim hasil Main/Ical:
 
 Cold/warm mengacu pada **cache server**, setiap invokasi CLI tetap proses baru dan memuat sumber lokal untuk validasi. Total checker mencakup validasi canonical/local, bukan murni latency HTTP; wall mencakup startup/import CLI. Health readiness sebelum smoke tidak menghangatkan dataset/graph. Ini observasi lokal satu sampel tiap tahap, bukan benchmark/SLA. Bukti lifecycle selesai **20:14:56 WIB**.
 
-`python scripts/check_handoff.py --all` lulus pada venv dengan PYTHONUTF8=1. Ownership diff dan receipt publication ditambahkan setelah perintah aktual berhasil. UI/browser/mobile/Jev live/submission tidak diuji. Uji transport sintetis tidak disebut bukti HTTP/restart; lifecycle di atas menggunakan API dan ranking Ical asli, bukan mock.
+`python scripts/check_handoff.py --all` dan `python scripts/check_handoff.py --base origin/main --head HEAD --branch bima/demo-readiness` sama-sama lulus pada venv dengan PYTHONUTF8=1. Scope commit lima file milik Bima termasuk handoff; PR #23 terbuka dan reviewer Main diminta, bukan approval. UI/browser/mobile/Jev live/submission tidak diuji. Uji transport sintetis tidak disebut bukti HTTP/restart; lifecycle di atas menggunakan API dan ranking Ical asli, bukan mock.
 
 ## Fixture dan keterbatasan
 Tests CLI memakai response dari produsen nyata tetapi transport/corruption **SYNTHETIC**; tidak membuka socket. Yang membuktikan socket/lifecycle adalah invokasi CLI pada uvicorn proses baru/baru setelah stop, dengan subprocess exit/status/log PID diamati. Checker tidak menghitung ranking lokal; generator fixture tes boleh memanggil engine rules untuk payload test berlabel.
@@ -85,11 +85,11 @@ Runbook/checker ini membuktikan kesiapan backend lokal, bukan kualitas model ran
 Tidak ada blocker backend untuk BIMA-04. Acceptance browser/end-to-end UI ranking/diagnostic dan rehearsal final menunggu pekerjaan Boy/Main; tidak ditunggu untuk menyelesaikan backend. Jev live bukan bukti yang diklaim dan tidak dipanggil untuk pemulihan core rules. Main tetap review/merge dan memperbarui status/progres, bukan Bima.
 
 ## Tugas berikutnya
-1. Bima: commit/push dan PR baru BIMA-04, kirim SHA/runbook/perintah smoke; tanggapi review Main dengan handoff setiap perubahan.
+1. Bima: tanggapi review Main pada PR #23, perbarui handoff setiap perubahan. Branch/runbook/SHA/perintah smoke telah dipublikasikan, tidak menunggu konfirmasi rutin untuk backend.
 2. Main: review source findings/runbook/lifecycle/CLI, hanya Main menetapkan VERIFIED/MERGED dan kredit kesiapan tim.
 3. Boy/Main: jalankan browser end-to-end UI BOY-04 dengan backend rules fresh; backend smoke tidak menggantikan acceptance UI.
 4. Tim: rehearsal 3–5 menit; gunakan temuan source/interpretation/missing untuk menjawab mentor, bukan menganggap rank/ready sebagai approval/consent atau probabilitas closing.
 5. Jangan deploy/merge/membuat key/submission dari pekerjaan ini. Scope akhir P01–P05 dan attribution R8 Ical tetap.
 
 ## Update WIB
-2026-10-09 **20:23:04 WIB** (waktu aktual pemeriksaan handoff/dependency; restart selesai 20:14:56, UTC+07:00). Status BIMA-04 READY_FOR_REVIEW; tidak menetapkan VERIFIED/MERGED sendiri.
+2026-10-09 **20:25:41 WIB** (waktu aktual pembukaan PR/reviewer request; checks 20:23:04, restart selesai 20:14:56, UTC+07:00). Status BIMA-04 READY_FOR_REVIEW; tidak menetapkan VERIFIED/MERGED sendiri.
