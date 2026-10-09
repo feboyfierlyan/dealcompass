@@ -1,42 +1,48 @@
 # Handoff MAIN
 
 ## Task dan status
-BOY-04 VERIFIED/MERGED PR #22. Kesiapan tim81/100, Boy100 pada scope UI,
-Bima90/Ical85. PR Bima#23 terlihat tetapi belum direview.
+BIMA-04 VERIFIED/MERGED #23. Kesiapan tim86/100, Boy100/Bima100 pada scope tugas,
+Ical85. Rehearsal/paket bukti final dan submission belum diverifikasi.
 
 ## Branch dan commit
-integrator/review-boy04-notes dari main ea96e23. PR Boy head a392907,
-merge ea96e2300a99b5cf10788ba585757aaf8198cffb. Tidak mengubah kode anggota.
+integrator/review-bima04-notes dari main2585bb3. Bima awalebe9c78 disinkronkan
+ke head34022b6596472e40b3c8edda2cb0f8e379751389 tanpa perubahan kode miliknya.
+Merge2585bb34ee9bb161394014ded392e1ec1a00d17a. Catatan ini tidak mengubah produk.
 
 ## File dan fungsi
-Review BOY-04 menyimpan bukti/ruang lingkup/batas pengujian. MAIN dan
-TEAM_PROGRESS mencatat status/inventaris/next, README mengoreksi status UI.
+Review BIMA-04 mencatat suite164, setup bersih, lifecycle dan verifikasi temuan.
+MAIN/TEAM_PROGRESS memperbarui tugas/inventaris/kredit, README menautkan runbook
+dan fenomena data. Handoff ini diperbarui untuk audit Main.
 
 ## Kontrak dan dependency
-Tidak ada perubahan API/CI/dependency/dataset. P01–P05, snapshot2026-10-01.
+Tidak mengubah API/metode/CI/dependency/dataset. Scope P01–P05, snapshot2026-10-01.
+Revisi R8 milik Ical; tidak diatribusikan ulang kepada Bima.
 
 ## Cara menjalankan
-frontend/TESTING.md memuat perintah dan alur demo. Review mencatat command HTTP
-Main; jalankan backend rules tanpa key. Boy latihan demo; Bima/Ical tetap tugas04.
+Ikuti backend/api/DEMO_RUNBOOK.md. Checker python -m backend.api.smoke_demo
+--base-url http://127.0.0.1:8000 --timeout 30.
+Jalankan backend rules sendiri; stop/restart hanya proses sendiri.
 
 ## Pengujian aktual
-Main mengulang52/52 frontend, build, handoff/ownership/diff. Sampling browser nyata
-P01/P02 desktop, P03/P04/P05 mobile; P02 source→graph, P04 refresh, harness error
-isolation/retry. CI PR22 lulus. Perubahan PR catatan ini dokumentasi saja;
-handoff --all, ownership/diff diperiksa, CI wajib sebelum merge.
+Main164/164backend PASS48.822s; CI head34022b6 PASS. Setup requirements venv
+bersih dan pip check PASS; empat smoke15/15 pada PID50659→50776, saat mati exit1.
+Handoff --all/ownership/diff PASS. Row asli/producer cocok dengan DATA_FINDINGS.
+Catatan docs ini diuji handoff/ownership/diff dan CI required sebelum merge.
 
 ## Fixture dan keterbatasan
-HTTP nyata dibedakan dari mock corruption/transport/lifecycle. Smoke lengkap Boy
-ditandai sebagai laporan Boy, bukan semuanya diulang Main. Jev live, runbook final,
-rehearsal dan submission belum terverifikasi. 144backend lokal adalah hasil R8
-historis. Kesiapan berbobot bukan nilai resmi atau probabilitas juara.
+20 tes baru transport/corruption sintetis terpisah dari socket/restart nyata.
+Suite lokal memakai venv review lama; konflik paket eksternal ditemukan saat
+pip check sehingga setup+restart diulang di venv bersih, lulus. CI juga lulus.
+Frontend52 tes/browser adalah review BOY-04 sebelumnya, tidak diulang kali ini.
+Tidak mengklaim Jev live, deployment, rehearsal tim atau submission.
 
 ## Blocker
-Tidak ada blocker BOY-04 yang ditemukan. PR Bima#23 menunggu review terpisah.
+Tidak ada blocker BIMA-04. Paket ICAL-04 dan latihan/paket penyerahan masih perlu
+verifikasi; kesiapan86 adalah bobot internal, bukan peluang juara.
 
 ## Tugas berikutnya
-Boy latihan demo3–5menit; Bima runbook, Ical paket evaluasi/mentor. Main review PR
-berikutnya, cocokkan brief dan rehearsal, lalu submission sesuai panitia.
+Boy demo3–5menit, Bima startup/recovery dan penjelasan sumber, Ical paket evaluasi/
+mentor ICAL-04. Main review paket Ical, periksa brief dan rehearsal lalu submission.
 
 ## Update WIB
-2026-10-09 20:28 WIB — review BOY-04 dan snapshot kesiapan.
+2026-10-09 20:43 WIB — review BIMA-04 dan progres berbobot.
