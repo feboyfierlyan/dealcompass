@@ -1,46 +1,60 @@
 # Handoff MAIN
 
 ## Task dan status
-ICAL-04 VERIFIED/MERGED #26. Tim92/100, Boy100/Bima100/Ical95; kredit rehearsal
-belum diberikan. Koreksi dokumentasi demo Main menyertai review.
+MAIN-JEV-LIVE: implementasi dan tes lokal VERIFIED; PR/CI menyusul. Provider live
+BLOCKED: pengguna mengonfirmasi belum punya akses/API key TypeSafe. Tidak ada
+request provider nyata. Status bonus terpisah dari kesiapan inti92/100.
 
 ## Branch dan commit
-integrator/review-ical04-notes dari maina635ccc. Head Icalf95b34b setelah update
-branch, mergea635ccc7b24d8efd249df8fdbbae99087445f0a9. Evaluation tidak berubah
-pada update dari1fcbab7; Main hanya menambahkan koreksi prosa, bukan formula.
+integrator/jev-live dari main2f1a79b6a799ef8bffb5290de9402c0f73223d08. Main
+mengerjakan aktivasi Jev atas instruksi langsung pengguna. Repo tidak memiliki
+PR terbuka lain saat pemeriksaan sebelum pengiriman perubahan.
 
 ## File dan fungsi
-Review ICAL-04 mencatat174tes,34/35decision,15/15ranking dan baseline identik.
-MENTOR_BRIEF/DEMO_CLAIMS: arah edge P01, urutan baca dua sumber P02, harga pilot,
-field baseline dan status UI diperjelas. MAIN/TEAM_PROGRESS/README diperbarui.
+backend/integrations/jev_live.py: loader .env eksplisit, konfigurasi endpoint resmi,
+check tanpa network, smoke satu request Choice/Score/Noul, analyze P02 dengan
+invariant/policy checks, serve loopback dan receipt metadata aman.
+backend/decision/analyze.py: nol request baru tidak boleh berlabel Jev; trace hanya
+mencatat panggilan analisis saat ini meski client dipakai ulang. JEV_LIVE.md,
+.env.example, README, koordinasi Main dan14tes baru melengkapi perubahan.
 
 ## Kontrak dan dependency
-API/backend/metode/dataset/dependency tidak berubah. Snapshot2026-10-01,
-P01–P05; baseline sengaja terbatas dan bukan ukuran seluruh produk CRM.
+Kontrak APIv1, ranking, formula, policy approval dan dataset tidak berubah.
+Tidak ada dependency baru. Base URL launcher dibatasi endpoint resmi TypeSafe.
+Env budget launcher maksimal15detik untuk UI timeout20detik; batas per operasi
+HTTP bukan jaminan waktu dinding mutlak. Key hanya backend/env, tidak dicommit.
 
 ## Cara menjalankan
-python -m evaluation.run_eval --no-write; python -m evaluation.baseline_crm
---no-write. Gunakan runbook Bima untuk start backend rules dan UI Boy.
+Dari root repo terbaru dengan requirements terpasang:
+python -m backend.integrations.jev_live --env-file .env check
+Lalu smoke, analyze --deal DL-002 dan serve --port 8000. Panduan lengkap: backend/integrations/JEV_LIVE.md. Backend/frontend
+Boy yang sedang berjalan tidak dihentikan atau diganti pada pekerjaan ini.
 
 ## Pengujian aktual
-Main174/174tests50.117s pada venv bersih. Run evaluasi/baseline dibandingkan
-JSON tersimpan: identik kecuali timestamp/durasi. E15 tetap gagal; inti34/34.
-CI PR26 PASS. Handoff/ownership/diff PASS. Panah diperiksa terhadap graph asli;
-harga skenario/preseden diperiksa producer/row asli. PR docs diuji checks danCI.
+Main menjalankan188/188 unittest PASS dalam38.069detik pada venv bersih yang
+dipakai review BIMA-04. Empat belas tes baru memakai MockTransport, tanpa
+provider: missing key/endpoint/timeout/env, format dan semantik respons, receipt,
+P02 approval pending/fallback dan P05 nol request termasuk client reuse.
+Pengecekan lokal9Oktober21:15WIB: BLOCKED missing_key, request_count0, exit1.
+Git diff --check PASS. Handoff/CI diverifikasi saat pengiriman PR.
 
 ## Fixture dan keterbatasan
-Decision dataset7/7,sintetis16/17,mock9/9,replay2/2; ranking asli5/5,mutasi10/10.
-Tidak ada Jev live/holdout/labelclosing/uplift. Unit suite174PASS tidak berarti
-benchmark35/35. Browser/lifecycle merujuk review Boy/Bima sebelumnya, tidak diulang.
+Semua respons Jev pada tes baru adalah MOCK, bukan akses provider. Belum ada
+latency/token usage provider nyata atau verifikasi browser mode live. Adapter
+dasar telah ada; perubahan ini menyiapkan aktivasi dan pembuktian yang eksplisit.
+Benchmark sebelumnya34/35 denganE15known limitation tidak diklaim menjadi35/35.
+P05 tidak punya pertanyaan eligible sehingga rules/insufficient_evidence benar.
 
 ## Blocker
-Tidak ada blocker paket ICAL-04. Jev live BLOCKED khusus bonus menurut handoff
-Ical; tidak menghambat rules. Rehearsal dan penyerahan belum terverifikasi.
+Pengguna belum punya akses/key TypeSafe. Perlu panitia atau console.typesafe.ai.
+Tidak ada pembelian/pendaftaran otomatis, dan tidak meminta key dikirim ke chat.
+File .env lokal ignored tersedia di checkout utama untuk diisi melalui editor.
 
 ## Tugas berikutnya
-Tim latihan3–5menit: Boy produk, Bima data/startup, Ical alasan/policy/batas.
-Main verifikasi latihan, cocokkan brief dan paket penyerahan. Jangan ubah ranking
-agar berbeda dari baseline atau mengklaim probabilitas closing.
+Boy memperoleh key lalu mengisi.env lokal. Main menjalankan smoke satu request;
+jika PASS, uji P02 lengkap dan browser sebelum menyatakan Jev live VERIFIED.
+Bima menjaga backend yang dipakai UI port8000, Ical memeriksa makna/policy hasil
+live. Tidak ada pesan otomatis ke anggota. Rehearsal/submission inti tetap lanjut.
 
 ## Update WIB
-2026-10-09 20:57 WIB — review ICAL-04 dan koreksi dokumen Main.
+2026-10-09 21:16 WIB — implementasi diuji lokal; live menunggu kredensial.

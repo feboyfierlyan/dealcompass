@@ -52,6 +52,9 @@ Frontend memakai proxy `/api` Vite. `.env.example` berisi nama konfigurasi;
 adapter Jev membaca secret dari lingkungan backend; gunakan DEALCOMPASS_ENGINE_MODE=rules
 untuk demo rules tanpa key. Jangan memasukkan secret ke frontend atau repo.
 
+Aktivasi dan pembuktian Jev: [panduan Jev Live](backend/integrations/JEV_LIVE.md).
+API key tim belum tersedia; implementasi teruji mock belum membuktikan provider live.
+
 ## Verifikasi
 
 ```bash
