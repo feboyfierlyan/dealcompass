@@ -1,85 +1,89 @@
 # Handoff ICAL
 
 ## Task dan status
-ICAL-03 (ranking prioritas, `docs/prompts/ICAL-03.md`, kontrak `docs/coordination/PHASE3_CONTRACT.md`): **READY_FOR_REVIEW**. Main yang memverifikasi dan merge; Ical tidak merge sendiri.
-- [x] `backend/decision/ranking.py:rank_deals(contexts, diagnostics) -> dict` sesuai signature dan envelope kontrak fase 3 (schema_version, snapshot_date, engine_mode `rules`, methodology + weights, items, limitations).
-- [x] Kelima deal nyata P01–P05 dibandingkan dengan metode deterministik `deal-priority-heuristic-v1`; faktor, bobot, tie-break, tradeoff dan sensitivitas dijelaskan (output + `evaluation/ranking.md`). Tidak ada daftar ID atau urutan hardcoded; tidak memakai nominal saja.
-- [x] Tiap item memuat rank 1..N, priority_kind, analysis_status (dari trace rules), rationale pembandingan, factors bersumber, Recommendation v1 (`engine_mode='rules'`), approval/gate, evidence lengkap dan evidence_paths dari edge asli graph konteks.
-- [x] P05 = discovery + insufficient_evidence + tindakan discovery; dinyatakan bukan peluang buruk/kalah/risiko rendah. Rank bukan probabilitas closing.
-- [x] Referensi P03/P04 diselaraskan dengan verifikasi BIMA-02 (lihat File dan fungsi). Kandidat dan overlap kerja bukan izin/saling kenal.
-- [x] Regresi approval R1–R3/R5/R6/R7 tetap lulus; gate approval diuji terpisah dari rank (nilai besar, R6, R7, kontrol sah).
-- [x] Tes: input diacak, tie, ID ditukar, nilai besar dengan bukti kurang, faktor berubah, missing data, input invalid, evidence/path, tanpa Jev, lima deal nyata.
-- [ ] Jev live: BELUM DIUJI. Ranking tidak memakai Jev (sesuai kontrak).
-- [ ] Integrasi HTTP `GET /api/pipeline/priorities`: milik Bima (BIMA-03); belum diuji bersama dari sisi Ical.
+ICAL-04 (pembuktian metode dan paket penjelasan mentor, `docs/prompts/ICAL-04.md`): **READY_FOR_REVIEW**. Main memutuskan VERIFIED/MERGED.
+- [x] `evaluation/MENTOR_BRIEF.md`: masalah bisnis, kenapa CRM saja belum cukup, graph sebagai alasan/riwayat, arti ranking, tindakan P01–P05, jawaban P04>P01, P02 bukan otomatis pertama, P05 discovery, batas bobot, business anomaly vs statistical outlier. Semua ID dari output aktual.
+- [x] Pembanding CRM-only vs graph+rules (`evaluation/baseline_crm.py`, hasil `evaluation/results/baseline_latest.{json,md}`), lima deal kanonis yang sama, faktor yang sengaja tidak dipakai didokumentasikan.
+- [x] Evaluasi decision/ranking dijalankan ulang di atas main `be628d7`; semua kasus dilaporkan termasuk E15 gagal; kasus dipisah dataset asli / sintetis / mock Jev / replay mock.
+- [x] `evaluation/DEMO_CLAIMS.md`: matriks klaim → bukti → batas, klaim terlarang, dampak bisnis sebagai hipotesis, skrip demo 3–5 menit, tanya jawab.
+- [x] Smoke HTTP rules lokal (lihat Pengujian aktual).
+- [ ] Jev live: **BLOCKED** (lihat Blocker). Tidak menghambat empat deliverable utama.
+- Formula ranking, kontrak dan Recommendation v1 **tidak diubah** (freeze selama BOY-04).
 
-Riwayat: ICAL-01/02 merged di PR #7 (`cef7e7c`), R6/R7 VERIFIED Main pada `3e90711`.
+Riwayat: ICAL-01/02 merged #7; ICAL-03 merged #15; revisi R8 pada #16 merged 8581de8 (VERIFIED).
 
 ## Branch dan commit
-Branch `ical/priority-ranking` dibuat dari `origin/main` `712acf9` (berisi kontrak fase 3 dan BIMA-02 merged). Checkout lokal bersih sebelum mulai; branch lama `ical/decision-jev` tidak punya commit yang belum masuk main. Commit kode ICAL-03 dibuat bersama catatan ini; hash dicantumkan di PR baru (bukan PR #7).
+Branch `ical/evidence-demo-pack` dari `origin/main` `be628d7` (berisi #14/#15/#16/#20/#21). Pekerjaan disusun di sesi Claude cloud; push dari sesi itu ditolak GitHub (403, akses integrasi), sehingga commit dipindahkan ke checkout lokal Ical lewat `git am` dan di-push dari sana. Ownership dicek dengan `scripts/check_handoff.py --branch ical/evidence-demo-pack` (valid). Hash commit dicantumkan di PR/laporan, bukan di sini.
+Saat dipasang di laptop Ical, `origin/main` sudah maju ke `2585bb3` (berisi #23 Bima); `git am --3way` bersih tanpa konflik.
 
 ## File dan fungsi
-- `backend/decision/ranking.py` (baru)
-  - `rank_deals(contexts: list[DealContext], diagnostics: list[dict]) -> dict`. Input: DealContext (atau dict valid) dan laporan `analyze_deal_initial` Bima, dipasangkan per `deal_id`. Output: envelope kontrak fase 3, JSON strict (`allow_nan=False`).
-  - Validasi `ValueError`: list kosong/bukan list, deal_id duplikat, set deal berbeda, snapshot campuran/selain 2026-10-01, account_id diagnostic ≠ konteks, evidence ID sama isi berbeda (registry union context+diagnostic), evidence dirujuk tak ter-resolve, diagnostic tanpa deal_id.
-  - `path_is_valid(graph, path)`: setiap pasangan node berurutan dihubungkan edge asli yang disebut (arah edge tidak diubah; boleh dilalui berlawanan), bukti path ⊆ bukti edge.
-  - Jalur yang dibangun (BFS deterministik, relasi dibatasi): deal→akun→interaksi hambatan; permintaan→email→VP Sales; deal→keputusan preseden (`candidate_precedent_*`)→deal preseden; deal→akun→kontak pengambil keputusan→akun sebelumnya→keputusan→fitur; deal→kandidat referensi (`related_account_*`); permintaan→fitur→usage bulan lengkap→kandidat; akun→kontak→kontak overlap→kandidat.
-- `backend/decision/analyze.py`
-  - `analyze_deal_trace(context, mode=None, client=None, diagnostic=None)`: parameter baru opsional `diagnostic` (laporan Bima deal yang sama; deal_id beda → ValueError). `analyze_deal(context)` dan Recommendation v1 tidak berubah.
-  - Referensi (`_reference_candidates`, `_reference`): kandidat dari `related_account_*`; tidak lagi menolak berdasarkan health dashboard saja. Catatan material (tiket bug/prioritas Tinggi terbuka, komitmen terbuka, usage 0 bulan lengkap terakhir) → dicek belakangan; catatan minor (health non-Hijau sebagai indikator CRM, industri berbeda, tiket non-bug terbuka, usage missing) → tetap dicek. Status `cek_pertama`/`cadangan`/`cek_dengan_catatan` = urutan pemeriksaan AM, bukan kelayakan. Usage = bulan lengkap terakhir (2026-09), recorded/zero/missing dibedakan; dengan diagnostic dicocokkan ke `feature_usage` Bima (Bima menang bila beda, dicatat). Overlap dari `work_overlap_paths` Bima, `acquaintance_confirmed` null. `suitability`/`reference_willingness`/`contact_consent` diteruskan null → unknown.
-  - Pengambil keputusan: bila diagnostic ada, dicek terhadap `authority_contact_id` Bima (P01: sama, K017, tetap inferred). Harga: ringkasan `decision_lookup` Bima ditampilkan (P02: 0 log fokus).
-- `evaluation/ranking_cases.py` (baru): 15 kasus ranking + helper (`real_inputs`, `swap_ids`, `clone_deal`, `set_isi`, `contract_violations`, `sensitivity_table`).
-- `evaluation/ranking.md` (baru): metode, bobot, tie-break, tradeoff, hasil, sensitivitas, keterbatasan.
-- `evaluation/run_eval.py`: menulis juga `results/ranking_latest.{json,md}`. `evaluation/cases.py`: E29/E30 disesuaikan ke perilaku referensi baru. `evaluation/README.md` diperbarui.
-- `tests/ical/test_ranking.py` (baru, 9 tes); `tests/ical/test_decision.py` (status referensi baru, izin null).
+- `evaluation/baseline_crm.py` (baru)
+  - `rank_crm(rows: list[DealSummary], baseline='stage_value') -> list[dict]`: baseline CRM-only. Hanya membaca baris `list_deals()` (tahap, nilai, umur tahap, owner). Baseline: `stage_value` (utama: tahap lalu nilai), `value_only`, `stage_age` (paling lama di tahap). Tindakan = template generik per tahap (`GENERIC_ACTION`) buatan Ical; `approval_visible`/`obstacle_visible` = None.
+  - `graph_rules(deal_ids) -> (envelope, obstacles)`: `rank_deals` production di atas `build_deal_context` + `analyze_deal_initial` nyata; `main_obstacle` dari `analyze_deal_trace(mode='rules')`.
+  - `compare(rows, envelope, obstacles) -> dict`: per deal rank CRM vs G+R, tindakan, hambatan + bukti, gate, approval, preseden, jumlah bukti/path, file sumber tambahan; ringkasan dan `limits`. `same_order_as_graph_rules` dihitung, bukan diklaim.
+  - `run()`, `to_markdown()`, CLI `python -m evaluation.baseline_crm [--no-write]`.
+- `evaluation/run_eval.py`: `decision_source(case)`, `ranking_source(case)`, `by_source(rows)`; field `source` per kasus dan tabel per sumber di markdown; kalimat "bukan holdout independen". Hitungan dan pemeriksaan kasus tidak berubah.
+- `evaluation/MENTOR_BRIEF.md`, `evaluation/DEMO_CLAIMS.md` (baru); `evaluation/README.md` diperbarui.
+- `evaluation/results/*`: dihasilkan ulang (latest, ranking_latest, baseline_latest).
+- `tests/ical/test_baseline.py` (8 tes), `tests/ical/test_eval_sources.py` (2 tes).
+- Tidak ada perubahan di `backend/decision/`, `backend/integrations/`, kontrak, route, frontend, dataset.
 
-### Metode ranking (ringkas)
-Tier: `ready` → acceleration (diskor), `insufficient_evidence` → discovery (setelah acceleration, tanpa skor). Skor acceleration 0–10 = tahap (Lead 0 … Negosiasi 4) + nilai potensi (≥200jt 3, ≥100jt 2, ≥50jt 1) + hambatan dinyatakan pelanggan (tunda/syarat 2, hambatan 1, internal saja 0) + preseden relevan (0/1). Tie-break: hambatan pelanggan, tahap, nilai, deal_id (determinisme saja). Konteks tidak dihitung: umur tahap, interaksi eksternal terakhir, gate approval/izin. Unknown = 0 poin + dicatat, termasuk kemungkinan naik rank.
+### Hasil pembanding (aktual)
+| Metode | Urutan |
+|---|---|
+| graph+rules | DL-004 > DL-001 > DL-002 > DL-003 > DL-005 |
+| CRM tahap lalu nilai (utama) | DL-004 > DL-001 > DL-002 > DL-003 > DL-005 (**sama**) |
+| CRM nilai saja | DL-001 > DL-005 > DL-004 > DL-002 > DL-003 |
+| CRM paling lama di tahap | DL-002 > DL-004 > DL-001 > DL-003 > DL-005 |
 
-Hasil aktual (graph + diagnostic nyata): 1 DL-004/P04 (8), 2 DL-001/P01 (8, kalah tie-break hambatan pelanggan 1 vs 2), 3 DL-002/P02 (5, gate VP Sales E01 untuk diskon 20% I0348), 4 DL-003/P03 (2), 5 DL-005/P05 (discovery). Sensitivitas: tanpa tahap, tanpa hambatan pelanggan, atau nilai ×2 → P01 menjadi rank 1; rank 3–5 stabil di semua variasi.
+Perbedaan graph+rules vs baseline utama: hambatan bersumber 4/5 deal (I0335, I0343, I0296+I0348, I0334; P05 tidak ada), gate approval VP Sales 1 (DL-002) vs 0, jumlah bukti CRM 2 → G+R 10/9/15/23/2 (P04/P01/P02/P03/P05), sumber tambahan pada DL-004/001/002/003; P05 tidak mendapat sumber tambahan.
 
 ## Kontrak dan dependency
-Kontrak v1 dan `PHASE3_CONTRACT.md` diikuti; `backend/contracts.py`, route, graph Bima, frontend, CI, manifest dan dataset tidak diubah. Tidak ada dependency baru. Fungsi Ical memakai produsen Bima (`build_deal_context`, `analyze_deal_initial`) hanya lewat input; tes memakai keduanya untuk data nyata.
-Catatan integrasi untuk Bima/Main:
-- Item hanya memuat field wajib kontrak (tanpa field tambahan); skor ada di factor `skor_prioritas` dan bobot di `methodology.weights`.
-- Registry bukti ketat: record dengan ID sama tetapi isi beda antara context dan diagnostic → ValueError (adapter sebaiknya memetakan ke 503 PRIORITIES_UNAVAILABLE). Pada data nyata tidak ada konflik.
-- Usulan (belum diterapkan): tampilkan `priority_kind` dan gate di UI terpisah dari rank; `analysis_status` daftar lama tetap tidak diubah sepihak.
+Kontrak v1 dan `PHASE3_CONTRACT.md` diikuti tanpa perubahan. Baseline memakai `backend.ingestion.deals.list_deals` (Bima) dan produsen konteks/diagnostic Bima hanya lewat import; tidak ada ingest duplikat. Tidak ada dependency baru. Tidak ada permintaan perubahan kontrak.
+Catatan untuk Main/Boy: bila UI menampilkan pembanding, sumber datanya `evaluation/results/baseline_latest.json` (offline, bukan endpoint). Tidak ada usulan endpoint baru selama freeze.
 
 ## Cara menjalankan
 ```bash
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
 python -m evaluation.run_eval
-python -c "import json; from backend.graph.context import build_deal_context as b; from backend.graph.analysis import analyze_deal_initial as a; from backend.decision.ranking import rank_deals; c=[b(f'DL-00{i}') for i in range(1,6)]; print(json.dumps(rank_deals(c,[a(x) for x in c]), ensure_ascii=False, indent=2)[:3000])"
+python -m evaluation.baseline_crm
+# demo rules (tanpa key):
+DEALCOMPASS_ENGINE_MODE=rules python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+curl -s http://127.0.0.1:8000/api/pipeline/priorities | python -m json.tool | head -60
+cd frontend && npm ci && npm run dev
 ```
-Windows: set `PYTHONUTF8=1` untuk `scripts/check_handoff.py --all` (decode cp1252; CI Linux tidak terdampak). Tidak ada env tambahan untuk ranking; ranking selalu rules.
+Env: `DEALCOMPASS_ENGINE_MODE` (rules/jev/replay/auto), `TYPESAFE_API_KEY`, `TYPESAFE_MODEL`, `TYPESAFE_BASE_URL`, `TYPESAFE_TIMEOUT_S`, `DEALCOMPASS_REPLAY_DIR`, `DEALCOMPASS_RECORD_DIR` (nama saja; tidak ada nilai di repo). Windows: `PYTHONUTF8=1` untuk `check_handoff.py`.
 
 ## Pengujian aktual
-2026-10-09 ±18:40 WIB, Windows, Python 3.11.9 (CI Python 3.12 berjalan saat PR dibuka):
-- `DEALCOMPASS_ENGINE_MODE=rules python -m unittest discover -s tests` → `Ran 108 tests, OK` (Bima 65, Ical 33 = decision 24 + ranking 9, bootstrap/handoff 10). Diulang tanpa env mode → `Ran 108 tests, OK`.
-- `python -m evaluation.run_eval` → decision 34/35 (inti 34/34; E15 batas parafrase diketahui); ranking 15/15. Hasil di `evaluation/results/latest.md` dan `ranking_latest.md`.
-- Pemisahan: **dataset nyata** (lima deal, shuffle, tanpa Jev, referensi, sensitivitas, kontrak/path/bukti ke row sumber via `lookup_evidence`); **mutasi sintetis** (tukar ID DL-001↔DL-004/P01↔P04, tie salinan DL-003→DL-903, nilai P05 Rp10M, tahap P03 Negosiasi, I0335 tanpa "tunda", nilai P02 Rp10M, R6 DL-OLD, R7 nilai kosong, kontrol approval sah, tahap tidak dikenal + metrics hilang); **mock/replay Jev** hanya pada evaluasi decision E16–E26; **live** tidak dijalankan.
-- Waktu terukur: konteks lima deal cold ±2,2 dtk (Bima), diagnostic ±0,01 dtk, `rank_deals` ±0,17–0,21 dtk.
-- `PYTHONUTF8=1 python scripts/check_handoff.py --all` dan `--base origin/main --head HEAD --branch ical/priority-ranking` → valid (dijalankan sebelum push).
-- Belum: HTTP `/api/pipeline/priorities` (route Bima), UI, Jev live.
+2026-10-09 ±19:57–20:05 WIB, Linux, Python 3.13.16 (CI memakai 3.12):
+- `DEALCOMPASS_ENGINE_MODE=rules python -m unittest discover -s tests` → `Ran 154 tests, OK` (144 sebelumnya + 10 baru). Diulang tanpa env mode → `Ran 154 tests, OK`.
+- `python -m evaluation.run_eval` → decision **34/35** (inti 34/34; **E15 gagal**: "KasirPro lebih ramah di kantong" tidak terdeteksi harga, batas parafrase diketahui); ranking **15/15**.
+  - Decision per sumber: dataset asli 7/7 (E01, E09, E11, E12, E27, E29, E30); sintetis 16/17 (gagal E15); mock Jev 9/9 (E16–E24); replay mock 2/2 (E25, E26).
+  - Ranking per sumber: dataset asli 5/5 (K01, K02, K13, K14, K15); sintetis 10/10 (K03–K12).
+  - Benchmark disusun bersama pengembangan rules: **bukan holdout independen**, bukan validasi closing.
+- `python -m evaluation.baseline_crm` → hasil di atas; `tests/ical/test_baseline.py` 8/8, `tests/ical/test_eval_sources.py` 2/2.
+- Smoke HTTP lokal uvicorn port 8131, `DEALCOMPASS_ENGINE_MODE=rules`, tanpa key: `/health` 200; `/api/pipeline/priorities` 200 (3,95 dtk request pertama, cold); `/api/pipeline/initial-analysis` 200 (0,75 dtk); `/api/deals/DL-002/initial-analysis` 200; `DL-999` 404; `POST /api/deals/DL-002/analyze` 200 `engine_mode=rules` dengan approval VP Sales. Urutan HTTP P04→P01→P02→P03→P05. Server dihentikan. Observasi lokal, bukan SLA.
+- `python scripts/check_handoff.py --all` dan `--base origin/main --head HEAD --branch ical/evidence-demo-pack` → valid.
+- Ulang di laptop Ical (Windows, Python 3.11.9, di atas `2585bb3`, ±20:25 WIB): `DEALCOMPASS_ENGINE_MODE=rules python -m unittest discover -s tests` → `Ran 174 tests, OK` (main kini memuat tes tambahan); `python -m evaluation.baseline_crm --no-write` → urutan sama seperti di atas; `check_handoff.py --all` dan `--base origin/main --head HEAD --branch ical/evidence-demo-pack` → valid.
+- Belum: browser/UI ranking (menunggu BOY-04), Jev live, CI pada PR.
 
 ## Fixture dan keterbatasan
-- Tidak ada fixture tulisan tangan; semua data dari produsen Bima. Mutasi kasus diberi label sintetis.
-- Mode: ranking selalu `rules`. Jev mock/replay hanya di evaluasi decision; Jev live belum pernah dieksekusi.
-- Bobot/bin pilihan desain, belum divalidasi terhadap hasil closing historis; satu snapshot, tidak ada backtest.
-- Rank 1–2 (P04/P01) sensitif terhadap bobot; dicatat di output dan `evaluation/ranking.md`.
-- Deteksi hambatan pelanggan, tunda/syarat dan hambatan pesan bersifat leksikal.
-- Kandidat referensi: kesesuaian, kesediaan, izin kontak null; health dashboard hanya indikator CRM. Identitas P01 inferred.
-- Nilai deal = potensi CRM; P05 belum divalidasi percakapan.
+- Mode yang benar: ranking selalu **rules**; decision rules untuk lima deal nyata; Jev hanya **mock** (E16–E24) dan **replay** rekaman mock (E25–E26); **live tidak pernah dieksekusi**.
+- Tidak ada fixture tulisan tangan; mutasi kasus diberi label sintetis pada salinan konteks. Dataset asli tidak diubah.
+- Baseline: lima deal, satu snapshot, tanpa label hasil; urutan sama/berbeda bukan bukti akurasi; tindakan baseline template buatan Ical, bukan perilaku CRM/sales nyata; kolom `kompetitor` sengaja tidak dipakai.
+- Bobot ranking pilihan desain, belum dikalibrasi sales/closing; rank 1–2 sensitif bobot; deteksi hambatan leksikal (E15).
+- Dampak bisnis di DEMO_CLAIMS adalah hipotesis H1–H4, belum diukur.
 
 ## Blocker
-- Jev live: `TYPESAFE_API_KEY` tidak ada di environment sesi ini dan tidak ada `.env`; tidak ada mekanisme credential uji yang diberikan. Dampak: smoke live belum bisa; ranking tidak terdampak (rules). Butuh: credential uji melalui env backend oleh pihak berwenang.
-- Tidak ada blocker kode untuk ICAL-03.
+- **Jev live — BLOCKED.** `TYPESAFE_API_KEY` dan `TYPESAFE_BASE_URL` tidak di-set di environment sesi ini (dicek hanya ada/tidak, nilai tidak ditampilkan), tidak ada `.env` (hanya `.env.example` kosong), dan tidak ada credential resmi atau izin provider yang diberikan. Smoke live tidak dijalankan; tidak ada request ke provider (request count 0). Dampak: tidak ada klaim Jev live/confidence; core rules dan empat deliverable tidak terdampak. Butuh: credential uji resmi diset di env backend oleh pihak berwenang, lalu smoke terbatas ≤20 menit via `analyze_deal` (bukan GET priorities/diagnostic).
+- Tidak ada blocker lain untuk deliverable utama ICAL-04.
 
 ## Tugas berikutnya
-1. Main: review metode/bobot/rationale ranking dan PR baru; smoke gabungan dengan route priorities Bima.
-2. Bima: hubungkan `GET /api/pipeline/priorities` ke `rank_deals`; ValueError → 503 PRIORITIES_UNAVAILABLE.
-3. Boy: tampilkan rank + priority_kind + gate + path setelah Main merge (BOY-04).
-4. Ical: Jev live smoke bila credential tersedia; holdout/pembanding CRM-only; bila Main meminta, kalibrasi bobot dengan masukan sales (bukan demi urutan demo).
+1. Main: review paket ICAL-04 (MENTOR_BRIEF, DEMO_CLAIMS, baseline, eval per sumber); putuskan apakah pembanding ditampilkan di demo/UI.
+2. Ical: rehearsal bagian alasan ranking/policy bersama tim setelah BOY-04; latih jawaban P04/P01, P02, P05.
+3. Ical: Jev live smoke bila credential resmi tersedia; catat request count, mode, error, latensi tanpa header auth.
+4. Setelah lomba (opsional): holdout terpisah, masukan sales untuk bobot, perbaikan parafrase E15 — bukan sebelum demo (freeze).
 
 ## Update WIB
-2026-10-09 18:45 WIB (Ical via Claude).
+2026-10-09 20:05 WIB (Ical via Claude).

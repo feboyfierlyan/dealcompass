@@ -17,6 +17,46 @@ from evaluation.ranking_cases import RANKING_CASES, real_inputs, sensitivity_tab
 RESULTS = Path(__file__).resolve().parent / 'results'
 WIB = timezone(timedelta(hours=7))
 
+SOURCE_LABEL = {
+    'dataset_asli': 'dataset asli (konteks/diagnostic nyata tanpa perubahan record)',
+    'sintetis': 'mutasi/sintetis berlabel pada salinan konteks',
+    'mock_jev': 'transport Jev mock (bukan live)',
+    'replay_mock': 'replay rekaman respons mock (bukan live)',
+}
+
+
+def decision_source(case) -> str:
+    if case.description.startswith('Sintetis'):
+        return 'sintetis'
+    if case.category == 'replay':
+        return 'replay_mock'
+    if case.category.startswith('Jev'):
+        return 'mock_jev'
+    return 'dataset_asli'
+
+
+def ranking_source(case) -> str:
+    if case.description.startswith('Sintetis') or case.category in ('ID diganti', 'tie'):
+        return 'sintetis'
+    return 'dataset_asli'
+
+
+def by_source(rows: list[dict]) -> dict:
+    out = {}
+    for r in rows:
+        s = out.setdefault(r['source'], {'cases': 0, 'passed': 0, 'ids': []})
+        s['cases'] += 1
+        s['passed'] += r['passed']
+        s['ids'].append(r['id'])
+    return out
+
+
+def source_markdown(groups: dict) -> list[str]:
+    out = ['| Sumber kasus | Lulus | Kasus |', '|---|---|---|']
+    for k, v in groups.items():
+        out.append(f"| {SOURCE_LABEL[k]} | {v['passed']}/{v['cases']} | {', '.join(v['ids'])} |")
+    return out
+
 
 def run() -> dict:
     rows = []
@@ -31,7 +71,7 @@ def run() -> dict:
             checks, error = {}, f'{type(e).__name__}: {e}'
         rows.append({
             'id': case.id, 'category': case.category, 'description': case.description,
-            'known_limitation': case.known_limitation,
+            'source': decision_source(case), 'known_limitation': case.known_limitation,
             'passed': error is None and all(checks.values()),
             'checks': checks, 'error': error,
             'engine_mode': rec.engine_mode if rec else None,
@@ -58,6 +98,7 @@ def run() -> dict:
             'known_limitations': [r['id'] for r in rows if r['known_limitation']],
             'known_limitations_passed': [r['id'] for r in rows if r['known_limitation'] and r['passed']],
             'invariants_all_true': all(all(d['invariants'].values()) for d in deals),
+            'by_source': by_source(rows),
         },
         'cases': rows, 'deals': deals,
     }
@@ -71,6 +112,8 @@ def to_markdown(res: dict) -> str:
            f"batas diketahui: {', '.join(s['known_limitations']) or '-'} "
            f"(lulus: {', '.join(s['known_limitations_passed']) or 'tidak ada'}). "
            f"Invarian lima deal nyata: {'semua benar' if s['invariants_all_true'] else 'ADA YANG GAGAL'}.", '',
+           *source_markdown(s['by_source']), '',
+           'Benchmark ini bukan holdout independen: kasus disusun bersama pengembangan rules.', '',
            '| ID | Kategori | Lulus | Mode | Hambatan | Pemeriksaan gagal |', '|---|---|---|---|---|---|']
     for r in res['cases']:
         failed = ', '.join(k for k, v in r['checks'].items() if not v) or (r['error'] or '-')
@@ -96,7 +139,7 @@ def run_ranking() -> dict:
         except Exception as e:  # dicatat sebagai kegagalan, bukan disembunyikan
             checks, error, ranked = {}, f'{type(e).__name__}: {e}', None
         rows.append({'id': case.id, 'category': case.category, 'description': case.description,
-                     'passed': error is None and all(checks.values()), 'checks': checks, 'error': error,
+                     'source': ranking_source(case), 'passed': error is None and all(checks.values()), 'checks': checks, 'error': error,
                      'order': ranked, 'latency_ms': round((time.perf_counter() - start) * 1000)})
     ctxs, diags = real_inputs()
     start = time.perf_counter()
@@ -118,7 +161,8 @@ def run_ranking() -> dict:
         'jev': 'Ranking tidak memakai Jev (rules). Tidak ada mock/replay/live pada ranking.',
         'methodology': res['methodology'], 'global_limitations': res['limitations'],
         'rank_deals_ms_warm': rank_ms, 'items': items, 'sensitivity': sensitivity_table(),
-        'summary': {'cases': len(rows), 'passed': sum(r['passed'] for r in rows)}, 'cases': rows,
+        'summary': {'cases': len(rows), 'passed': sum(r['passed'] for r in rows), 'by_source': by_source(rows)},
+        'cases': rows,
     }
 
 
@@ -128,6 +172,8 @@ def ranking_markdown(r: dict) -> str:
            f"Sumber: {r['source']}. {r['jev']}", '',
            f"Kasus ranking: {s['passed']}/{s['cases']} lulus. rank_deals lima deal (konteks sudah dibangun): "
            f"{r['rank_deals_ms_warm']} ms.", '',
+           *source_markdown(s['by_source']), '',
+           'Benchmark ini bukan holdout independen dan bukan validasi hasil closing.', '',
            '## Urutan aktual', '', '| Rank | Deal | Tier | Status | Skor | Tahap | Nilai | Hambatan pelanggan | Preseden | Gate |',
            '|---|---|---|---|---|---|---|---|---|---|']
     for i in r['items']:

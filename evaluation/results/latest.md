@@ -1,8 +1,17 @@
-# Hasil evaluasi decision ICAL-01/02 (2026-10-09 18:37 WIB)
+# Hasil evaluasi decision ICAL-01/02 (2026-10-09 20:01 WIB)
 
 Sumber konteks: build_deal_context nyata (graph Bima, dataset asli); mutasi kasus sintetis berlabel. Jev: Tidak ada panggilan live. Kasus Jev memakai transport mock.
 
 Kasus: 34/35 lulus; inti 34/34; batas diketahui: E15 (lulus: tidak ada). Invarian lima deal nyata: semua benar.
+
+| Sumber kasus | Lulus | Kasus |
+|---|---|---|
+| dataset asli (konteks/diagnostic nyata tanpa perubahan record) | 7/7 | E01, E09, E11, E12, E27, E29, E30 |
+| mutasi/sintetis berlabel pada salinan konteks | 16/17 | E02, E03, E04, E05, E06, E31, E32, E33, E34, E35, E07, E08, E10, E13, E14, E15, E28 |
+| transport Jev mock (bukan live) | 9/9 | E16, E17, E18, E19, E20, E21, E22, E23, E24 |
+| replay rekaman respons mock (bukan live) | 2/2 | E25, E26 |
+
+Benchmark ini bukan holdout independen: kasus disusun bersama pengembangan rules.
 
 | ID | Kategori | Lulus | Mode | Hambatan | Pemeriksaan gagal |
 |---|---|---|---|---|---|
