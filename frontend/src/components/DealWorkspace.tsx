@@ -3,10 +3,11 @@ import type { ReactNode } from 'react';
 import { ApiError } from '../lib/api';
 import type { DealApi } from '../lib/api';
 import type { Deal, DealContext, Recommendation } from '../lib/contracts';
-import { dateLabel, kindLabel, rupiah } from '../lib/format';
+import { dateLabel, rupiah } from '../lib/format';
 import { ContextGraph } from './ContextGraph';
 import type { Selection } from './ContextGraph';
 import { EvidencePanel } from './EvidencePanel';
+import { EvidenceBrowser } from './EvidenceBrowser';
 import { Icon } from './Icon';
 
 export function ErrorNotice({ error, retry, subject = 'Data' }: { error: ApiError; retry: () => void; subject?: string }) {
@@ -77,7 +78,7 @@ export function DealWorkspace({ deal, api, fixture }: { deal: Deal; api: DealApi
           </section>
         </>}
         {tab === 'graph' && (context ? <section className="panel graph-panel"><div className="panel-heading"><h3>Konteks yang saling terhubung</h3><span className="muted small">{context.graph.nodes.length} node · {context.graph.edges.length} relasi</span></div><ContextGraph context={context} selection={selection} onSelect={setSelection}/></section> : !loading && <section className="panel"><Empty title="Peta relasi menunggu konteks">Graph akan menampilkan hubungan yang dikirim layanan, lengkap dengan sumber buktinya.</Empty></section>)}
-        {tab === 'evidence' && <section className="panel evidence-browser"><div className="panel-heading"><h3>Sumber yang mendasari deal</h3><Icon name="file" size={18}/></div>{context?.evidence.length ? context.evidence.map(e => <button key={e.id} className={`evidence-row ${selection?.kind === 'evidence' && selection.id === e.id ? 'active' : ''}`} aria-pressed={selection?.kind === 'evidence' && selection.id === e.id} onClick={() => setSelection({ kind: 'evidence', id: e.id })}><span className="evidence-row-icon"><Icon name="file" size={19}/></span><span><span className="row-between"><strong>{e.source_id}</strong><span className={`badge ${e.evidence_type}`}>{kindLabel[e.evidence_type]}</span></span><span className="excerpt-preview">{e.excerpt || 'Kutipan belum tersedia.'}</span><small>{dateLabel(e.date)} · {e.source_file}</small></span><Icon name="chevron" size={16}/></button>) : <Empty title="Bukti belum tersedia">Bukti akan muncul dari konteks deal. Ketiadaan bukti belum menjelaskan kondisi bisnisnya.</Empty>}</section>}
+        {tab === 'evidence' && <EvidenceBrowser records={context?.evidence ?? []} selection={selection} onSelect={setSelection}/>}
       </div>
     </div><EvidencePanel context={context} selection={selection} onClear={() => setSelection(null)}/></div>
   </section>;

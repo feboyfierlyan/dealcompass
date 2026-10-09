@@ -38,7 +38,7 @@ test('recommendation modes and approvals follow the shared contract', () => {
 });
 test('missing evidence stays visible and duplicate references do not duplicate records', () => {
   const context = fixture('fixtureContext');
-  const resolved = resolveEvidence(['I0296', 'MISSING', 'I0296', 'MISSING'], context.evidence);
-  assert.deepEqual(resolved.records.map(e => e.id), ['I0296']);
+  const resolved = resolveEvidence(['interactions.jsonl:I0296', 'MISSING', 'interactions.jsonl:I0296', 'MISSING'], context.evidence);
+  assert.deepEqual(resolved.records.map(e => e.id), ['interactions.jsonl:I0296']);
   assert.deepEqual(resolved.missing, ['MISSING']);
 });
