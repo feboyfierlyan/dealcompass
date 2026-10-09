@@ -1,31 +1,31 @@
 # Handoff MAIN
 
 ## Task dan status
-MAIN-01 IN_PROGRESS. Review ulang ICAL-02 selesai pada 7919550: R1-R3/R5 lulus, R6/R7 NEEDS_REVISION. PR #7 belum merged; BIMA-01 tetap MERGED #6.
+MAIN-01 IN_PROGRESS. BOY-01/02 MERGED #5, R4 VERIFIED. BIMA-01 MERGED #6. ICAL-02 terakhir NEEDS_REVISION R6/R7; integrasi akhir belum selesai.
 
 ## Branch dan commit
-integrator/ical-r2-review-notes dari main ddf7a2a. Kode Ical diperiksa pada checkout terpisah integrator/review-ical-r2, head 79195504dd9d877d9bc3cc98b3a219744da77b21.
+integrator/boy-r2-review-notes dari main 3b8cc872b421d193ba56937201a7c9c3739d6015. Kode Boy direview b95d7ed; sinkron main menghasilkan 4c82ea4 tanpa perubahan frontend/handoff Boy; CI final lulus sebelum merge.
 
 ## File dan fungsi
-Catatan docs/reviews/2026-10-09-pr7-r2.md dan checklist docs/coordination/MAIN.md diperbarui. Kode anggota tidak diubah. Fungsi yang bermasalah: ContextIndex.focus_decisions dan _price.
+Review docs/reviews/2026-10-09-pr5-r2.md; checklist docs/coordination/MAIN.md dan handoff Main. Graph index/scope/search/path/expand/layout serta EvidencePanel/Browser diverifikasi. Catatan PR ini tidak mengubah kode anggota.
 
 ## Kontrak dan dependency
-Schema v1 dan dependency tetap. Approval harus cocok cakupan deal dan persentasenya terbukti; nilai unknown bukan approval.
+Schema v1, dependency dan dataset tidak berubah. Graph subset eksplisit, akses ke seluruh bukti tetap tersedia. Rank null tetap belum tersedia.
 
 ## Cara menjalankan
-Pada head Ical, jalankan unittest discover dan python -m evaluation.run_eval --no-write. Reproduksi R6/R7 lengkap ada dalam dokumen review; gunakan dependency requirements.txt.
+Ikuti frontend/TESTING.md. Review memakai backend lokal port 8126 dan Vite 5177 dengan override proxy runtime, tanpa mengubah file konfigurasi. Server review dihentikan dan viewport browser direset setelah uji.
 
 ## Pengujian aktual
-48/48 unittest lulus. Evaluasi 29/30, inti 29/29; E15 dikenal sebagai keterbatasan rules. Dua probe sintetis pada salinan konteks P02 menghasilkan approvals_needed kosong dan klaim 20% disetujui yang keliru. CI verify head Ical sukses. Validasi catatan Main dilakukan sebelum commit.
+20/20 tes frontend, 27/27 backend/handoff, build produksi, ownership/handoff dan diff check lulus. Browser P01-P05 desktop 1440x1000/mobile 390x844: label 13px, tidak ada overflow halaman. P02 7/1305 node, 9/2895 relasi; bukti I0348/I0296, preseden D-2025-06, filter dan pagination diverifikasi. Analyze 501 ditampilkan eksplisit. CI final PR #5 verify sukses.
 
 ## Fixture dan keterbatasan
-R6/R7 direproduksi melalui helper evaluasi yang menambah decision/evidence sintetis; bukan temuan pada dataset asli. Konteks asli P02 tetap memerlukan VP Sales. Jev live, ranking, dan UI end-to-end belum diverifikasi. Main masih belum memiliki kode Ical.
+Uji graph dan browser memakai API dataset nyata, bukan fixture. Jev live, ranking dan panel analisis Ical belum terintegrasi di main. Klik edge preseden diverifikasi lewat keyboard Enter; tidak mengklaim pengujian seluruh kurva dengan pointer.
 
 ## Blocker
-R6 menerima approval deal lain pada akun sama. R7 menerima approval persentase kosong sebagai persetujuan request 20%. Keduanya perlu regresi dan revisi PR #7; review ulang ini tidak mengubah status Boy/Bima.
+Tidak ada blocker BOY-02 yang ditemukan pada cakupan review. R6/R7 Ical tetap menghalangi integrasi analisis berdasarkan review terakhir; status review lain tidak diubah tanpa bukti baru.
 
 ## Tugas berikutnya
-Ical memperbaiki R6/R7 pada PR yang sama, memperbarui handoff/evaluasi. Main memeriksa SHA baru sebelum merge. Boy melanjutkan R4, Bima melanjutkan analisis anomali bersumber sesuai MAIN.md.
+BOY-03 siapkan checklist demo sekarang, lalu uji panel analisis kelima deal setelah Ical merged. Main review revisi Ical dan pekerjaan Bima berikutnya, kemudian koordinasikan ranking. Detail assignment di MAIN.md.
 
 ## Update WIB
-2026-10-09 17:38 WIB
+2026-10-09 17:53 WIB
