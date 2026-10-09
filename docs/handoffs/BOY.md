@@ -2,25 +2,46 @@
 
 Pelaksana tugas redesign: Ical, atas penugasan pengguna/Main; area frontend sebelumnya dikerjakan Boy.
 
-## Current update — Agent workspace (Ical), 2026-10-10 02:50 WIB
-Pelaksana: Ical atas permintaan pengguna (pitching full English). Branch `boy/ical-agent-workspace`
-dari main 103cfe0. Status **READY_FOR_REVIEW**; belum merged.
+## Current update — Rules + Jev default deal analysis (Ical), 2026-10-10 03:45 WIB
+Pelaksana: Ical atas penugasan pengguna. Branch `boy/ical-agent-workspace` (PR #32, dilanjutkan).
+Status **READY_FOR_REVIEW**; belum merged. Arah produk berubah: **Agent/chat dihapus**.
 
-- Shell baru bergaya minimal: sidebar (Agent · Priorities · Deals) + topbar; halaman default **Agent**.
-- **Agent** (`components/AgentView.tsx`, `lib/agent.ts`, `lib/usePipeline.ts`): chat-style, tetapi
-  jawaban hanya dari API DealCompass, bukan teks bebas/LLM. Pertanyaan dirutekan
-  ke: urutan prioritas (GET), deal yang butuh approval (GET), informasi yang belum pasti (GET),
-  atau "next step for <customer>" (GET konteks + **satu POST analyze hanya saat pengguna mengirim
-  pertanyaan**). Pertanyaan lain ditolak dengan saran, tidak ditebak. Label mode dari respons.
-- **Deals** (`components/DealsTable.tsx`): tabel ringkas; klik membuka deal di Priorities
-  (`Dashboard` menerima `initialDeal`).
-- `shell.css` baru; ikon bot/send/table/spark. Tidak ada perubahan backend/kontrak/dependency.
-- Tes: `frontend/tests/agent.test.mjs` (2) baru. Run Ical: build lulus; agent+contracts+graph+
-  session+present+english 35/35, transport 7/7, analysis 8/8, phase3 18/18, redesign 14/14.
-- Browser (desktop 1440×900, backend rules): chip pertanyaan, jawaban prioritas P04→P05,
-  "next step for Teras Kafe" → POST DL-002 dengan approval VP Sales (E01) utuh, Deals → buka
-  Teras Kafe. Free chat ke Jev butuh endpoint backend baru (usulan ke Main, belum dibuat).
-- Belum: uji kegunaan tim, mobile, Jev live.
+- Dihapus: `AgentView.tsx`, `lib/agent.ts`, `tests/agent.test.mjs`, ikon bot/send/spark, gaya agent,
+  `lib/analysisSession.ts` + `tests/session.test.mjs` (tombol "Analyze/Run again" dan versi ganda).
+- Shell: sidebar **Priorities** (halaman awal) · **Deals** (tabel tetap). Bug CSS PR #32 diperbaiki:
+  identitas sidebar memakai `.sidebar .sidebar-workspace*`, tidak lagi menimpa `.workspace` (grid
+  DealWorkspace + panel bukti). Terukur di 1280/1440/1920: grid tetap, 1920 `917px 380px` dengan
+  panel bukti sticky di kolom kanan; tidak ada scroll horizontal.
+- Alur default: buka deal → rekomendasi rules (dari ranking GET) langsung tampil berlabel
+  **Checking context…** → satu `POST /api/deals/{id}/analysis` otomatis untuk deal aktif →
+  hasil backend menjadi versi aktif: **Rules + Jev** / **Rules + Jev · recorded replay** /
+  **Jev unavailable · rules shown** / **Rules-based** / **More information needed**.
+- `lib/analysis.ts`: tipe + validator envelope (label integrity: Jev butuh engine jev/replay dan
+  provider_requests>0; not_eligible harus 0 request) dan `createAnalysisStore`: satu entri per
+  deal+snapshot per objek API (WeakMap) → rerender, ganti tab, modal, buka panel bukti, pindah
+  Deals↔Priorities atau kembali ke deal **tidak** mengirim request. Gagal tidak di-retry otomatis;
+  **Refresh analysis** (dalam disclosure "About this analysis") = `?refresh=true`, sekali per klik.
+  Saat refresh, versi lama tetap tampil dengan keterangan "previous version".
+- `lib/activeAnalysis.ts`: memilih versi tampil + label + `provenance()` ("Saved analysis from…"
+  untuk cache, tidak pernah disebut baru; replay "not a live provider call").
+- Satu versi untuk semua: action/owner/target/gate (judul tugas dari `analysis.gate`),
+  approvals, unknowns, Evidence tab, jalur graph (`analysis.evidence_paths` dari trace aktif; jalur
+  ranking tidak dipakai untuk hasil Jev), follow-up plan + teks salin (`Analysis: <label> | id`).
+- `EvidencePaths` menerima `paths`; kosong → keterbatasan dinyatakan, tidak ada edge rekaan.
+- `planning.ts`: `taskHeading(gate)`, `gateLabel(gate, approvals)`; `engineLabel` → Rules-based /
+  Rules + Jev / Rules + Jev · recorded replay. Pesan HTTP sisa bahasa Indonesia diterjemahkan.
+- Backend pendukung di PR terpisah (ownership CI): `ical/hybrid-deal-analysis` (engine/cache) dan
+  `bima/hybrid-analysis-route` (route). Lihat docs/handoffs/ICAL.md. Tanpa route itu, deal page
+  menampilkan rules dengan label fallback (POST gagal → "Jev unavailable · rules shown").
+- Tes (Ical, 03:30 WIB, backend rules lokal port 8010 dari branch route): build lulus;
+  contracts+graph+present+english+analysis-store **34/34**; api+analysis+phase3+redesign **48/48**
+  (total 82). Baru: `tests/analysis-store.test.mjs` (9) dan tes API `/analysis`.
+- Browser (Chrome, MOCK Jev backend = MockTransport, bukan provider): P04 dibuka otomatis
+  "Rules + Jev"; P02 "Checking context…" → "Rules + Jev" (10 request mock); tab Evidence/Graph/
+  Next step + pindah P04→P02 → tetap **1 POST per deal**; P05 "More information needed";
+  Refresh = 1 POST `?refresh=true`; "Explore relationships" = 6 jalur analisis; plan memuat label +
+  analysis id + approval VP Sales (E01). Live Jev **tidak** diuji (tidak ada key/ledger tim di laptop ini).
+- Belum: mobile, uji kegunaan tim, live smoke.
 
 ## Current update — corporate English desktop, 2026-10-10 02:13 WIB
 
@@ -361,3 +382,4 @@ provenance dan semua gate bisnis. Jangan mengganti saran dengan ringkasan yang m
 build dan pemeriksaan browser desktop; catatan riset Mobbin diperbarui. Belum merged/deployed.
 Implementasi awal Ical, lanjutan Main; riwayat BOY-04 tetap milik Boy.
 2026-10-10 02:50 WIB — Agent workspace READY_FOR_REVIEW (Ical, branch boy/ical-agent-workspace).
+2026-10-10 03:45 WIB — PR #32 diubah: Agent dihapus; analisis Rules + Jev otomatis per deal aktif READY_FOR_REVIEW (Ical). 82/82 frontend + build.

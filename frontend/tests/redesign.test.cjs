@@ -11,7 +11,8 @@ const { englishText } = require(`${build}/lib/english.js`);
 const { ActionTab } = require(path.join(build, 'components/DealTabs.js'));
 const { EvidenceDrawer, EvidenceInspector } = require(path.join(build, 'components/EvidencePanel.js'));
 const { ContextGraph } = require(path.join(build, 'components/ContextGraph.js'));
-const { employeeFromContext, evidenceTitle, interactionMeta, recommendationView } = require(path.join(build, 'lib/present.js'));
+const { employeeFromContext, evidenceTitle, interactionMeta } = require(path.join(build, 'lib/present.js'));
+const { activeAnalysis } = require(path.join(build, 'lib/activeAnalysis.js'));
 const { ApiError, liveApi } = require(path.join(build, 'lib/api.js'));
 const p = require(path.join(build, 'lib/phase3.js'));
 const base = process.env.GRAPH_API_URL || 'http://127.0.0.1:8000';
@@ -19,7 +20,6 @@ const src = path.join(__dirname, '../src');
 const signal = () => new AbortController().signal;
 const escape = s => s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#x27;');
 const noop = () => {};
-const idle = { status: 'idle', error: null, receivedAt: null };
 let ranking, contexts;
 before(async () => {
   const original = global.fetch, methods = [];
@@ -34,10 +34,16 @@ before(async () => {
   } finally { global.fetch = original; }
 });
 const joined = id => p.enrichContext(contexts.get(id), ranking.items.find(i => i.deal_id === id));
-function action({ id, priority, context, rankingState = 'ready', snapshot = { status: 'idle', data: null }, session = idle, preferred = 'priority' }) {
-  const view = recommendationView({ dealId: id, priority, session: snapshot, preferred });
-  return { view, html: render(React.createElement(ActionTab, { context, priority, rankingState, view, fixture: false, snapshot: '2026-10-01', session, onEvidence: noop, onReasons: noop, onShowPaths: noop, onAnalyze: noop, onShowVersion: noop })) };
+function action({ id, priority, context, rankingState = 'ready', entry = null, service = false }) {
+  const view = activeAnalysis({ dealId: id, priority, entry, service });
+  return { view, html: render(React.createElement(ActionTab, { context, priority, rankingState, view, fixture: false, snapshot: '2026-10-01', canRefresh: service, onEvidence: noop, onReasons: noop, onShowPaths: noop, onRefresh: noop })) };
 }
+// MOCK envelope around a real recommendation; label integrity follows the backend metadata.
+const envelope = (item, over = {}) => ({ schema_version: 'v1', deal_id: item.deal_id, snapshot_date: '2026-10-01', recommendation: over.recommendation ?? item.recommendation, analysis: {
+  analysis_id: 'mock-analysis', analysis_version: 'mock', context_fingerprint: 'mock', engine_mode: (over.recommendation ?? item.recommendation).engine_mode, outcome: 'rules_only',
+  analysis_status: item.analysis_status, fallback_reason: null, cache: 'fresh', generated_at: '2026-10-10T03:00:00+00:00', provider_requests: 0, model: null,
+  gate: item.factors.find(f => f.name === 'gate_approval_izin').value, evidence_paths: item.evidence_paths, path_limitations: [], ...over.analysis } });
+const ready = env => ({ status: 'ready', envelope: env, refreshing: false, error: null });
 const acceptance = {
   'DL-001': [/Rina Hapsari \(GM Operations, identitas inferensi yang perlu dikonfirmasi\)/],
   'DL-002': [/Jangan menawarkan atau menjanjikan diskon 20%/, /VP Sales \(E01\): putuskan dan catat di decision_log permintaan diskon 20%/],
@@ -62,33 +68,39 @@ test('REAL HTTP guided layer: goal and gate precede preparation, full API action
   }
 });
 
-test('MOCK states: loading and failed requests never present a recommendation as a success', () => {
+test('MOCK states: rules stay readable while checking; a failed analysis falls back honestly and never shows a result as new', () => {
   const item = ranking.items.find(i => i.deal_id === 'DL-002'), context = joined('DL-002');
-  const loading = action({ id: 'DL-002', priority: null, context, rankingState: 'loading' }).html;
-  assert.ok(loading.includes('Preparing the priority recommendation')); assert.ok(!loading.includes('Recommended action'));
-  const failedSession = { status: 'failed', error: new ApiError(503, 'MOCK 503 untuk uji.'), receivedAt: null };
-  const failed = action({ id: 'DL-002', priority: null, context, rankingState: 'error', snapshot: { status: 'failed', data: null }, session: failedSession, preferred: 'session' }).html;
-  assert.ok(failed.includes('Analysis could not be loaded') && failed.includes('MOCK 503 untuk uji.') && failed.includes('Retry'));
-  assert.ok(failed.includes('Priorities could not be loaded'));
-  assert.ok(!failed.includes('Recommended action') && !failed.includes('Analyze this deal'), 'One recovery action, no result');
-  const running = action({ id: 'DL-002', priority: item, context, snapshot: { status: 'running', data: null }, session: { status: 'running', error: null, receivedAt: null }, preferred: 'session' }).html;
-  assert.ok(running.includes(escape(item.recommendation.action)) && running.includes('From priority ranking'));
-  assert.ok(running.includes('Analysis is running. The displayed recommendation has not changed.'));
-  const retryFailed = action({ id: 'DL-002', priority: item, context, snapshot: { status: 'failed', data: null }, session: failedSession, preferred: 'session' }).html;
-  assert.ok(retryFailed.includes('Re-analysis could not be loaded') && !retryFailed.includes('Requested re-analysis'));
+  const running = { status: 'running', envelope: null, refreshing: false, error: null };
+  const loading = action({ id: 'DL-002', priority: null, context, rankingState: 'loading', service: true, entry: running }).html;
+  assert.ok(loading.includes('Checking context…')); assert.ok(!loading.includes('Recommended action'));
+  const checking = action({ id: 'DL-002', priority: item, context, service: true, entry: running }).html;
+  assert.ok(checking.includes(escape(item.recommendation.action)) && checking.includes('Checking context…'));
+  assert.ok(checking.includes('Rules-based recommendation shown while the deal context is checked.'));
+  const failedEntry = { status: 'failed', envelope: null, refreshing: false, error: new ApiError(503, 'MOCK 503 for testing.') };
+  const fallback = action({ id: 'DL-002', priority: item, context, service: true, entry: failedEntry }).html;
+  assert.ok(fallback.includes('Jev unavailable · rules shown') && fallback.includes('MOCK 503 for testing.'));
+  assert.ok(fallback.includes(escape(item.recommendation.action)) && fallback.includes('VP Sales (E01)'));
+  const nothing = action({ id: 'DL-002', priority: null, context, rankingState: 'error', service: true, entry: failedEntry }).html;
+  assert.ok(nothing.includes('Analysis could not be loaded') && nothing.includes('Refresh analysis') && nothing.includes('Priorities could not be loaded'));
+  assert.ok(!nothing.includes('Recommended action'));
 });
 
-test('MOCK session result: an explicit re-analysis is labelled with its own mode and time; the ranking version stays one click away', () => {
-  const item = ranking.items.find(i => i.deal_id === 'DL-004'), context = joined('DL-004');
-  const posted = { ...structuredClone(item.recommendation), action: 'MOCK new analysis DL-004', engine_mode: 'replay' };
-  const { view, html } = action({ id: 'DL-004', priority: item, context, snapshot: { status: 'received', data: posted }, session: { status: 'received', error: null, receivedAt: '10.00.00' }, preferred: 'session' });
-  assert.equal(view.source, 'session');
-  assert.ok(html.includes('MOCK new analysis DL-004') && !html.includes(escape(item.recommendation.action)));
-  assert.ok(html.includes('Recorded analysis (replay)') && !html.includes('Jev analysis'));
-  assert.ok(html.includes('Requested re-analysis at 10.00.00 · priority order unchanged'));
-  assert.ok(html.includes('Priority recommendation') && html.includes('New analysis · 10.00.00'));
-  const back = action({ id: 'DL-004', priority: item, context, snapshot: { status: 'received', data: posted }, session: { status: 'received', error: null, receivedAt: '10.00.00' }, preferred: 'priority' }).html;
-  assert.ok(back.includes(escape(item.recommendation.action)) && back.includes('New analysis is available under Versions &amp; re-analysis.'));
+test('MOCK hybrid result: becomes the active analysis with its own label, gate and paths; approvals stay', () => {
+  const item = ranking.items.find(i => i.deal_id === 'DL-002'), context = joined('DL-002');
+  const r = { ...structuredClone(item.recommendation), action: item.recommendation.action + ' MOCK hybrid', engine_mode: 'jev' };
+  const env = envelope(item, { recommendation: r, analysis: { outcome: 'jev_applied', provider_requests: 3, model: 'jev-mock', cache: 'hit' } });
+  const { view, html } = action({ id: 'DL-002', priority: item, context, service: true, entry: ready(env) });
+  assert.equal(view.source, 'analysis'); assert.equal(view.label, 'Rules + Jev');
+  assert.ok(html.includes('MOCK hybrid') && html.includes('Rules + Jev') && html.includes('VP Sales (E01)'));
+  assert.ok(html.includes('Request a discount decision'), 'title from the gate of the analysis shown');
+  assert.ok(html.includes('Saved analysis from') && html.includes('No new provider request was made.') && !html.includes('Generated '));
+  const replay = action({ id: 'DL-002', priority: item, context, service: true, entry: ready(envelope(item, { recommendation: { ...r, engine_mode: 'replay' }, analysis: { outcome: 'jev_applied', provider_requests: 3 } })) }).html;
+  assert.ok(replay.includes('Rules + Jev · recorded replay') && replay.includes('not a live provider call'));
+  const fallback = action({ id: 'DL-002', priority: item, context, service: true, entry: ready(envelope(item, { analysis: { outcome: 'jev_unavailable', fallback_reason: 'usage_budget_blocked' } })) }).html;
+  assert.ok(fallback.includes('Jev unavailable · rules shown') && fallback.includes('usage_budget_blocked') && !fallback.includes('>Rules + Jev<'));
+  const p05 = ranking.items.find(i => i.deal_id === 'DL-005');
+  const discovery = action({ id: 'DL-005', priority: p05, context: joined('DL-005'), service: true, entry: ready(envelope(p05, { analysis: { outcome: 'not_eligible', fallback_reason: 'insufficient_evidence' } })) }).html;
+  assert.ok(discovery.includes('More information needed') && discovery.includes('No provider request was made.'));
 });
 
 test('REAL HTTP evidence drawer: I0348 opens its own record verbatim, closable, with a route to the graph and its original edge', () => {
@@ -121,17 +133,17 @@ test('REAL HTTP graph proof: priority paths open as a highlighted union within t
   }
 });
 
-test('STATIC guard: the analysis POST only starts from an explicit button, never from an effect or page load', () => {
+test('STATIC guard: one automatic analysis per opened deal through the store; GET views, tabs and panels never request one', () => {
   const read = file => fs.readFileSync(path.join(src, file), 'utf8');
-  const workspace = read('components/DealWorkspace.tsx'), dashboard = read('Dashboard.tsx'), tabs = read('components/DealTabs.tsx');
-  assert.equal((workspace.match(/session\.run\(/g) ?? []).length, 1);
-  assert.match(workspace, /function analyze\(\) \{[^}]*session\.run\(\)/);
-  assert.match(workspace, /onAnalyze=\{analyze\}/);
-  assert.equal((workspace.match(/[{\s]analyze\b/g) ?? []).length, 2, 'analyze is defined once and only passed as onAnalyze');
-  assert.equal((workspace.match(/api\.analyze\(/g) ?? []).length, 1);
-  assert.match(workspace, /createAnalysisSession\(signal => api\.analyze\(deal\.deal_id, signal\)\)/);
-  assert.ok(!/analy[sz]e/i.test(dashboard.replace(/initial-analysis/g, '')), 'Dashboard never requests an analysis');
-  assert.deepEqual(tabs.match(/[A-Za-z]+=\{onAnalyze\}/g), ['onClick={onAnalyze}', 'retry={onAnalyze}', 'onClick={onAnalyze}', 'retry={onAnalyze}']);
+  const workspace = read('components/DealWorkspace.tsx'), dashboard = read('Dashboard.tsx'), tabs = read('components/DealTabs.tsx'), store = read('lib/analysis.ts');
+  assert.equal((workspace.match(/store\.ensure\(/g) ?? []).length, 1);
+  assert.match(workspace, /useEffect\(\(\) => \{ if \(store && snapshot\) store\.ensure\(deal\.deal_id, snapshot\); \}, \[store, deal\.deal_id, snapshot\]\)/);
+  assert.equal((workspace.match(/store\.refresh\(/g) ?? []).length, 1, 'refresh only from the explicit button handler');
+  for (const file of [workspace, dashboard, tabs]) assert.ok(!/api\.analy[sz]e?\w*\(/.test(file), 'components never call the analysis endpoints directly');
+  assert.equal((store.match(/request\(dealId, refresh/g) ?? []).length, 1);
+  assert.match(store, /ensure\(dealId: string, snapshot: string\) \{ if \(!entries\.has/);
+  assert.match(dashboard, /analysisStoreFor\(api\)/);
+  assert.deepEqual(tabs.match(/[A-Za-z]+=\{(?:canRefresh \? )?onRefresh(?: : undefined)?\}/g), ['retry={canRefresh ? onRefresh : undefined}', 'onClick={onRefresh}']);
 });
 
 // Desktop copy improvement must never guess identity or discard policy words.
@@ -185,15 +197,15 @@ test('REAL HTTP plan export carries the complete action, approval gates, unknown
     if (!r.approvals_needed.length) assert.ok(brief.includes('This does not mean the action is approved.'));
   }
 });
-test('MOCK presentation titles only translate exact gate values and never carry an old priority title into re-analysis', () => {
+test('MOCK presentation titles only translate exact gate values of the analysis shown', () => {
   const { taskHeading } = require(path.join(build, 'lib/planning.js'));
   const item = ranking.items.find(x => x.deal_id === 'DL-002');
-  assert.equal(taskHeading(item, 'priority').title, 'Request a discount decision');
-  assert.equal(taskHeading(item, 'session').title, 'Prepare the next step');
-  const unknown = { ...item, factors: [{name:'gate_approval_izin',value:'MOCK syarat berbeda'}] };
-  assert.equal(taskHeading(unknown, 'priority').title, 'Prepare the next step');
-  assert.equal(taskHeading(unknown, 'priority').note, 'MOCK syarat berbeda');
-  assert.equal(taskHeading(null, 'priority').title, 'Prepare the next step');
+  const { gateSummary } = require(path.join(build, 'lib/present.js'));
+  assert.equal(taskHeading(gateSummary(item)).title, 'Request a discount decision');
+  assert.equal(taskHeading('MOCK syarat berbeda').title, 'Prepare the next step');
+  assert.equal(taskHeading('MOCK syarat berbeda').note, 'MOCK syarat berbeda');
+  assert.equal(taskHeading(null).title, 'Prepare the next step');
+  assert.equal(taskHeading('approval VP Sales tertunda; kesediaan/izin kandidat referensi belum ada').title, 'Prepare the next step', 'combined gates are not shortened to one');
 });
 test('MOCK plan with missing owner, source and target never claims a completed task or available evidence', () => {
   const { buildFollowUpBrief } = require(path.join(build, 'lib/planning.js'));
@@ -219,15 +231,16 @@ test('REAL HTTP plan dialog keeps approval and consent text visible while origin
 });
 
 
-test('compact gates remain visible and never borrow priority conditions for a session result', () => {
+test('compact gates remain visible and follow the gate of the analysis shown', () => {
   const { gateLabel } = require(path.join(build, 'lib/planning.js'));
+  const { gateSummary } = require(path.join(build, 'lib/present.js'));
   for (const item of ranking.items) {
-    const label = gateLabel(item, 'priority', item.recommendation.approvals_needed);
+    const label = gateLabel(gateSummary(item), item.recommendation.approvals_needed);
     const html = action({ id: item.deal_id, priority: item, context: joined(item.deal_id) }).html;
     const gate = html.match(/<details class="move-boundary">([\s\S]*?)<\/details>/)[1];
     assert.ok(gate.includes(`<span>${escape(label)}</span>`));
     assert.ok(gate.indexOf(escape(label)) < gate.indexOf('</summary>'), 'Condition visible while details are closed');
-    assert.equal(gateLabel(item, 'session', []), 'Review action conditions');
+    assert.equal(gateLabel(null, []), 'Review action conditions');
   }
-  assert.equal(gateLabel(null, 'session', ['approval pending']), 'Approval required');
+  assert.equal(gateLabel(null, ['approval pending']), 'Approval required');
 });

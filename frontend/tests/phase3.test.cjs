@@ -12,7 +12,8 @@ const { liveApi } = require(path.join(build, 'lib/api.js'));
 const { createResource } = require(path.join(build, 'lib/resource.js'));
 const { PriorityFactors, DiagnosticPanel, Statistics } = require(path.join(build, 'components/Phase3Panels.js'));
 const { ActionTab, ReasonsTab } = require(path.join(build, 'components/DealTabs.js'));
-const { gateSummary, recommendationView, splitUnknowns } = require(path.join(build, 'lib/present.js'));
+const { gateSummary, splitUnknowns } = require(path.join(build, 'lib/present.js'));
+const { activeAnalysis } = require(path.join(build, 'lib/activeAnalysis.js'));
 const { evidenceGraphLinks } = require(path.join(build, 'lib/analysisView.js'));
 const { focusTarget, indexGraph, visibleGraph } = require(path.join(build, 'lib/graphView.js'));
 const base = process.env.GRAPH_API_URL || 'http://127.0.0.1:8000';
@@ -49,9 +50,9 @@ for (const id of ['DL-001','DL-002','DL-003','DL-004','DL-005']) test(`${id} REA
   const joined = p.enrichContext(p.enrichContext(context,item),d);
   // Same composition as the app: ranking recommendation in layer 1, reasons in layer 2, factors/diagnostic in layer 3. No POST.
   const noop = () => {};
-  const view = recommendationView({ dealId: id, priority: item, session: { status: 'idle', data: null }, preferred: 'priority' });
+  const view = activeAnalysis({ dealId: id, priority: item, entry: null, service: false });
   assert.equal(view.source,'priority');
-  const action = render(React.createElement(ActionTab,{context:joined,priority:item,rankingState:'ready',view,fixture:false,snapshot:joined.snapshot_date,session:{status:'idle',error:null,receivedAt:null},onEvidence:noop,onReasons:noop,onShowPaths:noop,onAnalyze:noop,onShowVersion:noop}));
+  const action = render(React.createElement(ActionTab,{context:joined,priority:item,rankingState:'ready',view,fixture:false,snapshot:joined.snapshot_date,canRefresh:false,onEvidence:noop,onReasons:noop,onShowPaths:noop,onRefresh:noop}));
   const html = action + render(React.createElement(React.Fragment,null,
     React.createElement(ReasonsTab,{priority:item,view,context:joined,onEvidence:noop,onEdge:noop,onShowPath:noop}),
     React.createElement(PriorityFactors,{item,onEvidence:noop}),
@@ -60,7 +61,7 @@ for (const id of ['DL-001','DL-002','DL-003','DL-004','DL-005']) test(`${id} REA
   if (gate) assert.ok(action.includes(escape(gate)),'Ranking gate stays in layer 1');
   for (const text of [...item.recommendation.approvals_needed,...splitUnknowns(item.recommendation,joined).specific]) assert.ok(action.includes(escape(englishText(text))),`Layer 1 keeps approval/unknown: ${text.slice(0,60)}`);
   assert.ok(action.indexOf('Next step') < action.indexOf('Owner') && action.indexOf('Owner') < action.indexOf('Prepare follow-up'));
-  assert.ok(action.includes('From priority ranking · snapshot 1 Oct 2026'));
+  assert.ok(action.includes('From the priority ranking (rules). The ranking order never changes because of an analysis.'));
   for (const label of ['Status request sesi','GET ranking','POST analisis','Tier acceleration']) assert.ok(!action.includes(label),`No technical label in layer 1: ${label}`);
   for (const text of [...item.rationale,...item.limitations,item.recommendation.action,item.recommendation.milestone,...item.recommendation.approvals_needed,...item.recommendation.unknowns,...item.recommendation.precedent_comparison,...d.boundaries]) assert.ok(html.includes(escape(text)),text);
   for (const f of [...d.findings,...d.reference_candidates]) for (const text of [f.fact,f.interpretation,...f.missing_information,...f.follow_up_implication]) assert.ok(html.includes(escape(text)),text);

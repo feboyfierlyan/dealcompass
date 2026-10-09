@@ -5,7 +5,7 @@ import type { DealContext, Evidence, EvidenceType, GraphNode, Recommendation } f
 import type { EvidencePath, PriorityItem } from './phase3';
 
 export const priorityKindLabel = { acceleration: 'Follow up', discovery: 'Needs discovery' } as const;
-export const engineLabel = { rules: 'Rules-based analysis', jev: 'Jev analysis', replay: 'Recorded analysis (replay)' } as const;
+export const engineLabel = { rules: 'Rules-based', jev: 'Rules + Jev', replay: 'Rules + Jev · recorded replay' } as const;
 export const evidenceKindLabel: Record<EvidenceType, string> = { direct: 'Direct from source', inferred: 'Inferred from relationships' };
 
 export function compactRupiah(value: number): string {
@@ -20,21 +20,6 @@ export function effectiveSelection({ items, ranked, userChoice }: { items: strin
   if (userChoice && items.includes(userChoice)) return userChoice;
   const first = ranked?.find(id => items.includes(id));
   return first ?? null;
-}
-
-export type SessionSnapshot = { status: 'idle' | 'running' | 'received' | 'failed'; data: Recommendation | null };
-/** Which recommendation is on screen. A failed or running re-analysis never presents old data as new. */
-export function recommendationView({ dealId, priority, session, preferred }: { dealId: string; priority: PriorityItem | null; session: SessionSnapshot; preferred: 'priority' | 'session' }) {
-  const fromPriority = priority && priority.deal_id === dealId && priority.recommendation.deal_id === dealId ? priority.recommendation : null;
-  const fromSession = session.status === 'received' && session.data && session.data.deal_id === dealId ? session.data : null;
-  const source: 'priority' | 'session' | null = preferred === 'session' && fromSession ? 'session' : fromPriority ? 'priority' : fromSession ? 'session' : null;
-  return {
-    source,
-    recommendation: source === 'session' ? fromSession : source === 'priority' ? fromPriority : null,
-    hasPriority: !!fromPriority,
-    hasSession: !!fromSession,
-    sessionStatus: session.status,
-  };
 }
 
 export function nextTabIndex(key: string, index: number, count: number): number | null {

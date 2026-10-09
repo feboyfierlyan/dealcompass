@@ -5,7 +5,10 @@ Tidak ada perubahan dependency, kontrak API, dataset, backend, ranking atau atur
 Redesign UI/UX dikerjakan Ical atas penugasan pengguna/Main di area frontend Boy;
 riwayat dan hasil uji BOY-02..04 tetap milik Boy (lihat `docs/handoffs/BOY.md`).
 
-## Build dan seluruh tes frontend (77)
+## Build dan seluruh tes frontend (82)
+
+Sejak PR #32 (revisi) halaman deal memanggil `POST /api/deals/{id}/analysis` sekali per deal aktif;
+backend rules wajib berasal dari branch yang memuat route tersebut. Tes HTTP nyata tetap mode rules.
 
 Backend lokal **rules** wajib menyala karena sebagian tes memanggil HTTP nyata:
 
@@ -19,8 +22,8 @@ Terminal kedua, dari root repo. `UX_BUILD` boleh folder sementara mana pun yang 
 ```bash
 UX_BUILD=/tmp/dealcompass-desktop-tests
 npm --prefix frontend run build
-node --test frontend/tests/contracts.test.mjs frontend/tests/graph.test.mjs frontend/tests/session.test.mjs frontend/tests/present.test.mjs
-frontend/node_modules/.bin/tsc frontend/src/components/DealTabs.tsx frontend/src/components/EvidencePanel.tsx frontend/src/components/ContextGraph.tsx frontend/src/components/Phase3Panels.tsx frontend/src/lib/graphView.ts frontend/src/lib/api.ts frontend/src/lib/resource.ts --target ES2022 --module commonjs --jsx react-jsx --outDir "$UX_BUILD" --skipLibCheck --strict
+node --test frontend/tests/contracts.test.mjs frontend/tests/graph.test.mjs frontend/tests/present.test.mjs frontend/tests/english.test.mjs frontend/tests/analysis-store.test.mjs
+frontend/node_modules/.bin/tsc frontend/src/components/DealTabs.tsx frontend/src/components/EvidencePanel.tsx frontend/src/components/ContextGraph.tsx frontend/src/components/Phase3Panels.tsx frontend/src/components/FollowUpPlan.tsx frontend/src/lib/graphView.ts frontend/src/lib/api.ts frontend/src/lib/resource.ts frontend/src/lib/analysis.ts frontend/src/lib/activeAnalysis.ts --target ES2022 --module commonjs --jsx react-jsx --outDir "$UX_BUILD" --skipLibCheck --strict
 NODE_PATH="$PWD/frontend/node_modules" API_TEST_BUILD="$UX_BUILD/lib" ANALYSIS_TEST_BUILD="$UX_BUILD" PHASE3_TEST_BUILD="$UX_BUILD" REDESIGN_TEST_BUILD="$UX_BUILD" node --test --test-concurrency=1 frontend/tests/api.test.cjs frontend/tests/analysis.test.cjs frontend/tests/phase3.test.cjs frontend/tests/redesign.test.cjs
 ```
 
@@ -29,7 +32,7 @@ NODE_PATH="$PWD/frontend/node_modules" API_TEST_BUILD="$UX_BUILD/lib" ANALYSIS_T
 | contracts | 5 | schema v1, rank null, bukti hilang | fixture repo sebagai data uji kontrak |
 | api (transport) | 7 | 404/501/503, JSON invalid, jaringan, abort, timeout, deal salah | mock transport |
 | graph | 8 | fokus, pencarian seluruh node, jalur, batas 24, direct/inferred, layout | GET nyata DL-001..005 |
-| session | 6 | lifecycle request analisis, abort, respons terlambat | mock promise |
+| analysis-store | 9 | satu workflow per deal, rerender/tab/kembali tanpa request, respons terlambat antar-deal, gagal tanpa retry otomatis, refresh, label Rules + Jev/replay/fallback/More information needed, validator envelope | mock promise |
 | present | 12 | pilihan default/pilihan pengguna, versi saran, tab keyboard, unknowns, owner, judul bukti, arah jalur | sintetis murni |
 | analysis | 8 | POST rules nyata lima deal dirender ActionTab+ReasonsTab; teks API utuh; urutan lapisan 1; bukti → graph | HTTP nyata + 3 sintetis |
 | phase3 | 18 | ranking/diagnostic nyata, join ID/snapshot, corruption, lifecycle | HTTP nyata + mock/sintetis berlabel |

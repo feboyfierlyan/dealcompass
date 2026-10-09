@@ -3,7 +3,9 @@ import { ApiError } from '../lib/api';
 import type { DealContext } from '../lib/contracts';
 import type { EvidencePath, PriorityItem } from '../lib/phase3';
 import { dateLabel } from '../lib/format';
-import { evidenceTitle, gateSummary, interactionMeta, obstacleEvidence, recommendationView } from '../lib/present';
+import { evidenceTitle, gateSummary, interactionMeta, obstacleEvidence } from '../lib/present';
+import { provenance } from '../lib/activeAnalysis';
+import type { ActiveAnalysis } from '../lib/activeAnalysis';
 import { ActionOverview } from './ActionOverview';
 import { ExplanationGroups, PrecedentList, RecommendationSources, UnknownList } from './AnalysisReport';
 import { EvidencePaths, PriorityRationale } from './Phase3Panels';
@@ -12,8 +14,6 @@ import { Icon } from './Icon';
 
 type OpenEvidence = (id: string) => void;
 export type RankingState = 'loading' | 'ready' | 'error' | 'unavailable';
-export type SessionInfo = { status: 'idle' | 'running' | 'received' | 'failed'; error: ApiError | null; receivedAt: string | null };
-type View = ReturnType<typeof recommendationView>;
 
 /** "Why this deal": the customer's own recorded words named by the ranking, plus its stated gate. */
 export function WhyBlock({ priority, context, rankingState, onEvidence }: { priority: PriorityItem | null; context: DealContext | null; rankingState: RankingState; onEvidence: OpenEvidence }) {
@@ -34,51 +34,52 @@ export function WhyBlock({ priority, context, rankingState, onEvidence }: { prio
   </section>;
 }
 
-export function ActionTab({ context, priority, rankingState, view, fixture, snapshot, session, onEvidence, onReasons, onShowPaths, onAnalyze, onShowVersion }: {
-  context: DealContext | null; priority: PriorityItem | null; rankingState: RankingState; view: View; fixture: boolean; snapshot: string | null;
-  session: SessionInfo; onEvidence: OpenEvidence; onReasons: () => void; onShowPaths: () => void; onAnalyze: () => void; onShowVersion: (v: 'priority' | 'session') => void;
+export function ActionTab({ context, priority, rankingState, view, fixture, snapshot, canRefresh, onEvidence, onReasons, onShowPaths, onRefresh }: {
+  context: DealContext | null; priority: PriorityItem | null; rankingState: RankingState; view: ActiveAnalysis; fixture: boolean; snapshot: string | null;
+  canRefresh: boolean; onEvidence: OpenEvidence; onReasons: () => void; onShowPaths: () => void; onRefresh: () => void;
 }) {
   const r = view.recommendation;
-  const running = session.status === 'running';
-  const rerunNote = useId();
+  const busy = view.status === 'checking' || view.refreshing;
+  const failed = view.error && !view.meta;
+  const status = view.refreshing ? 'Refreshing the analysis. The analysis shown is the previous version until the new one is checked.'
+    : view.status === 'checking' && r ? 'Rules-based recommendation shown while the deal context is checked.'
+    : view.error && view.meta ? `Refresh failed (${view.error.message}). The previous analysis is still shown.`
+    : '';
   return <div className="tab-stack">
-    {r ? <ActionOverview key={`${r.deal_id}-${view.source}-${JSON.stringify(r)}`} recommendation={r} context={context} priority={priority} source={view.source} snapshot={snapshot} fixture={fixture} onEvidence={onEvidence} onReasons={onReasons} onShowPaths={onShowPaths}/>
-      : rankingState === 'loading' && !running && session.status !== 'failed' ? <div className="action-card skeleton" role="status"><span className="visually-hidden">Preparing the priority recommendation</span><i/><i/><i/></div>
+    {r ? <ActionOverview key={view.versionKey} recommendation={r} view={view} context={context} snapshot={snapshot} fixture={fixture} onEvidence={onEvidence} onReasons={onReasons} onShowPaths={onShowPaths}/>
+      : (view.status === 'checking' || rankingState === 'loading') && !failed ? <div className="action-card skeleton" role="status"><span className="visually-hidden">Checking context…</span><i/><i/><i/></div>
       : <section className="action-card empty"><h3>No recommendation available yet</h3>
-        <p>{rankingState === 'error' ? 'Priorities could not be loaded, so their recommendation is unavailable.' : 'Priority recommendations are unavailable in this mode.'} You can request an analysis for this deal.</p>
-        {!running && session.status !== 'failed' && <div className="action-buttons"><button className="button primary" onClick={onAnalyze}><Icon name="arrow" size={17}/>Analyze this deal</button></div>}
-        {running && <p className="status-line" role="status"><span className="spinner"/>Running analysis…</p>}
-        {session.status === 'failed' && session.error && <ErrorNotice error={session.error} retry={onAnalyze} subject="Analysis"/>}
+        <p>{rankingState === 'error' ? 'Priorities could not be loaded, so their recommendation is unavailable.' : 'Priority recommendations are unavailable in this mode.'}</p>
+        {failed && view.error && <ErrorNotice error={view.error instanceof ApiError ? view.error : new ApiError(0, view.error.message)} retry={canRefresh ? onRefresh : undefined} subject="Analysis" retryLabel="Refresh analysis"/>}
       </section>}
 
-    {r && <section className="origin" aria-label="Analysis source">
-      <details className="analysis-options"><summary><Icon name="history" size={14}/>Versions & re-analysis</summary><div className="origin-row">
-        <p><Icon name="history" size={16}/>{view.source === 'session'
-          ? `Requested re-analysis${session.receivedAt ? ` at ${session.receivedAt}` : ''} · priority order unchanged`
-          : `From priority ranking${snapshot ? ` · snapshot ${dateLabel(snapshot)}` : ''}`}</p>
-        <button className="button tertiary" onClick={onAnalyze} disabled={running} aria-describedby={rerunNote}><Icon name="refresh" size={15}/>{running ? 'Running analysis…' : 'Run analysis again'}</button>
-        <span id={rerunNote} className="visually-hidden">Request a new result for this deal only. Priority order stays unchanged.</span>
-      </div>
-      {view.hasPriority && view.hasSession && <div className="segmented" role="group" aria-label="Displayed recommendation version">
-        <button aria-pressed={view.source === 'priority'} onClick={() => onShowVersion('priority')}>Priority recommendation</button>
-        <button aria-pressed={view.source === 'session'} onClick={() => onShowVersion('session')}>New analysis{session.receivedAt ? ` · ${session.receivedAt}` : ''}</button>
-      </div>}
+    {(r || view.status === 'checking') && <section className="origin" aria-label="Analysis source">
+      <p className="status-line small" role="status">{busy && <span className="spinner"/>}{status}</p>
+      {failed && r && <p className="status-line small">Jev unavailable: {view.error!.message} Rules-based recommendation shown.</p>}
+      <details className="analysis-options"><summary><Icon name="history" size={14}/>About this analysis</summary>
+        <div className="origin-row">
+          <div>{provenance(view).map((line, i) => <p key={i}>{line}</p>)}</div>
+          {canRefresh && <button className="button tertiary" onClick={onRefresh} disabled={busy}><Icon name="refresh" size={15}/>{busy ? 'Checking…' : 'Refresh analysis'}</button>}
+        </div>
+        {view.meta && <dl className="tech-list compact">
+          <div><dt>Analysis ID</dt><dd className="mono">{view.meta.analysis_id}</dd></div>
+          <div><dt>Version</dt><dd className="mono">{view.meta.analysis_version}</dd></div>
+          <div><dt>Context fingerprint</dt><dd className="mono">{view.meta.context_fingerprint}</dd></div>
+        </dl>}
+        <p className="note">Refreshing re-checks only this deal. The priority order is never changed by an analysis.</p>
       </details>
-      <p className="status-line small" role="status">{running ? 'Analysis is running. The displayed recommendation has not changed.' : session.status === 'received' && view.source === 'priority' ? 'New analysis is available under Versions & re-analysis.' : ''}</p>
-      {session.status === 'failed' && session.error && <ErrorNotice error={session.error} retry={onAnalyze} subject="Re-analysis"/>}
     </section>}
   </div>;
 }
 
-export function ReasonsTab({ priority, view, context, onEvidence, onEdge, onShowPath }: { priority: PriorityItem | null; view: View; context: DealContext; onEvidence: OpenEvidence; onEdge: (id: string) => void; onShowPath: (path: EvidencePath) => void }) {
+export function ReasonsTab({ priority, view, context, onEvidence, onEdge, onShowPath }: { priority: PriorityItem | null; view: ActiveAnalysis; context: DealContext; onEvidence: OpenEvidence; onEdge: (id: string) => void; onShowPath: (path: EvidencePath) => void }) {
   const r = view.recommendation;
   return <div className="tab-stack">
-
     <WhyBlock priority={priority} context={context} rankingState={priority ? 'ready' : 'unavailable'} onEvidence={onEvidence}/>
-    {r && view.hasPriority && view.hasSession && <p className="version-note">Evidence below follows the <strong>{view.source === 'session' ? 'new analysis' : 'priority recommendation'}</strong>.</p>}
+    {r && <p className="version-note">Sources, paths and reasoning below belong to the analysis shown: <strong>{view.label}</strong>{view.meta ? <> · <span className="mono">{view.meta.analysis_id}</span></> : null}.</p>}
     {r && <RecommendationSources ids={r.evidence_ids} context={context} onEvidence={onEvidence}/>}
     {r && <PrecedentList recommendation={r} context={context} onEvidence={onEvidence}/>}
-    {priority && <EvidencePaths item={priority} context={context} onEvidence={onEvidence} onEdge={onEdge} onShowPath={onShowPath}/>}
+    {r && <EvidencePaths paths={view.paths} limitations={view.pathLimitations} context={context} onEvidence={onEvidence} onEdge={onEdge} onShowPath={onShowPath}/>}
     {priority ? <PriorityRationale item={priority}/> : <p className="muted">Priority reasoning is not available.</p>}
     {r && <ExplanationGroups recommendation={r}/>}
     {r && <UnknownList recommendation={r} context={context}/>}

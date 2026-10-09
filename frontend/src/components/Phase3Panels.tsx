@@ -49,14 +49,15 @@ function EdgeButton({ edge, onEdge }: { edge: GraphEdge; onEdge: (id: string) =>
     <span className="muted small">{dateLabel(edge.valid_from)} — {edge.valid_to ? dateLabel(edge.valid_to) : 'no end date recorded'}</span>
   </button>;
 }
-/** API evidence paths in reading order. Arrows keep each original edge direction. */
-export function EvidencePaths({ item, context, onEvidence, onEdge, onShowPath }: { item: PriorityItem; context: DealContext; onEvidence: OpenEvidence; onEdge: (id: string) => void; onShowPath: (path: EvidencePath) => void }) {
+/** Graph paths of the displayed analysis, in reading order. Arrows keep each original edge direction. */
+export function EvidencePaths({ paths, limitations = [], context, onEvidence, onEdge, onShowPath }: { paths: EvidencePath[]; limitations?: string[]; context: DealContext; onEvidence: OpenEvidence; onEdge: (id: string) => void; onShowPath: (path: EvidencePath) => void }) {
   const edges = new Map(context.graph.edges.map(e => [e.id, e]));
   return <section className="reason-section" aria-label="Supporting relationships">
-    <h3>Supporting relationships <span className="count">{item.evidence_paths.length}</span></h3>
-    <p className="note">Arrows retain the original direction. Inferred relationships are interpretations, not direct facts.</p>
-    {!item.evidence_paths.length && <p className="muted">No graph paths provided by the ranking; source records remain available.</p>}
-    <ol className="path-list">{item.evidence_paths.map((path, i) => <li key={i}><details className="path-card">
+    <h3>Supporting relationships <span className="count">{paths.length}</span></h3>
+    <p className="note">Paths follow recorded relationships for the analysis shown. Arrows retain the original direction. Inferred relationships are interpretations, not direct facts.</p>
+    {!paths.length && <p className="muted">No graph path is available for this analysis. Cited source records remain available; no relationship is drawn without a recorded edge.</p>}
+    {!!limitations.length && <details className="disclosure compact"><summary>Path limitations <span className="count">{limitations.length}</span></summary><TextList items={limitations} empty="None"/></details>}
+    <ol className="path-list">{paths.map((path, i) => <li key={i}><details className="path-card">
       <summary><span>Path {i + 1}</span><strong>{pathSteps(path, context).at(-1)?.name ?? 'Supporting evidence'}</strong><span className="count">{path.edge_ids.length} edges</span></summary>
       <ol className="path-chain">{pathSteps(path, context).map((step, j) => <li key={j}>{step.edge && <span className={`path-link ${step.edge.evidence_type}`}><span className={`direction ${step.forward ? 'along' : 'against'}`}><Icon name="arrow" size={14}/></span>{relationPhrase(step.edge.relation)}<span className="visually-hidden">{step.forward ? ' (along the original direction)' : ' (read against the original direction)'}</span>{step.edge.evidence_type === 'inferred' && <span className="tag inferred">dugaan</span>}</span>}<span className="path-node"><strong>{step.name}</strong>{step.type && <span className="muted"> · {step.type}</span>} <span className="id-chip">{step.id}</span></span></li>)}</ol>
       <div className="path-actions"><button className="button secondary small" onClick={() => onShowPath(path)}><Icon name="graph" size={16}/>View path in graph</button>

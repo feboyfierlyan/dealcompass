@@ -1,35 +1,35 @@
 import { englishText } from './english';
 import type { DealContext, Recommendation } from './contracts';
-import type { PriorityItem } from './phase3';
-import { employeeFromContext, gateSummary, splitUnknowns } from './present';
+import { employeeFromContext, splitUnknowns } from './present';
 
-/** Presentation labels for exact API gate values; never infer a gate from a deal ID. */
-export function taskHeading(priority: PriorityItem | null, source: 'priority' | 'session' | null) {
-  if (source !== 'priority') return { title: 'Prepare the next step', note: 'Review the proposal and its conditions before acting.' };
-  const labels: Record<string, { title: string; note: string }> = {
-    'kesediaan/izin kandidat referensi belum ada': { title: 'Validate a customer reference', note: 'The candidate has not confirmed willingness or contact consent. A candidate is not permission for an introduction.' },
-    'identitas pengambil keputusan masih inferred': { title: 'Confirm the decision-maker', note: 'The decision-maker identity is inferred from the data. Confirm their role first.' },
-    'approval VP Sales tertunda': { title: 'Request a discount decision', note: 'The discount request is not approved. VP Sales must decide and record the decision before any offer.' },
-    'discovery belum dilakukan': { title: 'Discover customer needs', note: 'Confirm needs and the decision-maker before quoting. Missing discovery does not mean the deal is lost or risk-free.' },
-  };
-  return labels[gateSummary(priority) ?? ''] ?? { title: 'Prepare the next step', note: gateSummary(priority) ?? 'Conditions have not been summarized. Read the full proposal before proceeding.' };
+const TITLES: Record<string, { title: string; note: string }> = {
+  'kesediaan/izin kandidat referensi belum ada': { title: 'Validate a customer reference', note: 'The candidate has not confirmed willingness or contact consent. A candidate is not permission for an introduction.' },
+  'identitas pengambil keputusan masih inferred': { title: 'Confirm the decision-maker', note: 'The decision-maker identity is inferred from the data. Confirm their role first.' },
+  'approval VP Sales tertunda': { title: 'Request a discount decision', note: 'The discount request is not approved. VP Sales must decide and record the decision before any offer.' },
+  'discovery belum dilakukan': { title: 'Discover customer needs', note: 'Confirm needs and the decision-maker before quoting. Missing discovery does not mean the deal is lost or risk-free.' },
+};
+const GATES: Record<string, string> = {
+  'kesediaan/izin kandidat referensi belum ada': 'Contact consent unconfirmed',
+  'identitas pengambil keputusan masih inferred': 'Decision-maker unconfirmed',
+  'approval VP Sales tertunda': 'VP Sales approval pending',
+  'discovery belum dilakukan': 'Customer needs unknown',
+};
+
+/** Presentation labels for exact gate values of the displayed analysis; never infer a gate from a deal ID. */
+export function taskHeading(gate: string | null) {
+  return TITLES[gate ?? ''] ?? { title: 'Prepare the next step', note: gate && gate !== 'tidak ada gate tercatat' ? gate : 'Review the proposal and its conditions before acting.' };
 }
 
 /** Short visible gate; full conditions stay in the disclosure and follow-up plan. */
-export function gateLabel(priority: PriorityItem | null, source: 'priority' | 'session' | null, approvals: string[]) {
+export function gateLabel(gate: string | null, approvals: string[]) {
   if (approvals.length) return 'Approval required';
-  if (source !== 'priority') return 'Review action conditions';
-  const labels: Record<string, string> = {
-    'kesediaan/izin kandidat referensi belum ada': 'Contact consent unconfirmed',
-    'identitas pengambil keputusan masih inferred': 'Decision-maker unconfirmed',
-    'approval VP Sales tertunda': 'VP Sales approval pending',
-    'discovery belum dilakukan': 'Customer needs unknown',
-  };
-  return labels[gateSummary(priority) ?? ''] ?? 'Review action conditions';
+  return GATES[gate ?? ''] ?? 'Review action conditions';
 }
 
+export type BriefAnalysis = { label: string; id: string | null; generatedAt: string | null };
+
 /** A reviewable handoff, not an email or a CRM mutation. Preserve all business conditions verbatim. */
-export function buildFollowUpBrief(r: Recommendation, context: DealContext | null, snapshot: string | null) {
+export function buildFollowUpBrief(r: Recommendation, context: DealContext | null, snapshot: string | null, analysis: BriefAnalysis | null = null) {
   const owner = employeeFromContext(context, r.owner_id);
   const sources = [...new Set(r.evidence_ids)].map(id => {
     const e = context?.evidence.find(record => record.id === id);
@@ -38,6 +38,7 @@ export function buildFollowUpBrief(r: Recommendation, context: DealContext | nul
   return [
     `FOLLOW-UP PLAN — ${context?.deal.account_name ?? r.deal_id}`,
     `Deal: ${r.deal_id} | Data: ${snapshot ?? 'unavailable'} | Mode: ${r.engine_mode}`,
+    `Analysis: ${analysis ? `${analysis.label}${analysis.id ? ` | id ${analysis.id}` : ''}${analysis.generatedAt ? ` | generated ${analysis.generatedAt}` : ''}` : 'not specified'}`,
     'Draft for review. Not sent, not saved to CRM, and not approval.',
     `\nOWNER\n${owner ? `${owner.name} (${owner.id})` : r.owner_id ?? 'Not specified'}`,
     `\nPROPOSED ACTION\n${englishText(r.action)}`,

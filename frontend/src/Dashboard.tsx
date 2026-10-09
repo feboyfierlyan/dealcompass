@@ -8,6 +8,7 @@ import { DealWorkspace } from './components/DealWorkspace';
 import type { RankingState } from './components/DealTabs';
 import { ErrorNotice, asApiError } from './components/Notice';
 import { createResource } from './lib/resource';
+import { analysisStoreFor } from './lib/analysis';
 import { matchPipeline, rankedDeals } from './lib/phase3';
 import { compactRupiah, effectiveSelection, priorityKindLabel } from './lib/present';
 import { useMedia } from './lib/useMedia';
@@ -22,6 +23,8 @@ export function Dashboard({ api, fixture, initialDeal = null }: { api: DealApi; 
   const [userChoice, setUserChoice] = useState<string | null>(initialDeal);
   const [showDetail, setShowDetail] = useState(false);
   const narrow = useMedia('(max-width: 899px)');
+  // Shared per API object: returning to a deal reuses its analysis instead of requesting it again.
+  const store = fixture ? null : analysisStoreFor(api);
   const detailRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const controller = new AbortController();
@@ -31,7 +34,7 @@ export function Dashboard({ api, fixture, initialDeal = null }: { api: DealApi; 
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [api, refresh]);
-  // Ranking and pipeline findings are GET requests. No analysis (POST) runs on load.
+  // Ranking and pipeline findings are GET requests. Only the opened deal gets an analysis (DealWorkspace).
   const priorities = useMemo(() => createResource(async (signal: AbortSignal) => {
     if (!api.priorities || !data) throw new ApiError(501, 'Priorities are not available.');
     const result = await api.priorities(signal); matchPipeline(data, result); return result;
@@ -110,7 +113,7 @@ export function Dashboard({ api, fixture, initialDeal = null }: { api: DealApi; 
       <details className="queue-help"><summary><Icon name="info" size={15}/>Quick guide</summary><ol><li>Start with the highest-priority deal.</li><li>Review the action and its conditions.</li><li>Prepare a plan to copy.</li></ol><p>Priority is an order of attention, not a closing probability.</p></details>
     </section>
     <section className="detail-col" ref={detailRef} aria-label="Deal details" hidden={listOnly}>
-      {active && data ? <DealWorkspace key={`${fixture}-${active.deal_id}-${refresh}`} deal={active} api={api} fixture={fixture} snapshot={data.snapshot_date}
+      {active && data ? <DealWorkspace key={`${fixture}-${active.deal_id}-${refresh}`} deal={active} api={api} fixture={fixture} snapshot={data.snapshot_date} store={store}
         priority={itemFor(active.deal_id)} rankTotal={priorityState.data?.items.length ?? null} rankingState={rankingState} methodology={priorityState.data}
         diagnosticState={diagnosticState} retryDiagnostics={() => void diagnostics.run()} onBack={narrow ? back : undefined}/>
         : <div className="detail-empty">{loading ? <p role="status"><span className="spinner"/>Loading deals…</p>

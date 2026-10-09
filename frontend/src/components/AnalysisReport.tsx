@@ -51,11 +51,11 @@ export function ReadableAction({ text, context, onEvidence }: { text: string; co
 }
 
 /** Layer 1: what to do, who owns it, the next target, and conditions that must stay next to the action. */
-export function ActionSummary({ recommendation: r, context, fixture, onEvidence, actions }: { recommendation: Recommendation; context: DealContext | null; fixture: boolean; onEvidence: OpenEvidence; actions?: ReactNode }) {
+export function ActionSummary({ recommendation: r, context, fixture, onEvidence, actions, label }: { recommendation: Recommendation; context: DealContext | null; fixture: boolean; onEvidence: OpenEvidence; actions?: ReactNode; label?: string }) {
   const titleId = useId();
   const { specific } = splitUnknowns(r, context);
   return <section className="action-card" aria-labelledby={titleId}>
-    <div className="action-card-head"><h3 id={titleId}>Recommended action</h3><span className={`tag engine ${r.engine_mode}`}>{engineLabel[r.engine_mode]}{fixture ? ' · fixture' : ''}</span></div>
+    <div className="action-card-head"><h3 id={titleId}>Recommended action</h3><span className={`tag engine ${r.engine_mode}`}>{label ?? engineLabel[r.engine_mode]}{fixture ? ' · fixture' : ''}</span></div>
     {actions && <div className="action-buttons">{actions}</div>}
     <ReadableAction text={r.action || 'No action provided by the analysis.'} context={context} onEvidence={onEvidence}/>
     <dl className="action-facts">
