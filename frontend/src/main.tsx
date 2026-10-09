@@ -1,36 +1,63 @@
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { liveApi, ApiError } from './lib/api';
+import type { DealApi } from './lib/api';
+import type { DealList } from './lib/contracts';
+import { dateLabel, rupiah, statusLabel } from './lib/format';
+import { Icon } from './components/Icon';
+import { DealWorkspace, ErrorNotice } from './components/DealWorkspace';
 import './style.css';
 
-type Deal = { deal_id: string; account_id: string; account_name: string; stage: string; stage_age_days: number; annual_value: number; rank: number | null; analysis_status: string };
-const money = new Intl.NumberFormat('id-ID', {style: 'currency', currency: 'IDR', maximumFractionDigits: 0});
-
-function App() {
-  const [deals, setDeals] = useState<Deal[]>([]);
-  const [error, setError] = useState('');
+function Dashboard({ api, fixture }: { api: DealApi; fixture: boolean }) {
+  const [data, setData] = useState<DealList | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refresh, setRefresh] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
   useEffect(() => {
     const controller = new AbortController();
-    fetch('/api/deals', {signal: controller.signal}).then(r => {if (!r.ok) throw new Error(`API ${r.status}`); return r.json();})
-      .then(data => setDeals(data.items)).catch(e => {if (e.name !== 'AbortError') setError('Daftar deal belum dapat dimuat. Pastikan backend berjalan pada port 8000.');})
-      .finally(() => {if (!controller.signal.aborted) setLoading(false);});
+    setLoading(true); setError(null); setData(null);
+    api.list(controller.signal).then(result => {
+      if (controller.signal.aborted) return;
+      setData(result); setSelected(current => result.items.some(d => d.deal_id === current) ? current : result.items[0]?.deal_id ?? null);
+    }).catch(e => { if (!controller.signal.aborted) setError(e instanceof ApiError ? e : new ApiError(0, 'Daftar deal belum dapat dimuat.')); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
-  }, []);
-  return <main>
-    <p className="eyebrow">KASIRNUSA · SNAPSHOT 1 OKTOBER 2026</p>
-    <h1>DealCompass</h1>
-    <p>Peluang penjualan dan bukti untuk menentukan tindakan berikutnya.</p>
-    <aside>Fondasi proyek: daftar bersumber dari CRM. Graph dan analisis sedang dikerjakan; urutan di bawah belum merupakan ranking prioritas.</aside>
-    {loading && <p role="status">Memuat data…</p>}
-    {error && <p role="alert">{error}</p>}
-    {!loading && !error && <section aria-label="Daftar prospek">
-      {deals.map(d => <article key={d.deal_id}>
-        <p className="eyebrow">{d.account_id} · {d.deal_id}</p><h2>{d.account_name}</h2>
-        <p>{d.stage} · {d.stage_age_days} hari di tahap ini</p>
-        <strong>{money.format(d.annual_value)} / tahun</strong><p className="muted">Belum dianalisis</p>
-      </article>)}
-    </section>}
-  </main>;
+  }, [api, refresh]);
+  const deals = data?.items ?? [];
+  const visible = deals.filter(d => `${d.account_name} ${d.account_id} ${d.deal_id}`.toLowerCase().includes(search.toLowerCase().trim()));
+  const active = deals.find(d => d.deal_id === selected);
+  const rankCount = deals.filter(d => d.rank !== null).length;
+  const total = deals.reduce((sum, d) => sum + d.annual_value, 0);
+  return <>
+    <header className="topbar"><div><span className="breadcrumb">Ruang kerja sales</span><Icon name="chevron" size={12}/><strong>Deal acceleration</strong></div><span className="snapshot"><Icon name="clock" size={14}/>{data ? `Snapshot ${dateLabel(data.snapshot_date)}` : 'Snapshot belum dimuat'}</span></header>
+    <main id="main-content"><div className="page-heading"><div><p className="eyebrow orange">PIPELINE INTELLIGENCE</p><h1>Langkah tepat.<br/><span>Deal bergerak.</span></h1><p>Hubungkan konteks, periksa bukti, tentukan langkah berikutnya.</p></div><div className="page-heading-aside"><span className="live-label"><i/>{fixture ? 'Fixture pengembangan' : 'Sumber data CRM'}</span><button className="button secondary" disabled={loading} onClick={() => setRefresh(v => v + 1)}><Icon name="refresh" size={15}/>Muat ulang</button></div></div>
+      <div className="metrics"><div className="metric"><span>Potensi pipeline tahunan</span><strong>{data ? rupiah(total) : '—'}</strong><small>Nilai peluang, belum menjadi pendapatan</small></div><div className="metric"><span>Deal dalam cakupan</span><strong>{data ? String(deals.length).padStart(2, '0') : '—'}<em> / P01–P05</em></strong><small>Setiap prospek punya konteksnya sendiri</small></div><div className="metric"><span>Prioritas dari analisis</span><strong className="metric-text">{data ? rankCount ? `${rankCount} deal memiliki ranking` : 'Belum tersedia' : 'Menunggu data'}</strong><small>Urutan kartu mengikuti sumber data</small></div></div>
+      <section className="pipeline" aria-labelledby="pipeline-title"><div className="section-heading"><div><h2 id="pipeline-title">Pilih deal untuk ditelusuri <span>{data ? String(deals.length).padStart(2, '0') : '—'}</span></h2><p className="muted small">Periksa konteks dan tindakan berikutnya untuk setiap prospek.</p></div><label className="search"><Icon name="search" size={17}/><input aria-label="Cari deal" placeholder="Cari nama atau ID deal" value={search} onChange={e => setSearch(e.target.value)}/>{search && <button aria-label="Hapus pencarian" onClick={() => setSearch('')}>×</button>}</label></div>
+        {loading && <div className="deal-grid" role="status" aria-label="Memuat daftar deal">{Array.from({ length: 5 }, (_, i) => <div className="skeleton-card" key={i}><i/><i/><i/></div>)}</div>}
+        {error && <ErrorNotice error={error} retry={() => setRefresh(v => v + 1)} subject="Daftar deal"/>}
+        {!loading && !error && !deals.length && <div className="panel empty-state"><Icon name="grid" size={30}/><h3>Belum ada deal dalam daftar</h3><p>Layanan mengembalikan daftar kosong. Muat ulang setelah data tersedia.</p><button className="button secondary" onClick={() => setRefresh(v => v + 1)}>Muat ulang</button></div>}
+        {!loading && !!deals.length && !visible.length && <div className="search-empty" role="status">Tidak ada deal yang cocok dengan “{search}”. <button className="text-button" onClick={() => setSearch('')}>Tampilkan semua</button></div>}
+        <div className="deal-grid">{visible.map(deal => <button key={deal.deal_id} className={`deal-card ${selected === deal.deal_id ? 'active' : ''}`} aria-pressed={selected === deal.deal_id} aria-label={`${deal.account_id} ${deal.account_name}`} onClick={() => setSelected(deal.deal_id)}><span className="row-between"><span className="account-id">{deal.account_id}</span><span className="stage">{deal.stage}</span></span><strong className="deal-name">{deal.account_name}</strong><span className="deal-value">{rupiah(deal.annual_value)}<small> / tahun</small></span><span className="deal-age"><Icon name="clock" size={13}/>{deal.stage_age_days} hari di tahap ini</span><span className="card-footer"><span><span className="rank-label">{deal.rank === null ? 'Prioritas belum tersedia' : `Prioritas #${deal.rank}`}</span><small>{statusLabel[deal.analysis_status]}</small></span><span className="card-arrow"><Icon name="arrow" size={16}/></span></span></button>)}</div>
+      </section>
+      {active && !loading && <DealWorkspace key={`${fixture}-${active.deal_id}-${refresh}`} deal={active} api={api} fixture={fixture}/>}
+      <footer className="page-footer"><span>DEALCOMPASS <span> / </span> KasirNusa</span><span>Keputusan yang bisa ditelusuri.</span></footer>
+    </main>
+  </>;
+}
+function App() {
+  const [fixtureApi, setFixtureApi] = useState<DealApi | null>(null);
+  const [fixtureLoading, setFixtureLoading] = useState(false);
+  const [fixtureError, setFixtureError] = useState('');
+  async function toggleFixture() {
+    if (!import.meta.env.DEV) return;
+    if (fixtureApi) { setFixtureApi(null); return; }
+    setFixtureLoading(true); setFixtureError('');
+    try { const module = await import('./dev/fixture'); setFixtureApi(module.fixtureApi); }
+    catch { setFixtureError('Fixture pengembangan gagal dimuat.'); }
+    finally { setFixtureLoading(false); }
+  }
+  return <><a className="skip-link" href="#main-content">Lewati ke konten</a><div className="app-shell"><aside className="sidebar"><a className="brand" href="#main-content" aria-label="DealCompass ke konten utama"><span className="brand-mark"><Icon name="compass" size={26}/></span><span>deal<span className="brand-light">compass</span><small>CONTEXT TO ACTION</small></span></a><div className="workspace-label">WORKSPACE</div><a href="#pipeline-title" className="nav-item active"><Icon name="grid" size={19}/>Deal acceleration<span className="nav-dot"/></a><div className="sidebar-note"><span className="sidebar-note-symbol"><Icon name="graph" size={24}/></span><p>Konteks terhubung.<br/><strong>Keputusan beralasan.</strong></p><span>P01—P05 / SALES</span></div><div className="sidebar-bottom">{import.meta.env.DEV && <button className="fixture-toggle" onClick={toggleFixture} disabled={fixtureLoading}>{fixtureApi ? 'Kembali ke API nyata' : fixtureLoading ? 'Memuat fixture…' : 'Pratinjau fixture pengembangan'}</button>}<div className="team"><span className="avatar">KN</span><span>KasirNusa<small>Sales workspace</small></span><span className="team-dot"/></div></div></aside><div className="app-body">{fixtureApi && <div className="fixture-banner" role="status"><strong>MODE PENGEMBANGAN · FIXTURE</strong><span>Contoh P02 bersumber dari dataset; graph dan rekomendasi adalah fixture UI. Bukan hasil analisis backend atau Jev.</span><button onClick={() => setFixtureApi(null)}>Kembali ke API nyata</button></div>}{fixtureError && <p role="alert" className="notice error">{fixtureError}</p>}<Dashboard key={fixtureApi ? 'fixture' : 'live'} api={fixtureApi ?? liveApi} fixture={!!fixtureApi}/></div></div></>;
 }
 createRoot(document.getElementById('root')!).render(<App/>);
-
