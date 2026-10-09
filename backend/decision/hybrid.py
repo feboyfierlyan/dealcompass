@@ -362,6 +362,6 @@ def default_service() -> AnalysisService:
         return _service
 
 
-def analyze_deal_envelope(deal_id: str, refresh: bool = False) -> dict:
-    """Entry point route: AnalysisEnvelope sebagai dict JSON."""
-    return default_service().analyze(deal_id, refresh=refresh)
+def analyze_deal_envelope(deal_id: str, refresh: bool = False, context: DealContext | None = None) -> dict:
+    """Entry point route: AnalysisEnvelope sebagai dict JSON. context opsional dari produsen Bima di route."""
+    return default_service().analyze(deal_id, refresh=refresh, context=context)
