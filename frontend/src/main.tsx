@@ -23,8 +23,8 @@ const NAV: { id: View; label: string; icon: IconName }[] = [
 function App() {
   const [uploaded, setUploaded] = useState<UploadedWorkspace | null>(()=>{try { return JSON.parse(sessionStorage.getItem('dealcompass.workspace') || 'null'); } catch { return null; }});
   const scopedApi = useMemo(()=>uploaded ? workspaceApi(uploaded.workspace_id) : liveApi,[uploaded]);
-  const [tour, setTour] = useState(()=>{try { return !localStorage.getItem('dealcompass.tour.v1'); } catch { return true; }});
-  function closeTour() { setTour(false); try { localStorage.setItem('dealcompass.tour.v1','done'); } catch { /* Optional preference. */ } }
+  const [tour, setTour] = useState(()=>{try { return !localStorage.getItem('dealcompass.tour.v2'); } catch { return true; }});
+  function closeTour() { setTour(false); try { localStorage.setItem('dealcompass.tour.v2','done'); } catch { /* Optional preference. */ } }
   function selectWorkspace(value: UploadedWorkspace | null) { setUploaded(value); try { value ? sessionStorage.setItem('dealcompass.workspace',JSON.stringify(value)) : sessionStorage.removeItem('dealcompass.workspace'); } catch { /* Works in-memory if storage is unavailable. */ } setFixtureApi(null); setOpenDeal(null); setView('priorities'); }
   const [view, setView] = useState<View>('priorities');
   const [openDeal, setOpenDeal] = useState<{ id: string; seq: number } | null>(null);

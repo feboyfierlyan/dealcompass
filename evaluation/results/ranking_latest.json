@@ -1,5 +1,5 @@
 {
-  "generated_wib": "2026-10-09 20:01 WIB",
+  "generated_wib": "2026-10-10 07:53 WIB",
   "source": "build_deal_context + analyze_deal_initial nyata (Bima, dataset asli); kasus mutasi sintetis berlabel",
   "jev": "Ranking tidak memakai Jev (rules). Tidak ada mock/replay/live pada ranking.",
   "methodology": {
@@ -62,7 +62,7 @@
     "Sensitivitas tanpa faktor preseden_relevan: urutan acceleration DL-004 > DL-001 > DL-002 > DL-003 (sama).",
     "Sensitivitas bobot nilai x2: urutan acceleration DL-001 > DL-004 > DL-002 > DL-003 (berubah dari DL-004 > DL-001 > DL-002 > DL-003)."
   ],
-  "rank_deals_ms_warm": 109,
+  "rank_deals_ms_warm": 69,
   "items": [
     {
       "rank": 1,
@@ -390,7 +390,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 724
+      "latency_ms": 247
     },
     {
       "id": "K02",
@@ -409,7 +409,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 1727
+      "latency_ms": 692
     },
     {
       "id": "K03",
@@ -430,7 +430,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 641
+      "latency_ms": 345
     },
     {
       "id": "K04",
@@ -452,7 +452,7 @@
         "DL-903",
         "DL-005"
       ],
-      "latency_ms": 478
+      "latency_ms": 200
     },
     {
       "id": "K05",
@@ -471,7 +471,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 238
+      "latency_ms": 91
     },
     {
       "id": "K06",
@@ -491,7 +491,7 @@
         "DL-002",
         "DL-005"
       ],
-      "latency_ms": 241
+      "latency_ms": 91
     },
     {
       "id": "K07",
@@ -510,7 +510,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 216
+      "latency_ms": 91
     },
     {
       "id": "K08",
@@ -530,7 +530,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 362
+      "latency_ms": 150
     },
     {
       "id": "K09",
@@ -549,7 +549,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 260
+      "latency_ms": 91
     },
     {
       "id": "K10",
@@ -568,7 +568,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 262
+      "latency_ms": 91
     },
     {
       "id": "K11",
@@ -588,7 +588,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 423
+      "latency_ms": 157
     },
     {
       "id": "K12",
@@ -612,7 +612,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 240
+      "latency_ms": 94
     },
     {
       "id": "K13",
@@ -631,7 +631,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 200
+      "latency_ms": 91
     },
     {
       "id": "K14",
@@ -653,7 +653,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 184
+      "latency_ms": 93
     },
     {
       "id": "K15",
@@ -672,7 +672,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 314
+      "latency_ms": 150
     }
   ]
 }

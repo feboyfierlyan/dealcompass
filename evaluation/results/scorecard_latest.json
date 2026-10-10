@@ -1,0 +1,88 @@
+{
+  "generated_wib": "2026-10-10 07:56 WIB",
+  "decision_run_wib": "2026-10-10 07:53 WIB",
+  "metrics": [
+    {
+      "id": "decision",
+      "label": "Rules decision scenario acceptance",
+      "passed": 23,
+      "total": 24,
+      "source": "latest.json",
+      "scope": "Original-data and developer-authored synthetic scenarios. Excludes mock/replay Jev.",
+      "measures": "Specified action, approval, precedent and evidence checks; not human-rated answer accuracy."
+    },
+    {
+      "id": "ranking",
+      "label": "Ranking rule conformance",
+      "passed": 15,
+      "total": 15,
+      "source": "ranking_latest.json",
+      "scope": "5 original-data + 10 synthetic scenarios.",
+      "measures": "Ordering obeys declared heuristic and preserves gates/provenance; not best-deal prediction."
+    },
+    {
+      "id": "integrity",
+      "label": "Demo recommendation integrity",
+      "passed": 5,
+      "total": 5,
+      "source": "latest.json",
+      "scope": "Five built-in deals; rules mode.",
+      "measures": "Citations resolve, precedents belong to candidate records, account scope and proposal labels hold. Does not prove that every citation entails each claim."
+    },
+    {
+      "id": "mock",
+      "label": "Mock/replay Jev integration checks",
+      "passed": 11,
+      "total": 11,
+      "source": "latest.json",
+      "scope": "Transport mocks/replay only.",
+      "measures": "Fallback and policy integration behavior, not provider quality."
+    },
+    {
+      "id": "live_rules",
+      "label": "Historical paraphrases: rules",
+      "passed": 6,
+      "total": 12,
+      "source": "paraphrases_live.json",
+      "scope": "12 pre-labelled synthetic messages, historical run 2026-10-09T22:28:15.317184+00:00.",
+      "measures": "Exact match to the developer-assigned obstacle label; classification only."
+    },
+    {
+      "id": "live_jev",
+      "label": "Historical paraphrases: live Jev",
+      "passed": 10,
+      "total": 12,
+      "source": "paraphrases_live.json",
+      "scope": "Same messages and labels, historical run 2026-10-09T22:28:15.317184+00:00; no new provider call.",
+      "measures": "Exact match for obstacle classification only, not whole-app accuracy."
+    }
+  ],
+  "known_failures": [
+    {
+      "id": "E15",
+      "description": "Sintetis sulit: \"KasirPro lebih ramah di kantong\". Batas rules diketahui.",
+      "failed_checks": [
+        "I0296 terdeteksi harga"
+      ]
+    }
+  ],
+  "baseline": {
+    "deals": 5,
+    "rank_changed_vs_stage_value": [],
+    "approval_gates_visible_crm": 0,
+    "approval_gates_visible_graph_rules": 1,
+    "deals_with_named_obstacle_graph_rules": 4,
+    "deals_with_additional_sources": [
+      "DL-004",
+      "DL-001",
+      "DL-002",
+      "DL-003"
+    ]
+  },
+  "limitations": [
+    "Not an independent holdout. Development cases and synthetic labels may favor the implementation.",
+    "No benchmark-wide SalesTranscriptQA run and no comparable external accuracy score.",
+    "No measured sales uplift, time-to-close improvement, novice-user study or independent ranking ground truth.",
+    "Do not average these percentages: they measure different things, with overlapping inputs."
+  ]
+}

@@ -248,10 +248,13 @@
 .graph-canvas { background-color:#f7faf8; background-image:radial-gradient(#dce6df .7px,transparent .7px); }
 .focus-node rect { fill:#ffffff; stroke:#c0d0c5; }
 .focus-node .focus-label { fill:var(--ink); }
-.focus-node .focus-type { fill:#698273; }
+.focus-node .focus-type { fill:#4e695a; }
 .focus-node.root rect { fill:#207553; stroke:#207553; }
 .focus-node.root text { fill:#ffffff; }
-.focus-node:hover rect, .focus-node.selected rect { fill:#e8f5ed; stroke:#318862; }
+.focus-node:hover rect, .focus-node.selected rect, .focus-node:focus-visible rect { fill:#e8f5ed; stroke:#23734e; }
+.focus-node:hover .focus-label, .focus-node.selected .focus-label, .focus-node:focus-visible .focus-label { fill:#183c2c; }
+.focus-node:hover .focus-type, .focus-node.selected .focus-type, .focus-node:focus-visible .focus-type { fill:#355c46; }
+.focus-node:focus-visible rect { stroke-width:3; }
 .graph-edge { color:#6d8979; }
 .graph-legend i { border-color:#8fa99a; }
 .graph-legend i.dashed { border-color:var(--inferred-ink); }

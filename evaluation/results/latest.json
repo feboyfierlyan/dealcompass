@@ -1,5 +1,5 @@
 {
-  "generated_wib": "2026-10-09 20:01 WIB",
+  "generated_wib": "2026-10-10 07:53 WIB",
   "context_source": "build_deal_context nyata (graph Bima, dataset asli); mutasi kasus sintetis berlabel",
   "jev": "Tidak ada panggilan live. Kasus Jev memakai transport mock.",
   "summary": {
@@ -109,7 +109,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 2772
+      "latency_ms": 14226
     },
     {
       "id": "E02",
@@ -134,7 +134,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 107
+      "latency_ms": 82
     },
     {
       "id": "E03",
@@ -161,7 +161,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 100
+      "latency_ms": 102
     },
     {
       "id": "E04",
@@ -188,7 +188,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 107
+      "latency_ms": 86
     },
     {
       "id": "E05",
@@ -213,7 +213,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 112
+      "latency_ms": 76
     },
     {
       "id": "E06",
@@ -239,7 +239,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 219
+      "latency_ms": 147
     },
     {
       "id": "E31",
@@ -267,7 +267,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 144
+      "latency_ms": 65
     },
     {
       "id": "E32",
@@ -295,7 +295,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 113
+      "latency_ms": 60
     },
     {
       "id": "E33",
@@ -323,7 +323,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 113
+      "latency_ms": 61
     },
     {
       "id": "E34",
@@ -351,7 +351,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 109
+      "latency_ms": 56
     },
     {
       "id": "E35",
@@ -379,7 +379,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 110
+      "latency_ms": 57
     },
     {
       "id": "E07",
@@ -401,7 +401,7 @@
         "D-2025-02",
         "D-2025-07"
       ],
-      "latency_ms": 100
+      "latency_ms": 59
     },
     {
       "id": "E08",
@@ -425,7 +425,7 @@
         "D-2025-06",
         "D-2025-12"
       ],
-      "latency_ms": 195
+      "latency_ms": 110
     },
     {
       "id": "E09",
@@ -452,7 +452,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 113
+      "latency_ms": 59
     },
     {
       "id": "E10",
@@ -479,7 +479,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 117
+      "latency_ms": 60
     },
     {
       "id": "E11",
@@ -505,7 +505,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 119
+      "latency_ms": 60
     },
     {
       "id": "E12",
@@ -525,7 +525,7 @@
       "main_obstacle": "bukti_kurang",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 33
+      "latency_ms": 20
     },
     {
       "id": "E13",
@@ -551,7 +551,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 110
+      "latency_ms": 57
     },
     {
       "id": "E14",
@@ -576,7 +576,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 122
+      "latency_ms": 56
     },
     {
       "id": "E15",
@@ -601,7 +601,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 155
+      "latency_ms": 55
     },
     {
       "id": "E16",
@@ -630,7 +630,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 192
+      "latency_ms": 103
     },
     {
       "id": "E17",
@@ -659,7 +659,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 119
+      "latency_ms": 58
     },
     {
       "id": "E18",
@@ -687,7 +687,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 125
+      "latency_ms": 55
     },
     {
       "id": "E19",
@@ -715,7 +715,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 126
+      "latency_ms": 57
     },
     {
       "id": "E20",
@@ -743,7 +743,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 122
+      "latency_ms": 56
     },
     {
       "id": "E21",
@@ -771,7 +771,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 112
+      "latency_ms": 56
     },
     {
       "id": "E22",
@@ -799,7 +799,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 111
+      "latency_ms": 56
     },
     {
       "id": "E23",
@@ -825,7 +825,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 217
+      "latency_ms": 102
     },
     {
       "id": "E24",
@@ -854,7 +854,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 521
+      "latency_ms": 470
     },
     {
       "id": "E25",
@@ -880,7 +880,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 235
+      "latency_ms": 141
     },
     {
       "id": "E26",
@@ -908,7 +908,7 @@
         "D-2025-12",
         "D-2026-04"
       ],
-      "latency_ms": 239
+      "latency_ms": 120
     },
     {
       "id": "E27",
@@ -932,7 +932,7 @@
         "D-2025-11",
         "D-2026-08"
       ],
-      "latency_ms": 77
+      "latency_ms": 41
     },
     {
       "id": "E28",
@@ -950,7 +950,7 @@
       "main_obstacle": "pengambil_keputusan",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 82
+      "latency_ms": 40
     },
     {
       "id": "E29",
@@ -972,7 +972,7 @@
       "main_obstacle": "referensi",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 70
+      "latency_ms": 41
     },
     {
       "id": "E30",
@@ -992,7 +992,7 @@
       "main_obstacle": "referensi",
       "approvals_needed": [],
       "precedent_ids": [],
-      "latency_ms": 49
+      "latency_ms": 24
     }
   ],
   "deals": [

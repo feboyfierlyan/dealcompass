@@ -24,6 +24,16 @@ terverifikasi, P01–P05 asli tidak berubah. Batas: format template dan kebijaka
 KasirNusa tetap; tidak mengklaim benchmark SalesTranscriptQA telah dijalankan.
 [Handoff terbaru](../handoffs/MAIN.md), [panduan](../NEW_DATA_AND_BENCHMARK.md).
 
+## Action-driven tutorial and accuracy evidence — 10 Oktober 2026
+
+08:04 WIB: local VERIFIED, public deploy pending. Six actions drive an adjacent
+animated tutorial with tinted spotlight; no Next button. Graph selected/hover/focus
+text contrast fixed.105 frontend checks PASS. Rules23/24, ranking15/15, mock/replay
+11/11 separately reported; E15 remains failing. Historical Jev10/12 vs rules6/12
+measures obstacle classification only. No SalesTranscriptQA benchmark-wide run or
+independent human holdout. [Scorecard](../../evaluation/results/scorecard_latest.md),
+[protocol](../../evaluation/BENCHMARK_PROTOCOL.md).
+
 ## Review hybrid default — 10 Oktober 2026
 
 PR #32 (UI), #33 (engine), #34 (route) telah direview ulang oleh Main. Tiga regresi

@@ -1,7 +1,8 @@
 # Handoff MAIN
 
 ## Task dan status
-MAIN-PUBLIC-UPLOAD-TOUR: VERIFIED locally and on public production (07:43 WIB). Public
+MAIN-ACTION-TOUR-ACCURACY: VERIFIED locally (08:04 WIB); production verification pending this revision.
+Prior MAIN-PUBLIC-UPLOAD-TOUR: VERIFIED locally and on public production (07:43 WIB). Public
 access without credentials, light desktop UI, first-use tour and isolated CRM +
 transcript uploads requested by user. Preserves P01–P05 demo and existing live ledger.
 Earlier cutover is VERIFIED: one Railway service/worker, 500 MB volume, live P04,
@@ -10,7 +11,7 @@ in Git history. They must not be used to restart an obsolete local live ledger.
 
 ## Branch dan commit
 `integrator/english-graph-runtime`, [PR #36](https://github.com/feboyfierlyan/dealcompass/pull/36).
-Application commit 897db05 (builds on 857bac5). Railway follows this branch; not main yet.
+This revision builds on 78e8009. Railway follows this branch; not main yet.
 
 ## File dan fungsi
 - `backend/api/uploads.py`: bounded JSON/CSV ZIP ingestion, templates, validation,
@@ -22,7 +23,15 @@ Application commit 897db05 (builds on 857bac5). Railway follows this branch; not
 - `backend/main.py`, `deployment.py`: workspace header, public access, same-origin
   writes, write/import limits and cached public analysis.
 - `ImportWorkspace.tsx`, `Onboarding.tsx`, `main.tsx`: upload/preview/open workspace,
-  return to demo, first-use four-step tour, replay and reduced motion support.
+  return to demo, six-step action-driven tour, replay and reduced motion support.
+- `lib/tour.ts`: adjacent placement with viewport bounds; overlay spotlight and smooth
+  card movement. Actions: deal → Evidence → Context graph → root node → Your data →
+  template download. No Next button; Skip/Escape remain available. SVG keyboard
+  activation is supported alongside native buttons/links.
+- `corporate.css`: selected/hover/focused graph labels use dark text on pale green;
+  normal root retains white on dark green.
+- `evaluation/scorecard.py`, results and `BENCHMARK_PROTOCOL.md`: separate actual
+  rules scenarios from mocked Jev and historical live classification receipts.
 - CSS and `Dashboard.tsx`: light desktop presentation, dynamic pipeline count.
 - `lib/api.ts`, `phase3.ts`: workspace transport, variable deal counts and dates,
   complete 1..N ranks, exact-list joins, diagnostic sample-size validation and
@@ -46,6 +55,22 @@ local Jev launcher/ledger now that the cloud ledger is canonical.
 See [deploy guide](../DEPLOY_RAILWAY.md) and [upload guide](../NEW_DATA_AND_BENCHMARK.md).
 
 ## Pengujian aktual
+Latest revision, 08:04 WIB:
+- Frontend regressions: 38 module +52 compiled API/component/upload +15 desktop
+  tour placement tests PASS (105 total). First graph test attempt was sandbox-blocked
+  on localhost; rerun with local-network access passed. TypeScript/Vite build PASS.
+- Local browser: all six steps completed using mouse and keyboard; no Next control.
+  Actual Evidence/graph/upload views open before the next step. Replay works.
+- Computed graph colors: root label5.63:1/type5.41:1; selected/hover/focus
+  label10.87:1/type6.75:1; ordinary secondary text6.01:1. These graph text checks
+  exceed4.5:1; this is not a full-application accessibility audit.
+- Decision rerun: rules23/24 (original7/7 +synthetic16/17); E15 remains failing.
+  Mock/replay11/11 excluded from that score. Ranking heuristic15/15; demo citation
+  integrity5/5. No independent human correctness or ranking labels collected.
+- Historical live paraphrase receipt: Jev10/12 vs rules6/12, classification only.
+  No new paid provider calls for these evaluations. SalesTranscriptQA not run.
+
+Earlier verified regression/deployment evidence:
 Production 897db05: anonymous home and assets200, all five contexts/graphs200,
 new OPP01 snapshot2026-10-10/ranking/findings/analysis200, rules_only with zero
 provider requests, original demo unchanged and unknown OPP01 in demo404. Browser
@@ -83,10 +108,15 @@ No implementation/deployment blocker. Public production and isolated upload smok
 verified; previous private-login instructions are superseded.
 
 ## Tugas berikutnya
+Verify this revision on public production. Use the scoped accuracy scorecard and
+benchmark protocol; collect independent labels and novice task evidence before
+claiming product accuracy or usability gains.
 Team rehearsal and submission using the public URL. Review/merge PR #36.
 After eventual PR merge, deliberately switch Railway branch to main and verify.
 Use one shared live backend; never reset or fork the token ledger.
 
 ## Update WIB
+2026-10-10 08:04 WIB — action-driven adjacent tour and graph contrast locally
+verified;105 frontend checks pass; reproducible scoped accuracy scorecard prepared.
 2026-10-10 07:43 WIB — public source deployment and anonymous HTTP/browser checks
 verified; local 243 backend +90 frontend PASS. New upload flow also passed in cloud.

@@ -144,7 +144,7 @@ export function DealWorkspace({ deal, api, fixture, snapshot, store = null, prio
           <span>Snapshot {snapshot ? dateLabel(snapshot) : 'date unavailable'}</span>
         </div>
       </header>
-      <div className="tabs" role="tablist" aria-label="Deal details">{TABS.map((item, index) => <button key={item.id} id={`${ids.panel}-tab-${item.id}`} role="tab" aria-controls={tab === item.id ? `${ids.panel}-${item.id}` : undefined} aria-selected={tab === item.id} tabIndex={tab === item.id ? 0 : -1}
+      <div className="tabs" role="tablist" aria-label="Deal details">{TABS.map((item, index) => <button key={item.id} data-tour={`tab-${item.id}`} id={`${ids.panel}-tab-${item.id}`} role="tab" aria-controls={tab === item.id ? `${ids.panel}-${item.id}` : undefined} aria-selected={tab === item.id} tabIndex={tab === item.id ? 0 : -1}
         onClick={() => setTab(item.id)} onKeyDown={e => { const next = nextTabIndex(e.key, index, TABS.length); if (next === null) return; e.preventDefault(); setTab(TABS[next].id); document.getElementById(`${ids.panel}-tab-${TABS[next].id}`)?.focus(); }}><Icon name={item.icon} size={17}/>{item.label}</button>)}</div>
       </div>
       <div key={tab} className="tab-panel" role="tabpanel" id={`${ids.panel}-${tab}`} aria-labelledby={`${ids.panel}-tab-${tab}`} tabIndex={-1} aria-busy={loading}>

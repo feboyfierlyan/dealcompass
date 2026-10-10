@@ -6,8 +6,11 @@ Updated 10 October 2026, WIB. Integrator, PR #36.
 
 Open **Your data** → download **example JSON** or **CSV + transcript kit** → replace
 example records → upload → **Validate data** → inspect the summary → **Open workspace**.
-The first-visit tour explains the priority queue, next action, evidence/graph and
-upload. **Quick tour** replays it. The desktop interface uses light mode.
+The first-visit tour highlights one control at a time with a tinted overlay and
+an adjacent moving dialogue. It advances after the actual action: choose a deal →
+Evidence → Context graph → select the deal node → Your data → download example.
+There is no Next button. Skip/Escape exits; **Quick tour** replays it. Mouse and
+keyboard are supported. The desktop interface uses light mode.
 
 CRM and conversations are joined by stable account/contact/employee IDs. Each
 workspace rebuilds its own context graph, ranking, findings and recommendations.
@@ -91,3 +94,10 @@ menghitung ulang prioritas serta langkah berikutnya untuk workspace itu. Kita su
 menguji ID baru, tanggal baru, perubahan percakapan, perubahan nilai deal, dan enam
 deal sekaligus. Yang masih tetap adalah kebijakan penjualan KasirNusa; belum otomatis
 mempelajari kebijakan perusahaan lain atau menerima semua format file.”
+
+## Accuracy evidence available now
+
+See the [reproducible scorecard](../evaluation/results/scorecard_latest.md) and
+[benchmark protocol](../evaluation/BENCHMARK_PROTOCOL.md). They separate rules
+scenario acceptance, graph/citation integrity, mocked integration checks and the
+historical live Jev paraphrase probe. None is a whole-app accuracy percentage.
