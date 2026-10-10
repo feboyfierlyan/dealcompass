@@ -18,6 +18,10 @@ previous requests (47,048 input), verified by SQLite integrity and SHA-256.
 The old local live backend is stopped; local port 8000 now runs rules only.
 See `docs/handoffs/MAIN.md` for verification and limitations.
 
+Public revision 897db05 deployed successfully as 425bbe49-2b48-47e7-904a-b6dc407ab944.
+Anonymous home/assets, all five graphs, isolated new-data upload and rules analysis
+passed; the browser confirmed light mode, onboarding and P04 Rules + Jev.
+
 ## Public uploads and onboarding
 
 The current revision adds a light interface, first-visit tour, and separate upload

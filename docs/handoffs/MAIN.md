@@ -1,7 +1,7 @@
 # Handoff MAIN
 
 ## Task dan status
-MAIN-PUBLIC-UPLOAD-TOUR: VERIFIED locally; production deployment pending. Public
+MAIN-PUBLIC-UPLOAD-TOUR: VERIFIED locally and on public production (07:43 WIB). Public
 access without credentials, light desktop UI, first-use tour and isolated CRM +
 transcript uploads requested by user. Preserves P01–P05 demo and existing live ledger.
 Earlier cutover is VERIFIED: one Railway service/worker, 500 MB volume, live P04,
@@ -10,7 +10,7 @@ in Git history. They must not be used to restart an obsolete local live ledger.
 
 ## Branch dan commit
 `integrator/english-graph-runtime`, [PR #36](https://github.com/feboyfierlyan/dealcompass/pull/36).
-This revision builds on 857bac5. Railway follows this branch; not main yet.
+Application commit 897db05 (builds on 857bac5). Railway follows this branch; not main yet.
 
 ## File dan fungsi
 - `backend/api/uploads.py`: bounded JSON/CSV ZIP ingestion, templates, validation,
@@ -39,13 +39,18 @@ Public mode explicitly configured by user; API key remains backend only.
 ## Cara menjalankan
 Production: https://dealcompass-production.up.railway.app.
 Railway variables configured with skip-deploys: `DEALCOMPASS_PUBLIC_ACCESS=1` and
-`DEALCOMPASS_UPLOAD_DIR=/data/uploads`. New source deployment must finish before
-claiming public access. Keep existing `/data/typesafe-usage.sqlite3` and cache.
+`DEALCOMPASS_UPLOAD_DIR=/data/uploads`. Deployment 425bbe49-2b48-47e7-904a-b6dc407ab944 succeeded. Keep existing `/data/typesafe-usage.sqlite3` and cache.
 Local tests: rules-only uvicorn on8000; production preview8083. Never use the old
 local Jev launcher/ledger now that the cloud ledger is canonical.
 See [deploy guide](../DEPLOY_RAILWAY.md) and [upload guide](../NEW_DATA_AND_BENCHMARK.md).
 
 ## Pengujian aktual
+Production 897db05: anonymous home and assets200, all five contexts/graphs200,
+new OPP01 snapshot2026-10-10/ranking/findings/analysis200, rules_only with zero
+provider requests, original demo unchanged and unknown OPP01 in demo404. Browser
+confirmed four-step onboarding, light dashboard and Rules + Jev on P04; live
+upload → validation → Open workspace passed without credentials.
+
 - `python -m unittest discover -s tests -q`: 243/243 PASS (59.179s), rules/mocks.
 - Node module tests (contracts/graph/present/english/analysis-store): 38/38 PASS.
 - Compiled API/analysis/phase3/redesign/uploads tests: 52/52 PASS against local rules
@@ -73,15 +78,14 @@ need owner attention. Ledger inspection over SSH needs a newly authorized key;
 the temporary cutover key has been removed.
 
 ## Blocker
-No local implementation blocker. Production source deployment and anonymous smoke
-verification pending; no public success claimed until checked.
+No implementation/deployment blocker. Public production and isolated upload smoke
+verified; previous private-login instructions are superseded.
 
 ## Tugas berikutnya
-Publish PR revision, check CI and Railway build, anonymously verify all five demo
-contexts, new upload, light mode and tour. Then team rehearsal and submission.
+Team rehearsal and submission using the public URL. Review/merge PR #36.
 After eventual PR merge, deliberately switch Railway branch to main and verify.
 Use one shared live backend; never reset or fork the token ledger.
 
 ## Update WIB
-2026-10-10 07:42 WIB — local implementation and regression verification complete;
-public/upload variables configured, production source publish next.
+2026-10-10 07:43 WIB — public source deployment and anonymous HTTP/browser checks
+verified; local 243 backend +90 frontend PASS. New upload flow also passed in cloud.
