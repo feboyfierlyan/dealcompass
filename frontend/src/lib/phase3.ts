@@ -114,6 +114,7 @@ export function isDiagnostic(v: unknown): v is Diagnostic {
 export function isDealDiagnostic(v: unknown): v is Diagnostic { return obj(v) && v.schema_version === 'v1' && isDiagnostic(v); }
 export function isPipelineDiagnostic(v: unknown): v is PipelineDiagnostic {
   if (!obj(v) || !jsonSafe(v) || v.schema_version !== 'v1' || !snapshot(v.snapshot_date) || !Array.isArray(v.deals) || v.deals.length < 1 || !v.deals.every(isDiagnostic)
+    || !v.deals.every(d => d.snapshot_date === v.snapshot_date)
     || !unique(v.deals.map(d => d.deal_id)) || !unique(v.deals.map(d => d.account_id)) || !obj(v.statistical_assessment)) return false;
   const s = v.statistical_assessment;
   if (s.status !== 'not_assessed' || s.sample_size !== v.deals.length || !obj(s.stage_cohort_counts) || !Object.values(s.stage_cohort_counts).every(nat)

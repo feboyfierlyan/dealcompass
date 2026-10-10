@@ -25,7 +25,8 @@ Application commit 897db05 (builds on 857bac5). Railway follows this branch; not
   return to demo, first-use four-step tour, replay and reduced motion support.
 - CSS and `Dashboard.tsx`: light desktop presentation, dynamic pipeline count.
 - `lib/api.ts`, `phase3.ts`: workspace transport, variable deal counts and dates,
-  complete 1..N ranks, exact-list joins and diagnostic sample-size validation.
+  complete 1..N ranks, exact-list joins, diagnostic sample-size validation and
+  rejection of mixed snapshot dates inside one diagnostic response.
 - `tests/test_uploads.py`, deployment tests and frontend tests: unseen IDs/dates,
   changing inputs, isolation, consent and malformed input; original demo regressions.
 - `docs/NEW_DATA_AND_BENCHMARK.md`: supported formats, reference and honest limits.

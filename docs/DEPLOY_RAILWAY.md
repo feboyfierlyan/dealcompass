@@ -89,7 +89,8 @@ design is intended for a single process. The ledger remains the spending guard.
    for a process restart without a rebuild.
 5. Deploy, generate a Railway HTTPS domain, open `/health`, then `/`. For optional private mode, enter the
    demo login. Verify all five deals, the evidence panel and graph. Analysis should
-   explicitly report rules mode. A 401 without login is expected.
+   explicitly report rules mode. Public mode returns200 without login; private mode
+   returns401 without its configured credentials.
 
 For CLI setup, the official CLI is prepared locally at
 `/tmp/dealcompass-railway-cli/node_modules/.bin/railway` (5.64.2 at preparation time).
@@ -189,9 +190,9 @@ authorized SSH key; the demo application does not expose usage/account secrets.
 - Roll back application code without replacing the ledger with an older backup.
   An old ledger loses charges. Moving execution back to a laptop requires a new
   controlled cutover from the latest cloud ledger.
-- Demo Basic Auth is a small-team gate over HTTPS, not individual accounts/RBAC.
-  Share its password only with teammates and judges. A public launch needs proper
-  user authorization and per-user request controls.
+- Current public demo has no login or per-user accounts. Workspace handles and
+  bounded imports separate temporary uploads; global write limits and the existing
+  ledger guard spending. Optional Basic Auth is available for a private demo.
 
 ## Verification commands
 
@@ -203,10 +204,10 @@ python scripts/check_handoff.py --all
 docker build -t dealcompass:railway .
 ```
 
-For a local production-server smoke test, export a temporary demo password and
-`DEALCOMPASS_ENGINE_MODE=rules`, then run `python -m backend.deployment`. It uses
-port 8080 by default and does not load `.env`. Use test credentials locally, real
-credentials only via Railway's HTTPS domain.
+For a local public production-server smoke test, export `DEALCOMPASS_PUBLIC_ACCESS=1`
+and `DEALCOMPASS_ENGINE_MODE=rules`, then run `python -m backend.deployment`. It uses
+port8080 by default and does not load `.env`. Optional private mode instead requires
+a temporary demo password. Never load the obsolete local live ledger.
 
 Official references: [Railway CLI](https://docs.railway.com/cli),
 [Infrastructure as Code](https://docs.railway.com/infrastructure-as-code),

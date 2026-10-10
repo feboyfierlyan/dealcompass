@@ -107,6 +107,7 @@ test('CORRUPTED PAYLOAD: schema/snapshot/account/set mismatches never join by ar
   for(const mutate of [x=>x.schema_version='v2',x=>x.snapshot_date='invalid-date']) { const invalid=clone(ranking);mutate(invalid);assert.equal(p.isPriorities(invalid),false); }
   for(const mutate of [x=>x.items[0].account_id='P99',x=>x.items[0].deal_id='DL-999',x=>x.snapshot_date='2026-10-02']) { const invalid=clone(ranking);mutate(invalid);assert.throws(()=>p.matchPipeline(list,invalid)); }
   const invalid=clone(diagnostic);invalid.deals[0].account_id='P99';assert.equal(p.isPipelineDiagnostic(invalid),false);
+  const stale=clone(diagnostic);stale.snapshot_date='2026-10-10';assert.equal(p.isPipelineDiagnostic(stale),false);
 });
 test('NEW WORKSPACE: different snapshots and six complete ranks are accepted; missing members fail the list join', () => {
   const payload=clone(ranking); payload.snapshot_date='2026-10-10';
