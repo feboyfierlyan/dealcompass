@@ -1,7 +1,21 @@
 # Deploy DealCompass to Railway
 
-Deployment preparation, 10 October 2026. This document does **not** mean that
-the app is already online. See `docs/handoffs/MAIN.md` for actual verification.
+Live deployment verified on 10 October 2026 (WIB):
+https://dealcompass-production.up.railway.app
+
+Project `helpful-appreciation`, service `dealcompass`, environment `production`.
+The service follows `integrator/english-graph-runtime` (PR #36), not `main` yet.
+One 500 MB volume is attached at `/data`. The existing trial is used; no paid
+plan or subscription was selected. Demo username is `team`; the password is in
+the local, Git-ignored `.env.railway` file. Never put it in this document.
+
+Cloud verification: HTTPS/auth, built assets, all five deal contexts with graph,
+P04 Rules + Jev (`jev_applied`, 3 provider calls), cache hit, and cache/ledger
+persistence after a process restart. Ledger: 88 requests, 48,549 input / 5,407
+output tokens, zero pending/reserved, unblocked. The cutover preserved all 85
+previous requests (47,048 input), verified by SQLite integrity and SHA-256.
+The old local live backend is stopped; local port 8000 now runs rules only.
+See `docs/handoffs/MAIN.md` for verification and limitations.
 
 ## Architecture
 
@@ -12,7 +26,9 @@ All other routes, including API documentation, require the demo login.
 
 - `Dockerfile`: Node 24 build stage, Python 3.12 runtime; explicit file copies.
 - `.dockerignore`: allowlist excludes local secrets, databases and dependencies.
-- `railway.json`: Docker build, healthcheck, bounded failure restarts.
+- `railway.json`: legacy build/health/restart configuration; Railway now warns it
+  is deprecated. Verify actual service settings and build logs rather than relying
+  on this file alone. Set `RAILWAY_DOCKERFILE_PATH=Dockerfile` explicitly.
 - `backend/deployment.py`: built UI + API, authentication, one Uvicorn worker.
 - Persistent volume `/data`: existing team usage ledger and analysis cache.
 
@@ -35,6 +51,7 @@ design is intended for a single process. The ledger remains the spending guard.
 4. Set Railway Variables:
 
    ```text
+   RAILWAY_DOCKERFILE_PATH=Dockerfile
    DEALCOMPASS_ENGINE_MODE=rules
    DEALCOMPASS_DEMO_USER=team
    DEALCOMPASS_DEMO_PASSWORD=<unique random password, at least 16 characters>
@@ -48,14 +65,21 @@ design is intended for a single process. The ledger remains the spending guard.
 
    Keep `TYPESAFE_API_KEY` unset until cutover. Enter passwords/keys privately in
    Variables; never commit them, put them in browser code, or paste into logs/chat.
-   Do not override Railway's `PORT`. No custom build/start command is necessary.
+   Do not override Railway's `PORT`. Set the start command to
+   `python -m backend.deployment`, healthcheck `/health` (120 seconds), restart
+   on failure with at most 3 retries. Dockerfile CMD also supplies the start.
+   Verify that build logs use the Dockerfile: an October 2026 CLI redeploy
+   unexpectedly chose Railpack and failed before startup; setting the explicit
+   Dockerfile variable and deploying from source resolved it. Use `railway restart`
+   for a process restart without a rebuild.
 5. Deploy, generate a Railway HTTPS domain, open `/health`, then `/` and enter the
    demo login. Verify all five deals, the evidence panel and graph. Analysis should
    explicitly report rules mode. A 401 without login is expected.
 
 For CLI setup, the official CLI is prepared locally at
 `/tmp/dealcompass-railway-cli/node_modules/.bin/railway` (5.64.2 at preparation time).
-It is temporary and **not yet authenticated**. Run its `login` command when ready.
+It is temporary and authenticated on the setup machine. Other teammates must use
+their own authorized account; do not copy local Railway login credentials.
 An already installed global CLI can instead be used as `railway`.
 GitHub deployment is preferable to uploading the entire working folder; it publishes
 only the selected committed revision and does not upload `.env` or the local ledger.
@@ -123,8 +147,20 @@ The real ledger already includes earlier paid calls.
    and an increased ledger total. Reopening the same deal should use the cache.
    Read the usage total before and after a restart to verify persistence.
 
-Keep the former local live backend stopped. If local development is needed, use
-`DEALCOMPASS_ENGINE_MODE=rules`. Do not resume the old ledger after cloud use starts.
+Keep the former local live backend stopped. For local development use:
+
+```bash
+env -u TYPESAFE_API_KEY DEALCOMPASS_ENGINE_MODE=rules python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+```
+
+Do **not** run `backend.integrations.jev_live ... serve` locally: that launcher
+explicitly enables Jev. Do not resume the old local ledger after cloud use starts.
+The `.local/railway-cutover.sqlite3` file is a historical backup, not the active
+counter. Future migrations must export the latest cloud ledger.
+
+The temporary SSH key `dealcompass-cutover-20261010` was used only for cutover
+and verification, then revoked. Future SSH monitoring needs a team-owned,
+authorized SSH key; the demo application does not expose usage/account secrets.
 
 ## Monitoring and rollback
 
@@ -158,6 +194,7 @@ port 8080 by default and does not load `.env`. Use test credentials locally, rea
 credentials only via Railway's HTTPS domain.
 
 Official references: [Railway CLI](https://docs.railway.com/cli),
-[Config as Code](https://docs.railway.com/config-as-code/reference),
+[Infrastructure as Code](https://docs.railway.com/infrastructure-as-code),
+[Dockerfiles](https://docs.railway.com/builds/dockerfiles),
 [Volumes](https://docs.railway.com/volumes),
 [Healthchecks](https://docs.railway.com/deployments/healthchecks).

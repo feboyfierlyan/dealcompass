@@ -1,6 +1,8 @@
 # Handoff MAIN
 
 ## Task dan status
+MAIN-RAILWAY-CUTOVER: VERIFIED live at https://dealcompass-production.up.railway.app. One service/worker and 500 MB persistent volume. Rules + Jev P04 succeeds, cache survives process restart, previous ledger preserved. Trial used; no paid subscription selected. Temporary cutover SSH key revoked after verification. Older preparation/local-live entries below are historical and must not be used to restart a separate live ledger.
+
 MAIN-RAILWAY-SETUP: VERIFIED local application boundary; deployment preparation only. User has a Railway account and requested preparation first. No Railway resources, public deployment, paid hosting subscription, or cloud Jev cutover created. Docker image build remains unverified (local daemon unavailable).
 
 MAIN-PARAPHRASE-EVAL: evaluation completed, improvement not yet implemented. Twelve prelabelled synthetic messages: rules 6/12, live Jev 10/12. E15 idiom still fails; discount/authority category confusion also found.
@@ -17,6 +19,8 @@ dan mengonfirmasi belum pernah dipakai. Smoke, P01–P04, dan UI P02 berhasil me
 P05 tetap rules karena insufficient evidence; tidak diklaim sebagai live.
 
 ## Branch dan commit
+Deployment source: `integrator/english-graph-runtime`, application commit `26c8820`, [PR #36](https://github.com/feboyfierlyan/dealcompass/pull/36). PR CI passed before cloud cutover; this follow-up updates operational documentation. Not merged to main.
+
 Railway setup remains local on `integrator/english-graph-runtime`; earlier uncommitted UI/evaluation changes preserved. No new commit/PR/merge claimed in this turn.
 
 Current work: `integrator/english-graph-runtime`, based on main `e44aee7`. Changes are local; no new PR/merge claimed.
@@ -28,6 +32,8 @@ Backend live berjalan dari checkout utama; frontend 5174 tetap dari worktree PR 
 Tidak mengubah atau menggabungkan branch UI.
 
 ## File dan fungsi
+`docs/DEPLOY_RAILWAY.md`: actual URL, configuration, cutover evidence, restart/rollback and local rules-only commands. Railway Variables explicitly set `RAILWAY_DOCKERFILE_PATH=Dockerfile`; secret and ledger remain outside Git. `.env.railway` is the ignored private demo-login file.
+
 `Dockerfile`, `.dockerignore`, `railway.json`: multi-stage build and Railway health/restart setup, excluding credentials/databases. `backend/deployment.py`: same-origin built UI + existing API, demo Basic Auth, cross-origin POST rejection, production startup validation, one worker. `tests/test_deployment.py`: ten deployment boundary/ledger tests. `docs/DEPLOY_RAILWAY.md`, `.env.example`, README: setup, secret placement, controlled ledger cutover, monitoring and rollback.
 
 `evaluation/paraphrases.py`: opt-in metered live classification probe with production prompt drift guard, fixed labels, no retries, no dataset mutation. `evaluation/results/paraphrases_{rules,live}.{json,md}`: separate results and receipts; existing decision benchmark unchanged.
@@ -60,6 +66,8 @@ Satu request in-flight; permintaan paralel lain fallback rules. Semua proses/ang
 harus melalui host dan ledger yang sama. Pemakaian di luar jalur ini tidak terukur.
 
 ## Cara menjalankan
+CURRENT: team live access uses the Railway HTTPS URL above, username `team`, private password in local `.env.railway`. Local port 8000 is rules only (PID 72605), frontend 5174. Do NOT use the historical `jev_live serve` command below: it forces live mode against the obsolete local ledger.
+
 Production: set process env `DEALCOMPASS_DEMO_PASSWORD` (at least 16 characters), optional username, and explicit rules/jev mode; run `python -m backend.deployment`. Does not load .env automatically. Railway supplies PORT, `/data` must be attached for live mode. Follow [deployment guide](../DEPLOY_RAILWAY.md); existing local 8000/5174 runtime remains in place.
 
 Current runtime: primary checkout backend port 8000 and frontend port 5174, both on current source. Backend: `python -m backend.integrations.jev_live --env-file .env serve --port 8000`; frontend: `npm --prefix frontend run dev -- --port 5174 --strictPort`. The old Python process lacked `/analysis`; restart after pulling backend changes. Existing credential and usage ledger preserved.
@@ -77,6 +85,8 @@ Preview http://127.0.0.1:5174/ → P02 → Jalankan analisis ulang. GET ranking 
 POST eksplisit memakai Jev. Tidak menyimpan key di frontend/PR/log maupun pesan tim.
 
 ## Pengujian aktual
+CLOUD PASS: anonymous / returns401; authenticated dashboard/assets and all5 contexts with graph return200; P04 analysis outcome `jev_applied`, fresh3 provider requests, then cache hit in API and Arc. Restart `a88ab52b-a7c1-48dc-9331-55aa43e78a4d`: same cached analysis ID `0c30bda15c637e48`, ledger unchanged at88requests/48,549input/5,407output, pending0/reserved0/blockedfalse. Budget100,000,000input; remaining99,951,451. Full historical85requests migrated after local process stopped; SHA-256 and SQLite integrity passed. Arc confirmed Rules + Jev and supporting graph paths.
+
 Railway preparation: 232/232 backend tests PASS (54.620s), including 10 new deployment tests; TypeScript/Vite production build PASS. Actual temporary production server on 8082: built HTML + both assets, all five deal graphs, forwarded HTTPS same-origin analysis POST PASS, 0 provider requests. Server stopped after test. Logs: `/tmp/dealcompass-deploy-tests.log`, `/tmp/dealcompass-production-smoke.log`. Latest read-only team ledger snapshot: 85 requests / 47,048 input / 5,167 output, no pending/reserved, not blocked; no paid call made by deployment verification.
 
 Paraphrase run: 12 live requests, 5914 input / 970 output tokens; model jev-1.13.0. Team ledger after run: 46540 input, pending 0. No prompt tuning or production logic change. Five rules misses improved, one rules success regressed in Jev (PAR-10).
@@ -104,6 +114,8 @@ Review hybrid terbaru: gabungan engine + route + UI lulus 222/222 backend, 85/85
 - Receipt operasional lokal P01/P03/P04/P05 di `.local/live-proof/`, ignored Git.
 
 ## Fixture dan keterbatasan
+Cloud metered smoke covered P04 only; all5 deal contexts/graphs were checked. This is not a new paid evaluation of every scenario. Trial expiry and hosting usage still require account-owner attention. Railway config-as-code is deprecated; explicit Dockerfile variable was necessary after CLI redeploy chose Railpack. Source follows PR branch until deliberately switched after merge. Provider fallback and business approval gates remain unchanged.
+
 Deployment tests use temporary credentials/ledgers and rules/mock analysis; they do not prove live cloud connectivity or container build success. Basic Auth is an HTTPS demo gate, not per-user RBAC. One instance/worker is required. Persistent volume/cutover still must be verified on Railway before live activation.
 
 Paraphrase eval is a small developer-labelled synthetic diagnostic set, one observation each, not a holdout or closing benchmark. Automatic approval review rejected the optional full copied-context live E15 workflow because it would export dataset-derived context; the approved safer run sends only invented strings. Thus full hybrid/policy preservation is not claimed from these 12 calls.
@@ -120,6 +132,8 @@ provider hanya melalui counter lokal. Benchmark kualitas semua kasus belum dijal
 ulang ke provider berbayar; invariant lima deal bukan klaim akurasi sempurna.
 
 ## Blocker
+No blocker for the current live demo. Earlier Unauthorized/Docker/cloud-pending notes below are superseded. Routine future SSH usage inspection requires an authorized team key because the temporary key has been revoked.
+
 Railway CLI 5.64.2 is installed in `/tmp/dealcompass-railway-cli` but whoami reports Unauthorized. User explicitly chose preparation first. Docker daemon is unavailable locally; attempting to open OrbStack by application name failed. No cloud provisioning or image build success claimed.
 
 Current: no blocker for local preview. Provider and route failures have distinct fallback labels; unknown routes include restart guidance. Shared team ledger must remain the single spending path.
@@ -129,6 +143,8 @@ bersama; tidak ada deploy/public access baru. Tidak ada reset otomatis untuk rec
 unknown/pending: perlu rekonsiliasi berdasarkan usage provider agar tidak menghapus biaya.
 
 ## Tugas berikutnya
+Team rehearsal and final submission using the shared HTTPS backend. Share demo password privately with teammates/judges. After PR #36 review/merge, deliberately switch Railway source to main and verify health. Never resume the old local usage ledger or create a second live replica.
+
 Review/publish the prepared application revision; authenticate Railway, select workspace and approve hosting budget, create one service + /data volume, deploy rules and verify public HTTPS. Then stop old live callers, back up/transfer the complete existing ledger, compare totals, activate Jev on the cloud only, and verify restart persistence. Never resume the old local ledger after cloud spending begins.
 
 Current: team rehearsal on http://127.0.0.1:5174/; review these local changes before a new PR. Do not restart older worktree servers over the repaired preview.
@@ -141,6 +157,8 @@ Status terbaru: PR aplikasi #32/#33/#34 sudah merged. Tim sinkronkan main; rehea
 4. Jika provider gagal, tampilkan fallback rules; jangan klaim live dari label ranking.
 
 ## Update WIB
+2026-10-10 07:15 WIB — Railway cutover, live analysis, cached replay and restart persistence verified; temporary SSH key removed. Counts are the verified snapshot, not a promise that later user activity cannot increase them.
+
 2026-10-10 05:55 WIB — Railway deployment preparation and local production verification complete; cloud login/provisioning/cutover pending.
 
 2026-10-10 WIB — English, integrated graph controls and current live runtime verified. See current entries above; earlier token totals/PIDs below are historical.

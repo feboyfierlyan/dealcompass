@@ -3,6 +3,17 @@
 Pemilik: Boy + AI pada chat koordinasi. Tanggal: 9 Oktober 2026, WIB.
 Deadline: 10 Oktober 2026 09.00 WIB. CP2 20.00-22.00, CP3 08.00-09.00.
 
+## Live demo — 10 Oktober 2026
+
+**VERIFIED:** https://dealcompass-production.up.railway.app — Rules + Jev cloud,
+P04 live smoke, cache dan ledger tetap utuh setelah restart. Lima deal/graph API
+tersedia. PR #36 / branch `integrator/english-graph-runtime` adalah sumber deploy
+saat ini. Username `team`; password dibagikan privat dari `.env.railway` lokal.
+Ledger aktif hanya di Railway `/data`: 88 request / 48.549 input / 5.407 output,
+pending 0 pada verifikasi 07:15 WIB. Backend lokal sekarang **rules only**; jangan
+jalankan ulang launcher Jev memakai ledger laptop yang sudah tertinggal.
+SSH key sementara cutover telah dicabut. Detail: [deployment](../DEPLOY_RAILWAY.md).
+
 ## Review hybrid default — 10 Oktober 2026
 
 PR #32 (UI), #33 (engine), #34 (route) telah direview ulang oleh Main. Tiga regresi
