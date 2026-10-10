@@ -1,6 +1,6 @@
 export type Box = { left: number; top: number; width: number; height: number };
 export const tourSteps = [
-  { target: '.queue-list:has(.queue-item)', action: '.queue-item', title: 'Choose a deal', body: 'Select a company in the highlighted list. Its next action will open on the right.', hint: 'Select a deal to continue', side: 'right' },
+  { target: '.queue-list:has(.queue-item)', action: '.queue-item', title: 'Choose a deal', body: 'Select a company in the highlighted list. Its deal details appear on the right.', hint: 'Select a deal to continue', side: 'right' },
   { target: '[data-tour="tab-reasons"]', action: '[data-tour="tab-reasons"]', title: 'Check the evidence', body: 'Recommendations need a reason. Open Evidence to see the records behind this deal’s next step.', hint: 'Open Evidence to continue', side: 'bottom' },
   { target: '[data-tour="tab-explore"]', action: '[data-tour="tab-explore"]', title: 'Connect the dots', body: 'Open Context graph to see how the people, conversations and decisions connect.', hint: 'Open Context graph to continue', side: 'bottom' },
   { target: '.focus-node.root', action: '.focus-node.root', title: 'Explore a real connection', body: 'Select the highlighted deal card. The graph selects its recorded connections; View evidence opens the underlying source.', hint: 'Select the deal card to continue', side: 'right' },

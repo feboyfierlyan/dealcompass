@@ -66,7 +66,8 @@ export function Onboarding({ onClose }: { onClose: () => void }) {
       const controls=[...card.current?.querySelectorAll<HTMLElement>('button')??[]];
       const options=[...actions,...controls];if(!options.length)return;
       event.preventDefault();const index=options.indexOf(document.activeElement as HTMLElement);
-      options[(index+(event.shiftKey?-1:1)+options.length)%options.length].focus({preventScroll:true});
+      const next=index<0?(event.shiftKey?options.length-1:0):(index+(event.shiftKey?-1:1)+options.length)%options.length;
+      options[next].focus({preventScroll:true});
     };
     document.addEventListener('click',click,true);document.addEventListener('keydown',keys,true);schedule();
     return ()=>{cancelAnimationFrame(frame);mutation.disconnect();size.disconnect();document.removeEventListener('click',click,true);document.removeEventListener('keydown',keys,true);window.removeEventListener('resize',schedule);window.removeEventListener('scroll',schedule,true);};

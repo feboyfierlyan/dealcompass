@@ -60,7 +60,8 @@ Latest revision, 08:04 WIB:
   tour placement tests PASS (105 total). First graph test attempt was sandbox-blocked
   on localhost; rerun with local-network access passed. TypeScript/Vite build PASS.
 - Local browser: all six steps completed using mouse and keyboard; no Next control.
-  Actual Evidence/graph/upload views open before the next step. Replay works.
+  Actual Evidence/graph/upload views open before the next step. Replay, Shift+Tab
+  from the heading and Escape/focus restoration pass in the final build.
 - Computed graph colors: root label5.63:1/type5.41:1; selected/hover/focus
   label10.87:1/type6.75:1; ordinary secondary text6.01:1. These graph text checks
   exceed4.5:1; this is not a full-application accessibility audit.
