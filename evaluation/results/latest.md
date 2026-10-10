@@ -1,4 +1,4 @@
-# Hasil evaluasi decision ICAL-01/02 (2026-10-10 07:53 WIB)
+# Hasil evaluasi decision ICAL-01/02 (2026-10-10 08:16 WIB)
 
 Sumber konteks: build_deal_context nyata (graph Bima, dataset asli); mutasi kasus sintetis berlabel. Jev: Tidak ada panggilan live. Kasus Jev memakai transport mock.
 

@@ -1,4 +1,4 @@
-# Pembanding CRM-only vs graph+rules ICAL-04 (2026-10-10 07:53 WIB)
+# Pembanding CRM-only vs graph+rules ICAL-04 (2026-10-10 08:17 WIB)
 
 Snapshot 2026-10-01; lima deal prospek terbuka dari `list_deals()` (data kanonis sama). Graph+rules = `deal-priority-heuristic-v1` production, mode rules, tanpa Jev.
 

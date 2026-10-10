@@ -34,6 +34,16 @@ measures obstacle classification only. No SalesTranscriptQA benchmark-wide run o
 independent human holdout. [Scorecard](../../evaluation/results/scorecard_latest.md),
 [protocol](../../evaluation/BENCHMARK_PROTOCOL.md).
 
+## Deal Acceleration benchmark — 2026-10-10 08:20 WIB
+
+MAIN-BENCHMARK-16 execution VERIFIED. Sixteen frozen synthetic new cases run through
+local rules and actual cloud hybrid. Citation/graph structure16/16; action-family
+and explicit-gate screens12/16 each; all screens hybrid11/16 vs rules10/16.
+Labels AI-authored, human review pending.30 cloud provider requests via existing
+ledger, no local Jev. [Pitch](../../evaluation/deal_benchmark/PITCH.md),
+[results](../../evaluation/deal_benchmark/results/REPORT.md),
+[setup](../../evaluation/deal_benchmark/README.md). Product code unchanged.
+
 ## Review hybrid default — 10 Oktober 2026
 
 PR #32 (UI), #33 (engine), #34 (route) telah direview ulang oleh Main. Tiga regresi

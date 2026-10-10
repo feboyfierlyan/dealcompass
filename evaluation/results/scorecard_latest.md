@@ -1,6 +1,6 @@
 # DealCompass — accuracy evidence scorecard
 
-Generated: 2026-10-10 07:56 WIB. Decision/ranking suite rerun: 2026-10-10 07:53 WIB.
+Generated: 2026-10-10 08:18 WIB. Decision/ranking suite rerun: 2026-10-10 08:16 WIB.
 
 Use the individual metrics below. There is no single validated whole-app accuracy score.
 

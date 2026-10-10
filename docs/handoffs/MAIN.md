@@ -1,6 +1,9 @@
 # Handoff MAIN
 
 ## Task dan status
+MAIN-BENCHMARK-16: VERIFIED execution, 2026-10-10 08:20 WIB. Sixteen frozen synthetic
+cases run through local rules API and deployed Rules + Jev API. Business/human
+accuracy remains unverified. Product decision code unchanged during experiment.
 MAIN-ACTION-TOUR-ACCURACY: VERIFIED locally (08:04 WIB); production verification pending this revision.
 Prior MAIN-PUBLIC-UPLOAD-TOUR: VERIFIED locally and on public production (07:43 WIB). Public
 access without credentials, light desktop UI, first-use tour and isolated CRM +
@@ -14,6 +17,10 @@ in Git history. They must not be used to restart an obsolete local live ledger.
 This revision builds on 78e8009. Railway follows this branch; not main yet.
 
 ## File dan fungsi
+- `evaluation/deal_benchmark/`: frozen inputs/labels/hashes, end-to-end runner, raw
+  redacted receipts, score report, pitch script and empty human review/ranking forms.
+- `tests/ical/test_deal_benchmark.py`: reject broken provenance, wrong gates/owners,
+  unnamed/duplicate reviews and counting unfinished reviews as correct.
 - `backend/api/uploads.py`: bounded JSON/CSV ZIP ingestion, templates, validation,
   workspace receipt, expiry, distinct sources and explicit Jev consent.
 - `backend/ingestion/scope.py`, dataset/graph/metrics/context/ranking/diagnostics:
@@ -55,6 +62,20 @@ local Jev launcher/ledger now that the cloud ledger is canonical.
 See [deploy guide](../DEPLOY_RAILWAY.md) and [upload guide](../NEW_DATA_AND_BENCHMARK.md).
 
 ## Pengujian aktual
+Benchmark run 2026-10-10 08:20 WIB:
+- 16/16 normalized contexts equal between local and cloud; same decision version
+  `rules+jev/1+5ecd9ec8b69f`. Original P01–P05 data untouched.
+- Both arms: citation IDs/graph structure16/16; action-family12/16; explicit VP
+  approval-gate screen12/16. All applicable screens: hybrid11/16, rules10/16.
+- Comparison/exception wording4/4, capacity-exception screen1/1. These are
+  mechanical screens, not independent semantic correctness judgments.
+- Cloud:13 jev_applied,3 not_eligible,30 API-reported provider requests. Existing
+  shared Railway ledger handles token receipts/budget. No local provider calls.
+- Eight evaluator/review tests PASS. Existing decision suite34/35 including
+  mocked cases (actual rules23/24); ranking15/15 rerun.
+- Human review0 completed,32 case/arm ratings pending per criterion. No external
+  benchmark score, no observed closing uplift or measured user time saving.
+
 Latest revision, 08:04 WIB:
 - Frontend regressions: 38 module +52 compiled API/component/upload +15 desktop
   tour placement tests PASS (105 total). First graph test attempt was sandbox-blocked
@@ -105,10 +126,19 @@ need owner attention. Ledger inspection over SSH needs a newly authorized key;
 the temporary cutover key has been removed.
 
 ## Blocker
+Benchmark gaps: B07/B14 lack explicit approval gates for unlogged claims; B10/B11
+miss hybrid eligibility; B13 stale request persists. B09 rules negation fails but
+hybrid passes the action-family screen. Unknown warnings mitigate some cases;
+missing gates are not proof of unauthorized execution. Independent human labels
+are still needed before claiming task accuracy. See benchmark/PITCH findings.
+
 No implementation/deployment blocker. Public production and isolated upload smoke
 verified; previous private-login instructions are superseded.
 
 ## Tugas berikutnya
+Bima + Ical independently annotate source cases; Boy adjudicates and records
+semantic reviews. Fix documented engine gaps in a separate revision, preserve
+first-run receipts, then use new untouched cases for generalization.
 Verify this revision on public production. Use the scoped accuracy scorecard and
 benchmark protocol; collect independent labels and novice task evidence before
 claiming product accuracy or usability gains.
@@ -117,6 +147,8 @@ After eventual PR merge, deliberately switch Railway branch to main and verify.
 Use one shared live backend; never reset or fork the token ledger.
 
 ## Update WIB
+2026-10-10 08:20 WIB — internal benchmark execution and pitch evidence ready;
+first-run failures retained; no independent/external accuracy claimed.
 2026-10-10 08:04 WIB — action-driven adjacent tour and graph contrast locally
 verified;105 frontend checks pass; reproducible scoped accuracy scorecard prepared.
 2026-10-10 07:43 WIB — public source deployment and anonymous HTTP/browser checks

@@ -7,7 +7,7 @@ Bandingkan CRM-only, graph + rules, graph + Jev saat implementasi siap.
 
 ## Isi
 
-- `cases.py`: 35 kasus decision (label manusia = pemeriksaan per kasus) di atas
+- `cases.py`: 35 kasus decision (ekspektasi pengembangan = pemeriksaan per kasus) di atas
   `build_deal_context` nyata. Mutasi/parafrase = record SINTETIS pada salinan konteks
   dengan format produsen (excerpt JSON). Kasus Jev memakai transport mock, bukan live.
 - `ranking_cases.py`: 15 kasus ranking ICAL-03 di atas konteks + diagnostic nyata Bima;
@@ -40,3 +40,10 @@ E15 remains visible. CRM-only primary ordering equals graph+rules on the five de
 independent annotation, policy/evidence/action measures and novice-user testing.
 Run `python -m evaluation.scorecard` after the two evaluation commands above to
 regenerate the summary from receipts. No paid provider request is made by this command.
+
+## New end-to-end challenge: actual local + cloud run
+
+[Deal Acceleration benchmark](deal_benchmark/README.md):16 frozen synthetic new
+cases uploaded through the actual pipeline, with rules and deployed hybrid receipts.
+[Pitch-ready evidence and limits](deal_benchmark/PITCH.md), [results](deal_benchmark/results/REPORT.md).
+Internal AI-authored expectations, human adjudication pending; not an external score.

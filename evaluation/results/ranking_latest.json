@@ -1,5 +1,5 @@
 {
-  "generated_wib": "2026-10-10 07:53 WIB",
+  "generated_wib": "2026-10-10 08:17 WIB",
   "source": "build_deal_context + analyze_deal_initial nyata (Bima, dataset asli); kasus mutasi sintetis berlabel",
   "jev": "Ranking tidak memakai Jev (rules). Tidak ada mock/replay/live pada ranking.",
   "methodology": {
@@ -62,7 +62,7 @@
     "Sensitivitas tanpa faktor preseden_relevan: urutan acceleration DL-004 > DL-001 > DL-002 > DL-003 (sama).",
     "Sensitivitas bobot nilai x2: urutan acceleration DL-001 > DL-004 > DL-002 > DL-003 (berubah dari DL-004 > DL-001 > DL-002 > DL-003)."
   ],
-  "rank_deals_ms_warm": 69,
+  "rank_deals_ms_warm": 71,
   "items": [
     {
       "rank": 1,
@@ -390,7 +390,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 247
+      "latency_ms": 258
     },
     {
       "id": "K02",
@@ -409,7 +409,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 692
+      "latency_ms": 765
     },
     {
       "id": "K03",
@@ -430,7 +430,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 345
+      "latency_ms": 351
     },
     {
       "id": "K04",
@@ -452,7 +452,7 @@
         "DL-903",
         "DL-005"
       ],
-      "latency_ms": 200
+      "latency_ms": 208
     },
     {
       "id": "K05",
@@ -510,7 +510,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 91
+      "latency_ms": 92
     },
     {
       "id": "K08",
@@ -530,7 +530,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 150
+      "latency_ms": 165
     },
     {
       "id": "K09",
@@ -549,7 +549,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 91
+      "latency_ms": 94
     },
     {
       "id": "K10",
@@ -568,7 +568,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 91
+      "latency_ms": 92
     },
     {
       "id": "K11",
@@ -588,7 +588,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 157
+      "latency_ms": 163
     },
     {
       "id": "K12",
@@ -612,7 +612,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 94
+      "latency_ms": 97
     },
     {
       "id": "K13",
@@ -631,7 +631,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 91
+      "latency_ms": 94
     },
     {
       "id": "K14",
@@ -653,7 +653,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 93
+      "latency_ms": 92
     },
     {
       "id": "K15",
@@ -672,7 +672,7 @@
         "DL-003",
         "DL-005"
       ],
-      "latency_ms": 150
+      "latency_ms": 149
     }
   ]
 }
