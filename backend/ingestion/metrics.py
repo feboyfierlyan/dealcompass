@@ -1,9 +1,10 @@
 """Deterministic descriptive metrics for an open prospect at the fixed snapshot."""
 
+from backend.ingestion.scope import snapshot_date as active_snapshot
 from datetime import date
 from pathlib import PurePosixPath
 
-from backend.ingestion.dataset import Dataset, SNAPSHOT_DATE, SourceRecord, get_dataset
+from backend.ingestion.dataset import Dataset, SourceRecord, get_dataset
 
 
 def evidence_id(record: SourceRecord) -> str:
@@ -12,7 +13,7 @@ def evidence_id(record: SourceRecord) -> str:
 
 
 def summarize_deal(
-    deal_id: str, snapshot_date: str = '2026-10-01', *, dataset: Dataset | None = None,
+    deal_id: str, snapshot_date: str | None = None, *, dataset: Dataset | None = None,
 ) -> dict:
     """Count dated focus-account events; external emails do not prove buyer replies.
 
@@ -20,8 +21,9 @@ def summarize_deal(
     creation dates leave an explicitly unknown lower bound on the account query.
     Counts describe recorded interactions, not completeness of real-world contact.
     """
-    if snapshot_date != SNAPSHOT_DATE.isoformat():
-        raise ValueError('Only the fixed business snapshot 2026-10-01 is supported')
+    snapshot_date = active_snapshot().isoformat() if snapshot_date is None else snapshot_date
+    if snapshot_date != active_snapshot().isoformat():
+        raise ValueError('Requested snapshot does not match this workspace.')
     dataset = dataset if dataset is not None else get_dataset()
     record = dataset.by_id['crm_deals.csv'][deal_id]
     deal = record.values
@@ -47,17 +49,17 @@ def summarize_deal(
     stage_age = None
     if created is None:
         unknowns.append('Deal creation cutoff is unknown; interactions use account scope with since=null.')
-    elif created > SNAPSHOT_DATE:
+    elif created > active_snapshot():
         unknowns.append(f'{deal_evidence_id}: dibuat is after the snapshot; deal age is unknown.')
     else:
-        deal_age = (SNAPSHOT_DATE - created).days
+        deal_age = (active_snapshot() - created).days
     if stage_since is not None:
-        if stage_since > SNAPSHOT_DATE:
+        if stage_since > active_snapshot():
             unknowns.append(f'{deal_evidence_id}: stage_sejak is after the snapshot; stage age is unknown.')
         elif created is not None and stage_since < created:
             unknowns.append(f'{deal_evidence_id}: stage_sejak precedes dibuat; stage age is unknown.')
         else:
-            stage_age = (SNAPSHOT_DATE - stage_since).days
+            stage_age = (active_snapshot() - stage_since).days
 
     groups = {
         name: {'count': 0, 'last_date': None, 'last_evidence_ids': [], 'evidence_ids': []}
@@ -71,7 +73,7 @@ def summarize_deal(
         interaction_id = evidence_id(interaction)
         event_date = source_date(row.get('tanggal'), 'tanggal', interaction_id)
         if event_date is not None and (
-            event_date > SNAPSHOT_DATE or (created is not None and event_date < created)
+            event_date > active_snapshot() or (created is not None and event_date < created)
         ):
             continue
         kind = row.get('tipe')

@@ -14,6 +14,7 @@ Satu workflow dapat berisi beberapa request Jev (per pesan/preseden); semuanya m
 UsageLedger tim yang sama lewat JevClient. Cache key tidak memuat API key. Hasil cache
 membawa metadata asal (generated_at, provider_requests, model) dan tidak disebut baru.
 """
+from functools import lru_cache
 import hashlib
 import json
 import logging
@@ -381,7 +382,16 @@ _service: AnalysisService | None = None
 _service_lock = threading.Lock()
 
 
+@lru_cache(maxsize=8)
+def _workspace_service(path: str) -> AnalysisService:
+    return AnalysisService(cache=AnalysisCache(Path(path) / 'analysis-cache.sqlite3'))
+
+
 def default_service() -> AnalysisService:
+    from backend.ingestion.scope import workspace
+    selected = workspace.get()
+    if selected:
+        return _workspace_service(selected['path'])
     global _service
     with _service_lock:
         if _service is None:

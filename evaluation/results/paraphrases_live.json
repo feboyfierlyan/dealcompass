@@ -1,0 +1,338 @@
+{
+  "generated_at": "2026-10-09T22:28:15.317184+00:00",
+  "synthetic": true,
+  "scope": "12 synthetic message classifications using the production obstacle prompt",
+  "limitations": [
+    "Developer-labelled diagnostic set, not independent holdout.",
+    "One observation per case; no stability or production accuracy claim.",
+    "E15 rules benchmark remains separate; no closing-time claim."
+  ],
+  "prompt": "Klasifikasikan hambatan penjualan utama yang dinyatakan pesan ini. Pilih bukti_kurang bila pesan tidak cukup jelas.",
+  "criteria": {
+    "harga": "Keberatan harga, tekanan harga kompetitor, atau permintaan diskon.",
+    "pengambil_keputusan": "Pengambil keputusan berubah, belum dilibatkan, atau tidak jelas.",
+    "referensi": "Calon pelanggan meminta referensi atau bukti dari pengguna serupa.",
+    "kebutuhan_produk": "Menyebut kebutuhan fitur/produk tanpa keberatan eksplisit.",
+    "tanpa_hambatan": "Pesan netral/positif tanpa hambatan.",
+    "bukti_kurang": "Pesan tidak cukup jelas untuk menyimpulkan hambatan."
+  },
+  "live": true,
+  "cases": [
+    {
+      "id": "PAR-01",
+      "group": "E15 idiom",
+      "text": "Pak Teddy merasa KasirPro lebih ramah di kantong.",
+      "expected": "harga",
+      "rules": "bukti_kurang",
+      "rules_pass": false,
+      "jev": "tanpa_hambatan",
+      "jev_pass": false
+    },
+    {
+      "id": "PAR-02",
+      "group": "Budget paraphrase",
+      "text": "Biaya langganan ini sulit masuk alokasi dana kami.",
+      "expected": "harga",
+      "rules": "bukti_kurang",
+      "rules_pass": false,
+      "jev": "harga",
+      "jev_pass": true
+    },
+    {
+      "id": "PAR-03",
+      "group": "Competitor paraphrase",
+      "text": "Paket pesaing lebih terjangkau untuk usaha kami.",
+      "expected": "harga",
+      "rules": "bukti_kurang",
+      "rules_pass": false,
+      "jev": "harga",
+      "jev_pass": true
+    },
+    {
+      "id": "PAR-04",
+      "group": "Literal price control",
+      "text": "Harganya terlalu mahal dibanding KasirPro.",
+      "expected": "harga",
+      "rules": "harga",
+      "rules_pass": true,
+      "jev": "harga",
+      "jev_pass": true
+    },
+    {
+      "id": "PAR-05",
+      "group": "Negated price / reference",
+      "text": "Harga sudah cocok, tinggal menunggu referensi pelanggan serupa.",
+      "expected": "referensi",
+      "rules": "referensi",
+      "rules_pass": true,
+      "jev": "referensi",
+      "jev_pass": true
+    },
+    {
+      "id": "PAR-06",
+      "group": "Negated price / authority",
+      "text": "Bukan anggaran yang menghambat. Kami masih menunggu pengambil keputusan yang baru.",
+      "expected": "pengambil_keputusan",
+      "rules": "harga",
+      "rules_pass": false,
+      "jev": "pengambil_keputusan",
+      "jev_pass": true
+    },
+    {
+      "id": "PAR-07",
+      "group": "Positive price control",
+      "text": "Harganya sudah sesuai dan kami tidak punya keberatan. Terima kasih.",
+      "expected": "tanpa_hambatan",
+      "rules": "tanpa_hambatan",
+      "rules_pass": true,
+      "jev": "tanpa_hambatan",
+      "jev_pass": true
+    },
+    {
+      "id": "PAR-08",
+      "group": "Product requirement",
+      "text": "Kami membutuhkan modul apotek untuk sembilan klinik.",
+      "expected": "kebutuhan_produk",
+      "rules": "kebutuhan_produk",
+      "rules_pass": true,
+      "jev": "kebutuhan_produk",
+      "jev_pass": true
+    },
+    {
+      "id": "PAR-09",
+      "group": "Ambiguous message",
+      "text": "Kami masih mempertimbangkannya.",
+      "expected": "bukti_kurang",
+      "rules": "bukti_kurang",
+      "rules_pass": true,
+      "jev": "bukti_kurang",
+      "jev_pass": true
+    },
+    {
+      "id": "PAR-10",
+      "group": "Discount request, not approval",
+      "text": "Saya mengusulkan diskon 20%. Mohon keputusan VP Sales; belum ada persetujuan.",
+      "expected": "harga",
+      "rules": "harga",
+      "rules_pass": true,
+      "jev": "pengambil_keputusan",
+      "jev_pass": false
+    },
+    {
+      "id": "PAR-11",
+      "group": "Reference paraphrase",
+      "text": "Bisa pertemukan kami dengan pelanggan yang sudah memakai sistem ini?",
+      "expected": "referensi",
+      "rules": "bukti_kurang",
+      "rules_pass": false,
+      "jev": "referensi",
+      "jev_pass": true
+    },
+    {
+      "id": "PAR-12",
+      "group": "Authority paraphrase",
+      "text": "Saya hanya mengecek teknis; keputusan pembelian ada pada kepala operasional.",
+      "expected": "pengambil_keputusan",
+      "rules": "bukti_kurang",
+      "rules_pass": false,
+      "jev": "pengambil_keputusan",
+      "jev_pass": true
+    }
+  ],
+  "ledger_before": {
+    "limit_input_tokens": 100000000,
+    "prior_input_tokens": 0,
+    "recorded_input_tokens": 40626,
+    "recorded_output_tokens": 4117,
+    "reserved_input_tokens": 0,
+    "accounted_input_tokens": 40626,
+    "remaining_input_tokens": 99959374,
+    "request_count": 72,
+    "pending_requests": 0,
+    "blocked": false
+  },
+  "e15_workflow": {
+    "status": "not_run",
+    "reason": "No dataset-derived context transmitted. This run evaluates message classification only."
+  },
+  "summary": {
+    "tested": 12,
+    "rules_pass": 6,
+    "jev_pass": 10
+  },
+  "receipt": {
+    "request_count": 12,
+    "calls": [
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 457,
+        "error": null,
+        "usage": {
+          "input_tokens": 491,
+          "output_tokens": 82
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 371,
+        "error": null,
+        "usage": {
+          "input_tokens": 492,
+          "output_tokens": 78
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 371,
+        "error": null,
+        "usage": {
+          "input_tokens": 490,
+          "output_tokens": 78
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 408,
+        "error": null,
+        "usage": {
+          "input_tokens": 488,
+          "output_tokens": 78
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 470,
+        "error": null,
+        "usage": {
+          "input_tokens": 493,
+          "output_tokens": 80
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 376,
+        "error": null,
+        "usage": {
+          "input_tokens": 499,
+          "output_tokens": 83
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 377,
+        "error": null,
+        "usage": {
+          "input_tokens": 495,
+          "output_tokens": 82
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 455,
+        "error": null,
+        "usage": {
+          "input_tokens": 489,
+          "output_tokens": 81
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 339,
+        "error": null,
+        "usage": {
+          "input_tokens": 487,
+          "output_tokens": 82
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 352,
+        "error": null,
+        "usage": {
+          "input_tokens": 502,
+          "output_tokens": 83
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 526,
+        "error": null,
+        "usage": {
+          "input_tokens": 492,
+          "output_tokens": 80
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      },
+      {
+        "mode": "jev",
+        "model": "jev-1.13.0",
+        "latency_ms": 359,
+        "error": null,
+        "usage": {
+          "input_tokens": 496,
+          "output_tokens": 83
+        },
+        "question_keys": [
+          "hambatan"
+        ]
+      }
+    ]
+  },
+  "ledger_after": {
+    "limit_input_tokens": 100000000,
+    "prior_input_tokens": 0,
+    "recorded_input_tokens": 46540,
+    "recorded_output_tokens": 5087,
+    "reserved_input_tokens": 0,
+    "accounted_input_tokens": 46540,
+    "remaining_input_tokens": 99953460,
+    "request_count": 84,
+    "pending_requests": 0,
+    "blocked": false
+  },
+  "run_input_tokens": 5914,
+  "run_output_tokens": 970
+}

@@ -17,7 +17,7 @@ export function OwnerLabel({ id, context, onEvidence }: { id: string | null; con
   if (!id) return <span>Not specified by the analysis</span>;
   const employee = employeeFromContext(context, id);
   if (!employee) return <span><strong>Employee ID {id}</strong> <span className="muted">· name not found in this deal data</span></span>;
-  return <span className="owner"><strong>{employee.name}</strong>{employee.title && <span className="muted"> · {employee.title}</span>} <span className="id-chip">{id}</span> <button className="link-button" aria-label={`View employee ${employee.name}`} onClick={() => onEvidence(employee.evidenceId)}>View source</button></span>;
+  return <span className="owner"><strong>{employee.name}</strong>{employee.title && <span className="muted"> · {englishText(employee.title)}</span>} <span className="id-chip">{id}</span> <button className="link-button" aria-label={`View employee ${employee.name}`} onClick={() => onEvidence(employee.evidenceId)}>View source</button></span>;
 }
 
 /** Only replace verified employee / interaction identifiers with readable source links.
@@ -88,8 +88,8 @@ export function RecommendationSources({ ids, context, onEvidence }: { ids: strin
       const { kind, title } = evidenceTitle(e), meta = interactionMeta(e);
       return <li key={e.id}><button className="evidence-item" onClick={() => onEvidence(e.id)}>
         <span className="evidence-item-head"><span className="tag">{kind}</span><span className="muted">{dateLabel(e.date)}</span></span>
-        <strong>{title}</strong>
-        {meta?.message && <span className="evidence-quote preview-quote">“{meta.message}”</span>}
+        <strong>{englishText(title)}</strong>
+        {meta?.message && <span className="evidence-quote preview-quote">“{englishText(meta.message)}”</span>}
         <span className="evidence-item-foot"><span className="link-text">Open source <Icon name="arrow" size={14}/></span></span>
       </button></li>;
     })}</ul>
@@ -98,7 +98,7 @@ export function RecommendationSources({ ids, context, onEvidence }: { ids: strin
 }
 
 function Precedent({ decision, context, onEvidence }: { decision: Record<string, unknown>; context: DealContext; onEvidence: OpenEvidence }) {
-  const text = (value: unknown) => typeof value === 'string' || typeof value === 'number' ? String(value) : 'Not provided';
+  const text = (value: unknown) => typeof value === 'string' || typeof value === 'number' ? englishText(String(value)) : 'Not provided';
   const id = text(decision.decision_id);
   const records = context.evidence.filter(e => e.source_id === id);
   return <details className="precedent">

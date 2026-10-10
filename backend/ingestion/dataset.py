@@ -210,7 +210,14 @@ def load_dataset(data_dir: Path = DATA_DIR) -> Dataset:
     return Dataset(tables, by_id, columns, TABLE_KEYS, source_files)
 
 
-@lru_cache(maxsize=1)
-def get_dataset() -> Dataset:
+@lru_cache(maxsize=8)
+def _cached_dataset(path: Path) -> Dataset:
     """Process-wide source snapshot; call get_dataset.cache_clear() for fixtures."""
-    return load_dataset(DATA_DIR)
+    return load_dataset(path)
+
+
+def get_dataset() -> Dataset:
+    from backend.ingestion.scope import data_path
+    return _cached_dataset(data_path() or DATA_DIR)
+
+get_dataset.cache_clear = _cached_dataset.cache_clear

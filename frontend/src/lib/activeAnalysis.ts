@@ -4,10 +4,10 @@ import type { Recommendation } from './contracts';
 import type { AnalysisEntry, AnalysisMeta } from './analysis';
 import type { EvidencePath, PriorityItem } from './phase3';
 
-export type AnalysisStatus = 'checking' | 'hybrid' | 'replay' | 'rules' | 'fallback' | 'more_info' | 'none';
+export type AnalysisStatus = 'checking' | 'hybrid' | 'replay' | 'rules' | 'fallback' | 'more_info' | 'none' | 'service_error';
 export const statusLabel: Record<AnalysisStatus, string> = {
   checking: 'Checking context…', hybrid: 'Rules + Jev', replay: 'Rules + Jev · recorded replay', rules: 'Rules-based',
-  fallback: 'Jev unavailable · rules shown', more_info: 'More information needed', none: 'No analysis yet',
+  fallback: 'Jev unavailable · rules shown', more_info: 'More information needed', none: 'No analysis yet', service_error: 'Analysis unavailable · rules shown',
 };
 
 export type ActiveAnalysis = {
@@ -49,7 +49,7 @@ export function activeAnalysis({ dealId, priority, entry, service }: {
   const waiting = service && (!entry || entry.status === 'running');
   const status: AnalysisStatus = waiting ? 'checking'
     : !validPriority ? 'none'
-    : entry?.status === 'failed' ? 'fallback'
+    : entry?.status === 'failed' ? 'service_error'
     : validPriority.analysis_status === 'insufficient_evidence' ? 'more_info' : 'rules';
   return { source: validPriority ? 'priority' : null, recommendation: validPriority?.recommendation ?? null, meta: null,
     paths: validPriority?.evidence_paths ?? [], pathLimitations: validPriority?.limitations ?? [], gate: validPriority ? priorityGate(validPriority) : null,

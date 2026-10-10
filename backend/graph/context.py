@@ -1,12 +1,13 @@
 """Public v1 context interface; the dataset has one business snapshot."""
-from backend.ingestion.dataset import SNAPSHOT_DATE
+from backend.ingestion.scope import snapshot_date as active_snapshot
 from backend.graph.store import get_context_graph
 
 from backend.contracts import DealContext
 
-def build_deal_context(deal_id: str, snapshot_date: str = '2026-10-01') -> DealContext:
+def build_deal_context(deal_id: str, snapshot_date: str | None = None) -> DealContext:
     """Build a sourced context, not an analysis or reconstructed past snapshot."""
-    if snapshot_date != SNAPSHOT_DATE.isoformat():
-        raise ValueError('Hanya snapshot bisnis 2026-10-01 tersedia.')
+    snapshot_date = active_snapshot().isoformat() if snapshot_date is None else snapshot_date
+    if snapshot_date != active_snapshot().isoformat():
+        raise ValueError('Requested snapshot does not match this workspace.')
     return get_context_graph().deal_context(deal_id)
 

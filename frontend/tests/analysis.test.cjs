@@ -47,7 +47,7 @@ for (const [id, acceptance] of cases) test(`${id}: real rules response renders i
   const action=renderToStaticMarkup(React.createElement(ActionTab,{context, priority:null, rankingState:'unavailable', view, fixture:false, snapshot:context.snapshot_date, canRefresh:true, onEvidence:noop, onReasons:noop, onShowPaths:noop, onRefresh:noop}));
   const reasons=renderToStaticMarkup(React.createElement(ReasonsTab,{priority:null, view, context, onEvidence:noop, onEdge:noop, onShowPath:noop}));
   const html=action+reasons;
-  for(const text of [r.action,r.milestone,...r.approvals_needed,...r.precedent_comparison,...r.unknowns,...context.unknowns]) assert.ok(html.includes(escape(text)), `Full API text retained: ${text.slice(0,80)}`);
+  for(const text of [r.action,r.milestone,...r.approvals_needed,...r.precedent_comparison,...r.unknowns,...context.unknowns]) assert.ok(html.includes(escape(text === r.action ? text : englishText(text))), `Translated API content retained: ${text.slice(0,80)}`);
   // Guided overview precedes the full unmodified proposal; business gates remain accessible and are included in the plan.
   const order=(markup,headings)=>{for(let i=1;i<headings.length;i++) assert.ok(markup.indexOf(headings[i-1])>=0&&markup.indexOf(headings[i-1])<markup.indexOf(headings[i]),`${headings[i-1]} before ${headings[i]}`);};
   const specific=splitUnknowns(r,context).specific;

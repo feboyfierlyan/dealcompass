@@ -28,7 +28,7 @@ from backend.decision.records import ContextIndex
 
 METHOD_ID = 'deal-priority-heuristic-v1'
 SCHEMA_VERSION = 'v1'
-SUPPORTED_SNAPSHOT = '2026-10-01'
+from backend.ingestion.scope import snapshot_date as active_snapshot
 # dataset_kasirnusa/README.md, crm_deals.stage: urutan tahap terbuka.
 STAGE_ORDER = ('Lead', 'Discovery', 'Demo', 'Proposal', 'Negosiasi')
 # Potensi tahunan IDR (crm_deals.nilai_tahunan = outlet x harga acuan x 12).
@@ -91,8 +91,8 @@ def _pair_inputs(contexts, diagnostics) -> list[tuple[DealContext, dict]]:
         raise ValueError(f'Set deal berbeda: hanya di contexts {sorted(set(by_ctx) - set(by_diag))}, '
                          f'hanya di diagnostics {sorted(set(by_diag) - set(by_ctx))}.')
     snapshots = {c.snapshot_date for c in ctxs} | {d.get('snapshot_date') for d in diags}
-    if snapshots != {SUPPORTED_SNAPSHOT}:
-        raise ValueError(f'Snapshot campuran/tidak didukung: {sorted(map(str, snapshots))}; hanya {SUPPORTED_SNAPSHOT}.')
+    if snapshots != {active_snapshot().isoformat()}:
+        raise ValueError(f'Snapshot campuran/tidak didukung: {sorted(map(str, snapshots))}; hanya {active_snapshot().isoformat()}.')
     for did, c in by_ctx.items():
         if c.schema_version != SCHEMA_VERSION:
             raise ValueError(f'{did}: schema_version konteks {c.schema_version!r} bukan v1.')
@@ -514,7 +514,7 @@ def rank_deals(contexts: list[DealContext], diagnostics: list[dict]) -> dict:
         deal = p['ctx'].deal
         paths, missing = _evidence_paths(p)
         rec = p['rec'].model_dump()
-        limitations = [f'Rank {rank} adalah urutan perhatian sales pada snapshot {SUPPORTED_SNAPSHOT}, bukan probabilitas closing.']
+        limitations = [f'Rank {rank} adalah urutan perhatian sales pada snapshot {active_snapshot().isoformat()}, bukan probabilitas closing.']
         limitations += [f'Faktor {f} unknown; tidak diberi poin dan bukan bukti negatif.' for f in p['unknown']
                         if f in SCORED]
         if 'umur_tahap_berbeda' in p['unknown']:
@@ -556,7 +556,7 @@ def rank_deals(contexts: list[DealContext], diagnostics: list[dict]) -> dict:
             'evidence_paths': paths, 'limitations': list(dict.fromkeys(limitations)),
         })
     result = {
-        'schema_version': SCHEMA_VERSION, 'snapshot_date': SUPPORTED_SNAPSHOT, 'engine_mode': 'rules',
+        'schema_version': SCHEMA_VERSION, 'snapshot_date': active_snapshot().isoformat(), 'engine_mode': 'rules',
         'methodology': _methodology(), 'items': items,
         'limitations': [
             'Ranking heuristik rules; belum tervalidasi terhadap hasil closing historis dan bukan probabilitas closing.',

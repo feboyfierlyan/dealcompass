@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-10-10T01:15:14.297742+00:00",
+  "code_commit": "29697dfb0823900680516151ead5525aa5ab26ed",
+  "label_origin": "AI-authored, not independent human gold",
+  "files": {
+    "input.json": "b17cfa5df4d4134bb9d127818068b18c1950f10ec1dbad83f41423422465dfe4",
+    "cases.json": "a19cb15ec5f78aa56e500ba507b4f9d63d5b9158ef92c592a9f445784b5fb549"
+  }
+}

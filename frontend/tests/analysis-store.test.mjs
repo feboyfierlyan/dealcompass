@@ -61,7 +61,7 @@ test('failure is not retried by navigation; only Refresh analysis asks again', a
   store.ensure('DL-002', '2026-10-01', 'r1'); await tick();
   assert.equal(calls, 1);
   const failed = activeAnalysis({ dealId: 'DL-002', priority: priority('DL-002'), entry: store.get('DL-002', '2026-10-01', 'r1'), service: true });
-  assert.equal(failed.label, 'Jev unavailable · rules shown'); assert.equal(failed.recommendation.action, 'USULAN: ranking rules');
+  assert.equal(failed.label, 'Analysis unavailable · rules shown'); assert.equal(failed.recommendation.action, 'USULAN: ranking rules');
   fail = false; store.refresh('DL-002', '2026-10-01', 'r1'); await tick();
   assert.equal(calls, 2); assert.equal(store.get('DL-002', '2026-10-01', 'r1').status, 'ready');
 });

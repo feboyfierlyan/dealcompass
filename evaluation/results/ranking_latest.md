@@ -1,8 +1,8 @@
-# Hasil evaluasi ranking ICAL-03 (2026-10-09 20:01 WIB)
+# Hasil evaluasi ranking ICAL-03 (2026-10-10 08:17 WIB)
 
 Sumber: build_deal_context + analyze_deal_initial nyata (Bima, dataset asli); kasus mutasi sintetis berlabel. Ranking tidak memakai Jev (rules). Tidak ada mock/replay/live pada ranking.
 
-Kasus ranking: 15/15 lulus. rank_deals lima deal (konteks sudah dibangun): 109 ms.
+Kasus ranking: 15/15 lulus. rank_deals lima deal (konteks sudah dibangun): 71 ms.
 
 | Sumber kasus | Lulus | Kasus |
 |---|---|---|

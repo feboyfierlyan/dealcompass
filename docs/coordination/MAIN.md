@@ -3,6 +3,47 @@
 Pemilik: Boy + AI pada chat koordinasi. Tanggal: 9 Oktober 2026, WIB.
 Deadline: 10 Oktober 2026 09.00 WIB. CP2 20.00-22.00, CP3 08.00-09.00.
 
+## Live demo — 10 Oktober 2026
+
+**VERIFIED:** https://dealcompass-production.up.railway.app — Rules + Jev cloud,
+P04 live smoke, cache dan ledger tetap utuh setelah restart. Lima deal/graph API
+tersedia. PR #36 / branch `integrator/english-graph-runtime` adalah sumber deploy
+saat ini. Revisi public tanpa login + upload + light mode VERIFIED pada commit
+897db05 (07:43 WIB). Credential lama tidak diperlukan.
+Ledger aktif hanya di Railway `/data`: 88 request / 48.549 input / 5.407 output,
+pending 0 pada verifikasi 07:15 WIB. Backend lokal sekarang **rules only**; jangan
+jalankan ulang launcher Jev memakai ledger laptop yang sudah tertinggal.
+SSH key sementara cutover telah dicabut. Detail: [deployment](../DEPLOY_RAILWAY.md).
+
+## Public data workspaces — 10 Oktober 2026
+
+MAIN-PUBLIC-UPLOAD-TOUR: VERIFIED lokal dan produksi publik (07:43 WIB). Pengguna meminta
+akses tanpa credential, light mode, tutorial dan upload CRM + transkrip. 243 backend
++ 90 frontend PASS, build PASS. ID/tanggal baru, perubahan input dan enam deal
+terverifikasi, P01–P05 asli tidak berubah. Batas: format template dan kebijakan
+KasirNusa tetap; tidak mengklaim benchmark SalesTranscriptQA telah dijalankan.
+[Handoff terbaru](../handoffs/MAIN.md), [panduan](../NEW_DATA_AND_BENCHMARK.md).
+
+## Action-driven tutorial and accuracy evidence — 10 Oktober 2026
+
+08:04 WIB: local VERIFIED, public deploy pending. Six actions drive an adjacent
+animated tutorial with tinted spotlight; no Next button. Graph selected/hover/focus
+text contrast fixed.105 frontend checks PASS. Rules23/24, ranking15/15, mock/replay
+11/11 separately reported; E15 remains failing. Historical Jev10/12 vs rules6/12
+measures obstacle classification only. No SalesTranscriptQA benchmark-wide run or
+independent human holdout. [Scorecard](../../evaluation/results/scorecard_latest.md),
+[protocol](../../evaluation/BENCHMARK_PROTOCOL.md).
+
+## Deal Acceleration benchmark — 2026-10-10 08:20 WIB
+
+MAIN-BENCHMARK-16 execution VERIFIED. Sixteen frozen synthetic new cases run through
+local rules and actual cloud hybrid. Citation/graph structure16/16; action-family
+and explicit-gate screens12/16 each; all screens hybrid11/16 vs rules10/16.
+Labels AI-authored, human review pending.30 cloud provider requests via existing
+ledger, no local Jev. [Pitch](../../evaluation/deal_benchmark/PITCH.md),
+[results](../../evaluation/deal_benchmark/results/REPORT.md),
+[setup](../../evaluation/deal_benchmark/README.md). Product code unchanged.
+
 ## Review hybrid default — 10 Oktober 2026
 
 PR #32 (UI), #33 (engine), #34 (route) telah direview ulang oleh Main. Tiga regresi

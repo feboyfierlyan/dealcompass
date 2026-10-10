@@ -10,6 +10,13 @@ Tim: **Boy (@feboyfierlyan), Bima (@bimadji), Ical (@IXALS)**.
 3. Buka prompt peran: [Boy](docs/prompts/BOY.md), [Bima](docs/prompts/BIMA.md), [Ical](docs/prompts/ICAL.md).
 4. Ikuti [cara kontribusi](CONTRIBUTING.md); setiap PR wajib catatan `.md`.
 
+## Deployment
+
+[Railway setup and cutover guide](docs/DEPLOY_RAILWAY.md): one HTTPS service for
+the built frontend and API, protected demo access, and a persistent team usage
+ledger. Deployment configuration is prepared; a public deployment is not yet
+verified. Never initialize a new zero-usage ledger when moving live Jev to cloud.
+
 ## Status saat ini
 
 Analisis rules P01–P05, context graph, ranking, diagnostic dan UI sudah merged/verified.
@@ -75,4 +82,3 @@ Hasil build bukan bukti graph, Jev, atau analisis bisnis sudah selesai.
 
 Snapshot bisnis 1 Oktober 2026; deadline tim 10 Oktober 2026 09.00 WIB.
 Nilai deal adalah potensi tahunan, bukan pendapatan yang sudah diperoleh.
-

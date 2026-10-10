@@ -1,0 +1,211 @@
+{
+  "normalized_context_pairs_equal": 16,
+  "generated_at": "2026-10-10T01:18:41.823611+00:00",
+  "arms": [
+    {
+      "arm": "hybrid",
+      "metrics": {
+        "identity": {
+          "passed": 16,
+          "total": 16
+        },
+        "owner": {
+          "passed": 16,
+          "total": 16
+        },
+        "action_and_target": {
+          "passed": 16,
+          "total": 16
+        },
+        "citation_ids_resolve": {
+          "passed": 16,
+          "total": 16
+        },
+        "precedent_ids_resolve": {
+          "passed": 16,
+          "total": 16
+        },
+        "graph_edges_resolve": {
+          "passed": 16,
+          "total": 16
+        },
+        "supporting_paths_resolve": {
+          "passed": 16,
+          "total": 16
+        },
+        "action_family_screen": {
+          "passed": 12,
+          "total": 16
+        },
+        "approval_gate_screen": {
+          "passed": 12,
+          "total": 16
+        },
+        "precedent_explanation_screen": {
+          "passed": 4,
+          "total": 4
+        },
+        "capacity_exception_screen": {
+          "passed": 1,
+          "total": 1
+        }
+      },
+      "outcomes": {
+        "jev_applied": 13,
+        "not_eligible": 3
+      },
+      "cases_completed": 16,
+      "all_screens_passed": 11,
+      "precedent_ids_checked": 5,
+      "errors": 0,
+      "provider_requests_reported": 30,
+      "median_roundtrip_ms": 1120.0,
+      "failed_cases": [
+        {
+          "id": "B07",
+          "failed": [
+            "action_family_screen",
+            "approval_gate_screen"
+          ],
+          "error": null
+        },
+        {
+          "id": "B10",
+          "failed": [
+            "action_family_screen",
+            "approval_gate_screen"
+          ],
+          "error": null
+        },
+        {
+          "id": "B11",
+          "failed": [
+            "action_family_screen"
+          ],
+          "error": null
+        },
+        {
+          "id": "B13",
+          "failed": [
+            "action_family_screen",
+            "approval_gate_screen"
+          ],
+          "error": null
+        },
+        {
+          "id": "B14",
+          "failed": [
+            "approval_gate_screen"
+          ],
+          "error": null
+        }
+      ]
+    },
+    {
+      "arm": "rules",
+      "metrics": {
+        "identity": {
+          "passed": 16,
+          "total": 16
+        },
+        "owner": {
+          "passed": 16,
+          "total": 16
+        },
+        "action_and_target": {
+          "passed": 16,
+          "total": 16
+        },
+        "citation_ids_resolve": {
+          "passed": 16,
+          "total": 16
+        },
+        "precedent_ids_resolve": {
+          "passed": 16,
+          "total": 16
+        },
+        "graph_edges_resolve": {
+          "passed": 16,
+          "total": 16
+        },
+        "supporting_paths_resolve": {
+          "passed": 16,
+          "total": 16
+        },
+        "action_family_screen": {
+          "passed": 12,
+          "total": 16
+        },
+        "approval_gate_screen": {
+          "passed": 12,
+          "total": 16
+        },
+        "precedent_explanation_screen": {
+          "passed": 4,
+          "total": 4
+        },
+        "capacity_exception_screen": {
+          "passed": 1,
+          "total": 1
+        }
+      },
+      "outcomes": {
+        "rules_only": 16
+      },
+      "cases_completed": 16,
+      "all_screens_passed": 10,
+      "precedent_ids_checked": 5,
+      "errors": 0,
+      "provider_requests_reported": 0,
+      "median_roundtrip_ms": 3.0,
+      "failed_cases": [
+        {
+          "id": "B07",
+          "failed": [
+            "approval_gate_screen"
+          ],
+          "error": null
+        },
+        {
+          "id": "B09",
+          "failed": [
+            "action_family_screen"
+          ],
+          "error": null
+        },
+        {
+          "id": "B10",
+          "failed": [
+            "action_family_screen",
+            "approval_gate_screen"
+          ],
+          "error": null
+        },
+        {
+          "id": "B11",
+          "failed": [
+            "action_family_screen"
+          ],
+          "error": null
+        },
+        {
+          "id": "B13",
+          "failed": [
+            "action_family_screen",
+            "approval_gate_screen"
+          ],
+          "error": null
+        },
+        {
+          "id": "B14",
+          "failed": [
+            "approval_gate_screen"
+          ],
+          "error": null
+        }
+      ]
+    }
+  ],
+  "human_review_completed": 0,
+  "external_benchmark_run": false
+}

@@ -72,6 +72,10 @@ def analyze_deal(context: DealContext) -> Recommendation:
 
 
 def resolve_mode(explicit: str | None = None) -> str:
+    from backend.ingestion.scope import workspace
+    if workspace.get() and not workspace.get().get('allow_jev'):
+        return 'rules'
+
     mode = (explicit or os.environ.get('DEALCOMPASS_ENGINE_MODE') or 'auto').lower()
     if mode == 'auto':
         return 'jev' if os.environ.get('TYPESAFE_API_KEY') else 'rules'

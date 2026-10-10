@@ -1,0 +1,322 @@
+[
+  {
+    "case_id": "B01",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B01",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B02",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B02",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B03",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B03",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B04",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B04",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B05",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B05",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B06",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B06",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B07",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B07",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B08",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B08",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B09",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B09",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B10",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B10",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B11",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B11",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B12",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B12",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B13",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B13",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B14",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B14",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B15",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B15",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B16",
+    "arm": "rules",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  },
+  {
+    "case_id": "B16",
+    "arm": "hybrid",
+    "reviewer": "",
+    "notes": "",
+    "action_acceptable": null,
+    "claims_supported_by_citations": null,
+    "approval_handling_correct": null,
+    "precedent_handling_correct": null
+  }
+]
