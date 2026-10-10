@@ -70,7 +70,7 @@ class PriorityItem(PriorityWireModel):
 
 class PrioritiesResponse(PriorityWireModel):
     schema_version: Literal['v1']
-    snapshot_date: Literal['2026-10-01']
+    snapshot_date: str
     engine_mode: Literal['rules']
     methodology: PriorityMethodology
     items: list[PriorityItem]

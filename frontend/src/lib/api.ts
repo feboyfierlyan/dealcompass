@@ -18,7 +18,7 @@ export interface DealApi {
   diagnostics?(signal: AbortSignal): Promise<PipelineDiagnostic>;
   diagnostic?(id: string, signal: AbortSignal): Promise<Diagnostic>;
 }
-async function request<T>(path: string, signal: AbortSignal, valid: (v: unknown) => v is T, method = 'GET'): Promise<T> {
+async function request<T>(path: string, signal: AbortSignal, valid: (v: unknown) => v is T, method = 'GET', workspaceId?: string): Promise<T> {
   const controller = new AbortController();
   const abort = () => controller.abort();
   signal.addEventListener('abort', abort, { once: true });
@@ -26,7 +26,7 @@ async function request<T>(path: string, signal: AbortSignal, valid: (v: unknown)
   let timedOut = false;
   const timer = setTimeout(() => { timedOut = true; controller.abort(); }, 20000);
   try {
-    const response = await fetch(path, { method, signal: controller.signal, headers: { Accept: 'application/json' } });
+    const response = await fetch(path, { method, signal: controller.signal, headers: { Accept: 'application/json', ...(workspaceId ? { 'X-DealCompass-Workspace': workspaceId } : {}) } });
     if (!response.ok) {
       let code: string | undefined;
       try { code = (await response.json())?.detail?.code; } catch { /* Non-JSON error: keep the HTTP status. */ }
@@ -50,28 +50,33 @@ async function request<T>(path: string, signal: AbortSignal, valid: (v: unknown)
     signal.removeEventListener('abort', abort);
   }
 }
-export const liveApi: DealApi = {
-  priorities: signal => request('/api/pipeline/priorities', signal, isPriorities),
-  diagnostics: signal => request('/api/pipeline/initial-analysis', signal, isPipelineDiagnostic),
+export function workspaceApi(workspaceId?: string): DealApi {
+  const scopedRequest = <T,>(path: string, signal: AbortSignal, valid: (v: unknown) => v is T, method = 'GET') => request(path, signal, valid, method, workspaceId);
+  return {
+  priorities: signal => scopedRequest('/api/pipeline/priorities', signal, isPriorities),
+  diagnostics: signal => scopedRequest('/api/pipeline/initial-analysis', signal, isPipelineDiagnostic),
   diagnostic: async (id, signal) => {
-    const data = await request(`/api/deals/${encodeURIComponent(id)}/initial-analysis`, signal, isDealDiagnostic);
+    const data = await scopedRequest(`/api/deals/${encodeURIComponent(id)}/initial-analysis`, signal, isDealDiagnostic);
     if (data.deal_id !== id) throw new ApiError(502, 'The findings do not match the selected deal.');
     return data;
   },
-  list: signal => request('/api/deals', signal, isDealList),
+  list: signal => scopedRequest('/api/deals', signal, isDealList),
   context: async (id, signal) => {
-    const data = await request(`/api/deals/${encodeURIComponent(id)}`, signal, isContext);
+    const data = await scopedRequest(`/api/deals/${encodeURIComponent(id)}`, signal, isContext);
     if (data.deal.deal_id !== id) throw new ApiError(502, 'The detail response does not match the selected deal.');
     return data;
   },
   analyze: async (id, signal) => {
-    const data = await request(`/api/deals/${encodeURIComponent(id)}/analyze`, signal, isRecommendation, 'POST');
+    const data = await scopedRequest(`/api/deals/${encodeURIComponent(id)}/analyze`, signal, isRecommendation, 'POST');
     if (data.deal_id !== id) throw new ApiError(502, 'The analysis does not match the selected deal.');
     return data;
   },
   analysis: async (id, refresh, signal) => {
-    const data = await request(`/api/deals/${encodeURIComponent(id)}/analysis${refresh ? '?refresh=true' : ''}`, signal, isAnalysisEnvelope, 'POST');
+    const data = await scopedRequest(`/api/deals/${encodeURIComponent(id)}/analysis${refresh ? '?refresh=true' : ''}`, signal, isAnalysisEnvelope, 'POST');
     if (data.deal_id !== id) throw new ApiError(502, 'The analysis does not match the selected deal.');
     return data;
   },
 };
+
+}
+export const liveApi = workspaceApi();

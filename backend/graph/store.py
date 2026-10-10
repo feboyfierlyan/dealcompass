@@ -8,8 +8,9 @@ import re
 
 import networkx as nx
 
+from backend.ingestion.scope import snapshot_date
 from backend.contracts import DealContext, EvidenceGraph, EvidenceRecord, GraphEdge, GraphNode
-from backend.ingestion.dataset import Dataset, SNAPSHOT_DATE, SourceRecord, get_dataset
+from backend.ingestion.dataset import Dataset, SourceRecord, get_dataset
 from backend.ingestion.deals import deal_summary
 
 
@@ -37,7 +38,7 @@ class ContextGraph:
 
     def __init__(self, dataset: Dataset):
         self.dataset = dataset
-        self.graph = nx.MultiDiGraph(snapshot_date=SNAPSHOT_DATE.isoformat())
+        self.graph = nx.MultiDiGraph(snapshot_date=snapshot_date().isoformat())
         self.evidence: dict[str, EvidenceRecord] = {}
         self._sources: dict[str, list[SourceRecord]] = {}
         self._node_accounts = defaultdict(set)
@@ -49,7 +50,7 @@ class ContextGraph:
     def _rows(self, filename, date_field=None):
         for row in self.dataset.tables[filename]:
             when = row.values.get(date_field) if date_field else None
-            if when is None or when <= SNAPSHOT_DATE:
+            if when is None or when <= snapshot_date():
                 yield row
 
     def _evidence(self, row):
@@ -136,9 +137,9 @@ class ContextGraph:
             v = row.values
             active = [h for h in self._histories[v['contact_id']]
                       if h.values['account_id'] == v['account_id_saat_ini']
-                      and (h.values['selesai'] is None or h.values['selesai'] >= SNAPSHOT_DATE)]
+                      and (h.values['selesai'] is None or h.values['selesai'] >= snapshot_date())]
             self._link(row, v['contact_id'], v['account_id_saat_ini'], 'current_crm_account',
-                       min(h.values['mulai'] for h in active) if active else SNAPSHOT_DATE)
+                       min(h.values['mulai'] for h in active) if active else snapshot_date())
         for row in self._rows('outlets.csv'):
             self._link(row, row.values['outlet_id'], row.values['account_id'], 'outlet_of')
         for row in self._rows('crm_deals.csv', 'dibuat'):
@@ -256,7 +257,7 @@ class ContextGraph:
                     start = max(a['mulai'], b['mulai'])
                     ends = [d for d in (a['selesai'], b['selesai']) if d is not None]
                     end = min(ends) if ends else None
-                    if start > (end or SNAPSHOT_DATE):
+                    if start > (end or snapshot_date()):
                         continue
                     self._edge(a['contact_id'], b['contact_id'], 'overlapping_employment',
                                [self._evidence(first), self._evidence(second)], 'inferred', start, end)
@@ -267,7 +268,7 @@ class ContextGraph:
             start = date.fromisoformat(v['bulan'] + '-01')
             end = date(start.year, start.month, calendar.monthrange(start.year, start.month)[1])
             # A monthly total cannot be known before the month is complete.
-            if end >= SNAPSHOT_DATE:
+            if end >= snapshot_date():
                 continue
             nid = f'feature-usage:{row.source_id}'
             self._record_node(row, nid, f'{v["bulan"]}: {v["pengguna_aktif"]} pengguna aktif', 'feature_usage', [v['account_id']])
@@ -356,7 +357,7 @@ class ContextGraph:
                               if source in reference_ids and self.graph.nodes[target_id]['type'] == 'feature'}
         for usage in self.dataset.tables['feature_usage_monthly.csv']:
             u = usage.values
-            if u['feature_id'] not in mentioned_features or not u['pengguna_aktif'] or u['bulan'] >= SNAPSHOT_DATE.strftime('%Y-%m'):
+            if u['feature_id'] not in mentioned_features or not u['pengguna_aktif'] or u['bulan'] >= snapshot_date().strftime('%Y-%m'):
                 continue
             # One sourced example establishes usage, not suitability as a reference.
             related = u['account_id']
@@ -423,11 +424,18 @@ class ContextGraph:
             feature = self.dataset.by_id['features.csv'][fid]
             if feature.values['target_terkini'] == 'Belum ditetapkan':
                 unknowns.add(f'{fid}: target terkini belum ditetapkan; tidak ada tanggal rilis pasti dalam sumber.')
-        return DealContext(snapshot_date=SNAPSHOT_DATE.isoformat(), deal=deal_summary(deal, self.dataset),
+        return DealContext(snapshot_date=snapshot_date().isoformat(), deal=deal_summary(deal, self.dataset),
             evidence=[evidence_map[eid] for eid in sorted(evidence_map)], graph=graph,
             candidate_decisions=[dict(row.raw) for row in candidates], unknowns=sorted(unknowns))
 
 
-@lru_cache(maxsize=1)
-def get_context_graph() -> ContextGraph:
+@lru_cache(maxsize=8)
+def _cached_graph(path, snapshot):
     return ContextGraph(get_dataset())
+
+
+def get_context_graph() -> ContextGraph:
+    from backend.ingestion.scope import data_path
+    return _cached_graph(str(data_path()), snapshot_date().isoformat())
+
+get_context_graph.cache_clear = _cached_graph.cache_clear

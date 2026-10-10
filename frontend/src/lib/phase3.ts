@@ -37,7 +37,7 @@ const strings = (v: unknown): v is string[] => Array.isArray(v) && v.every(str);
 const nat = (v: unknown): v is number => typeof v === 'number' && Number.isSafeInteger(v) && v >= 0;
 const date = (v: unknown) => v === null || (str(v) && /^\d{4}-\d{2}-\d{2}$/.test(v));
 const unique = (v: string[]) => new Set(v).size === v.length;
-const snapshot = (v: unknown) => v === '2026-10-01'; // Shared v1 business snapshot, not a ranking rule.
+const snapshot = (v: unknown) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v); // Dataset-specific snapshot.
 function jsonSafe(v: unknown): boolean {
   if (v === null || str(v) || typeof v === 'boolean') return true;
   if (typeof v === 'number') return Number.isFinite(v);
@@ -79,7 +79,7 @@ function path(v: unknown): v is EvidencePath {
     && strings(v.edge_ids) && unique(v.edge_ids) && v.edge_ids.length === v.node_ids.length - 1 && strings(v.evidence_ids);
 }
 function priority(v: unknown): v is PriorityItem {
-  return obj(v) && str(v.deal_id) && str(v.account_id) && nat(v.rank) && v.rank > 0 && v.rank <= 5
+  return obj(v) && str(v.deal_id) && str(v.account_id) && nat(v.rank) && v.rank > 0
     && ['acceleration','discovery'].includes(String(v.priority_kind)) && ['ready','insufficient_evidence'].includes(String(v.analysis_status))
     && strings(v.rationale) && Array.isArray(v.factors) && v.factors.every(f => obj(f) && str(f.name) && str(f.effect) && strings(f.evidence_ids) && (f.value === null || str(f.value) || (typeof f.value === 'number' && Number.isFinite(f.value))))
     && isRecommendation(v.recommendation) && v.recommendation.deal_id === v.deal_id && v.recommendation.engine_mode === 'rules'
@@ -89,9 +89,11 @@ export function isPriorities(v: unknown): v is Priorities {
   if (!obj(v) || !jsonSafe(v) || v.schema_version !== 'v1' || !snapshot(v.snapshot_date) || v.engine_mode !== 'rules'
     || !obj(v.methodology) || !['id','label','description'].every(k => str(v.methodology && (v.methodology as RecordData)[k]))
     || !['ordered_rules','tie_breakers','limitations'].every(k => strings((v.methodology as RecordData)[k])) || !strings(v.limitations)
-    || !Array.isArray(v.items) || v.items.length !== 5 || !v.items.every(priority)) return false;
+    || !Array.isArray(v.items) || v.items.length < 1 || !v.items.every(priority)) return false;
   try { mergeEvidence(...v.items.map(i => i.evidence)); } catch { return false; }
-  return unique(v.items.map(i => i.deal_id)) && unique(v.items.map(i => i.account_id)) && unique(v.items.map(i => String(i.rank)));
+  const count = v.items.length;
+  return unique(v.items.map(i => i.deal_id)) && unique(v.items.map(i => i.account_id))
+    && unique(v.items.map(i => String(i.rank))) && v.items.every(i => i.rank <= count);
 }
 function interaction(v: unknown): v is InteractionMetric { return obj(v) && nat(v.count) && date(v.last_date) && strings(v.last_evidence_ids) && strings(v.evidence_ids); }
 function finding(v: unknown): v is Finding {
@@ -111,16 +113,16 @@ export function isDiagnostic(v: unknown): v is Diagnostic {
 }
 export function isDealDiagnostic(v: unknown): v is Diagnostic { return obj(v) && v.schema_version === 'v1' && isDiagnostic(v); }
 export function isPipelineDiagnostic(v: unknown): v is PipelineDiagnostic {
-  if (!obj(v) || !jsonSafe(v) || v.schema_version !== 'v1' || !snapshot(v.snapshot_date) || !Array.isArray(v.deals) || v.deals.length !== 5 || !v.deals.every(isDiagnostic)
+  if (!obj(v) || !jsonSafe(v) || v.schema_version !== 'v1' || !snapshot(v.snapshot_date) || !Array.isArray(v.deals) || v.deals.length < 1 || !v.deals.every(isDiagnostic)
     || !unique(v.deals.map(d => d.deal_id)) || !unique(v.deals.map(d => d.account_id)) || !obj(v.statistical_assessment)) return false;
   const s = v.statistical_assessment;
-  if (s.status !== 'not_assessed' || s.sample_size !== 5 || !obj(s.stage_cohort_counts) || !Object.values(s.stage_cohort_counts).every(nat)
-    || (Object.values(s.stage_cohort_counts) as number[]).reduce((a,b) => a + b,0) !== 5 || s.method !== null || s.threshold !== null || s.outlier_deal_ids !== null || !str(s.reason) || !strings(s.evidence_ids)) return false;
+  if (s.status !== 'not_assessed' || s.sample_size !== v.deals.length || !obj(s.stage_cohort_counts) || !Object.values(s.stage_cohort_counts).every(nat)
+    || (Object.values(s.stage_cohort_counts) as number[]).reduce((a,b) => a + b,0) !== v.deals.length || s.method !== null || s.threshold !== null || s.outlier_deal_ids !== null || !str(s.reason) || !strings(s.evidence_ids)) return false;
   try { return resolved(v, mergeEvidence(...v.deals.map(d => d.evidence))); } catch { return false; }
 }
 export function matchPipeline(list: DealList, payload: Priorities | PipelineDiagnostic) {
   const items = 'items' in payload ? payload.items : payload.deals;
-  if (list.snapshot_date !== payload.snapshot_date || list.items.length !== 5 || items.length !== 5
+  if (list.snapshot_date !== payload.snapshot_date || list.items.length < 1 || items.length !== list.items.length
     || items.some(i => !list.items.some(d => d.deal_id === i.deal_id && d.account_id === i.account_id))) throw new Error('Pipeline snapshot or deal/account mismatch. Results were rejected.');
   return payload;
 }

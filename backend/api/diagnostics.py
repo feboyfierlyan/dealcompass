@@ -98,8 +98,10 @@ def validate_pipeline_diagnostic(report: dict, contexts: list[DealContext]) -> d
     _required(report, ('snapshot_date', 'deals', 'statistical_assessment'))
     if 'schema_version' in report and report['schema_version'] != 'v1':
         raise ValueError('Diagnostic schema version is invalid.')
-    if len(contexts) != 5 or len({context.deal.deal_id for context in contexts}) != 5:
-        raise ValueError('Pipeline requires five unique deal contexts.')
+    from backend.ingestion.deals import list_deals
+    expected = {d.deal_id for d in list_deals()}
+    if len(contexts) != len(expected) or {c.deal.deal_id for c in contexts} != expected:
+        raise ValueError('Pipeline requires every workspace deal exactly once.')
     if any(context.snapshot_date != report['snapshot_date'] for context in contexts):
         raise ValueError('Pipeline snapshot does not match its contexts.')
     if not isinstance(report['deals'], list) or len(report['deals']) != len(contexts):

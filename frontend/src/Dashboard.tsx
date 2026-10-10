@@ -82,7 +82,7 @@ export function Dashboard({ api, fixture, initialDeal = null }: { api: DealApi; 
     <h1 className="visually-hidden">DealCompass · Sales priorities</h1>
     <section className="queue" aria-labelledby="queue-title" hidden={detailOnly}>
       <div className="queue-workspace"><span className="workspace-avatar">KN</span><div><strong>KasirNusa</strong><span>Sales workspace</span></div><Icon name="compass" size={17}/></div>
-      <div className="queue-section-label"><Icon name="grid" size={15}/>PIPELINE · P01–P05</div>
+      <div className="queue-section-label"><Icon name="grid" size={15}/>PIPELINE{deals.length ? ` · ${deals.length} DEALS` : ''}</div>
       <div className="queue-head">
         <h2 id="queue-title">Priority deals <span className="count">{deals.length || '—'}</span></h2>
         <button className="icon-button" title="Refresh deals" aria-label="Refresh deals" disabled={loading} onClick={() => setRefresh(v => v + 1)}><Icon name="refresh" size={15}/></button>

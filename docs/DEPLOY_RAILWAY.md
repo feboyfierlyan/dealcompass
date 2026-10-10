@@ -6,8 +6,9 @@ https://dealcompass-production.up.railway.app
 Project `helpful-appreciation`, service `dealcompass`, environment `production`.
 The service follows `integrator/english-graph-runtime` (PR #36), not `main` yet.
 One 500 MB volume is attached at `/data`. The existing trial is used; no paid
-plan or subscription was selected. Demo username is `team`; the password is in
-the local, Git-ignored `.env.railway` file. Never put it in this document.
+plan or subscription was selected. Public access is now requested and configured
+with `DEALCOMPASS_PUBLIC_ACCESS=1`; no username/password is needed. Stored legacy
+credentials are ignored in public mode. Upload storage is `/data/uploads`.
 
 Cloud verification: HTTPS/auth, built assets, all five deal contexts with graph,
 P04 Rules + Jev (`jev_applied`, 3 provider calls), cache hit, and cache/ledger
@@ -17,12 +18,22 @@ previous requests (47,048 input), verified by SQLite integrity and SHA-256.
 The old local live backend is stopped; local port 8000 now runs rules only.
 See `docs/handoffs/MAIN.md` for verification and limitations.
 
+## Public uploads and onboarding
+
+The current revision adds a light interface, first-visit tour, and separate upload
+workspaces for CRM + transcripts. See [formats and verification](NEW_DATA_AND_BENCHMARK.md).
+Keep `/data` and the existing usage ledger intact during deployment. Public write
+limits and Jev opt-in for uploads do not replace the shared token-budget guard.
+The cloud verification below is the earlier cutover; current public verification
+is recorded in the latest Main handoff.
+
 ## Architecture
 
 One Railway service builds the React frontend and runs FastAPI. The browser uses
 one HTTPS origin for `/`, `/assets/*`, and `/api/*`; there is no Vite server or
 separate frontend host in production. `/health` is public for Railway probes.
-All other routes, including API documentation, require the demo login.
+Public mode exposes the dashboard and API without login. Setting public access
+to 0 restores the optional demo-login gate.
 
 - `Dockerfile`: Node 24 build stage, Python 3.12 runtime; explicit file copies.
 - `.dockerignore`: allowlist excludes local secrets, databases and dependencies.
@@ -53,8 +64,8 @@ design is intended for a single process. The ledger remains the spending guard.
    ```text
    RAILWAY_DOCKERFILE_PATH=Dockerfile
    DEALCOMPASS_ENGINE_MODE=rules
-   DEALCOMPASS_DEMO_USER=team
-   DEALCOMPASS_DEMO_PASSWORD=<unique random password, at least 16 characters>
+   DEALCOMPASS_PUBLIC_ACCESS=1
+   DEALCOMPASS_UPLOAD_DIR=/data/uploads
    TYPESAFE_USAGE_DB=/data/typesafe-usage.sqlite3
    DEALCOMPASS_ANALYSIS_CACHE_DB=/data/analysis-cache.sqlite3
    TYPESAFE_BASE_URL=https://api.typesafe.ai/v1
@@ -72,7 +83,7 @@ design is intended for a single process. The ledger remains the spending guard.
    unexpectedly chose Railpack and failed before startup; setting the explicit
    Dockerfile variable and deploying from source resolved it. Use `railway restart`
    for a process restart without a rebuild.
-5. Deploy, generate a Railway HTTPS domain, open `/health`, then `/` and enter the
+5. Deploy, generate a Railway HTTPS domain, open `/health`, then `/`. For optional private mode, enter the
    demo login. Verify all five deals, the evidence panel and graph. Analysis should
    explicitly report rules mode. A 401 without login is expected.
 

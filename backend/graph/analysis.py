@@ -4,6 +4,7 @@ Conversation rules inspect only dated focus-account messages in the deal window.
 Follow-up implications describe missing checks, not approved sales actions.
 """
 from collections import Counter
+from backend.ingestion.scope import snapshot_date as active_snapshot
 from datetime import date
 from decimal import Decimal
 import json
@@ -12,7 +13,7 @@ import re
 from backend.contracts import DealContext, EvidenceRecord
 from backend.graph.store import ContextGraph, get_context_graph
 from backend.graph.verification import reference_request_rows, verify_authority_paths, verify_reference_candidates
-from backend.ingestion.dataset import Dataset, SNAPSHOT_DATE, get_dataset
+from backend.ingestion.dataset import Dataset, get_dataset
 from backend.ingestion.metrics import evidence_id, summarize_deal
 
 
@@ -61,8 +62,8 @@ def _sources(dataset, value):
 
 def analyze_deal_initial(context: DealContext, *, dataset: Dataset | None = None) -> dict:
     """Return sourced metrics/findings for one canonical context, without ranking."""
-    if context.snapshot_date != SNAPSHOT_DATE.isoformat():
-        raise ValueError('Hanya snapshot bisnis 2026-10-01 tersedia.')
+    if context.snapshot_date != active_snapshot().isoformat():
+        raise ValueError('Requested snapshot does not match this workspace.')
     dataset = dataset if dataset is not None else get_dataset()
     metrics = summarize_deal(context.deal.deal_id, dataset=dataset)
     if metrics['account_id'] != context.deal.account_id:
@@ -112,10 +113,10 @@ def analyze_deal_initial(context: DealContext, *, dataset: Dataset | None = None
         for percent in percentages:
             focus_logs = [r for r in dataset.tables['decision_log.csv']
                           if r.values['account_id'] == account_id and r.values['deal_id'] == deal_id
-                          and isinstance(r.values['tanggal'], date) and r.values['tanggal'] <= SNAPSHOT_DATE]
+                          and isinstance(r.values['tanggal'], date) and r.values['tanggal'] <= active_snapshot()]
             account_only = [r for r in dataset.tables['decision_log.csv']
                             if r.values['account_id'] == account_id and r.values['deal_id'] is None
-                            and isinstance(r.values['tanggal'], date) and r.values['tanggal'] <= SNAPSHOT_DATE]
+                            and isinstance(r.values['tanggal'], date) and r.values['tanggal'] <= active_snapshot()]
             ids = [evidence_id(row), evidence_id(deal)] + [evidence_id(r) for r in focus_logs + account_only]
             recipients = {address.strip() for address in (row.values.get('ke') or '').split(';')}
             vp_recipients = [r for r in dataset.tables['employees.csv']
@@ -130,7 +131,7 @@ def analyze_deal_initial(context: DealContext, *, dataset: Dataset | None = None
                 ['Periksa keputusan dan log sebelum menganggap permintaan sebagai persetujuan.'])
             finding['requested_discount_pct'] = str(percent)
             finding['decision_lookup'] = dict(source_file=dataset.source_files['decision_log.csv'],
-                account_id=account_id, deal_id=deal_id, through=SNAPSHOT_DATE.isoformat(),
+                account_id=account_id, deal_id=deal_id, through=active_snapshot().isoformat(),
                 focus_log_evidence_ids=[evidence_id(r) for r in focus_logs],
                 account_only_log_evidence_ids=[evidence_id(r) for r in account_only],
                 inspected_record_count=len(dataset.tables['decision_log.csv']))
@@ -157,10 +158,11 @@ def analyze_deal_initial(context: DealContext, *, dataset: Dataset | None = None
     return report
 
 
-def analyze_pipeline_initial(snapshot_date: str = '2026-10-01', *, dataset: Dataset | None = None) -> dict:
+def analyze_pipeline_initial(snapshot_date: str | None = None, *, dataset: Dataset | None = None) -> dict:
     """Analyze all open prospects; a heterogeneous five-deal set is not an outlier model."""
-    if snapshot_date != SNAPSHOT_DATE.isoformat():
-        raise ValueError('Hanya snapshot bisnis 2026-10-01 tersedia.')
+    snapshot_date = active_snapshot().isoformat() if snapshot_date is None else snapshot_date
+    if snapshot_date != active_snapshot().isoformat():
+        raise ValueError('Requested snapshot does not match this workspace.')
     store = get_context_graph() if dataset is None else ContextGraph(dataset)
     dataset = store.dataset
     reports = []
@@ -169,7 +171,7 @@ def analyze_pipeline_initial(snapshot_date: str = '2026-10-01', *, dataset: Data
     for row in dataset.tables['crm_deals.csv']:
         account = dataset.by_id['crm_accounts.csv'][row.values['account_id']]
         if row.values['status'] == 'Terbuka' and account.values['tipe'] == 'prospek':
-            if isinstance(row.values['dibuat'], date) and row.values['dibuat'] > SNAPSHOT_DATE:
+            if isinstance(row.values['dibuat'], date) and row.values['dibuat'] > active_snapshot():
                 continue
             reports.append(analyze_deal_initial(store.deal_context(row.values['deal_id']), dataset=dataset))
             stage_counts[row.values['stage']] += 1

@@ -109,3 +109,28 @@ serta diagnostic kelima deal asli200; unknown deal404. Endpoint tambahan:
 Endpoint lama tetap; rank/status daftar lama tidak diubah. BOY-04 menggabungkan
 priorities berdasarkan deal_id/snapshot untuk UI. Rank bukan probabilitas closing;
 ready bukan approval. Lihat [review final R8](../reviews/2026-10-09-ical-r8.md).
+
+
+## Addendum: isolated uploaded workspaces (10 October 2026)
+
+The fixed P01–P05 IDs and 2026-10-01 snapshot above describe the built-in demo.
+Without a workspace header, those original semantics remain unchanged.
+
+- `GET /api/import/template` downloads example JSON; `/api/import/template.zip`
+  downloads canonical CSV/JSONL tables and a manifest.
+- `POST /api/import?allow_jev=false`: raw JSON or application/zip, bounded to 2 MB.
+  Validates sources, IDs, dates, graph and complete ranking before returning a
+  workspace receipt. 422 means invalid data; 413 oversized; 429 capacity/rate limit.
+- Receipt: `workspace_id`, `name`, `snapshot_date`, `allow_jev`, `created_at`,
+  `deal_count`, `source_count`, `sources`, `warnings`, `expires_in_hours`.
+- Subsequent existing v1 requests send `X-DealCompass-Workspace: <workspace_id>`.
+  All deal IDs, snapshots, ranks and diagnostic sample sizes are scoped to that
+  workspace. Expired/unknown workspace returns404; never silently uses demo data.
+- v1 response shapes, provenance, approvals and ranking rules are unchanged.
+  Uploaded workspaces allow 1–20 open deals, one per account; ranks must be a
+  complete 1..N sequence and joined against the exact current list of IDs.
+- No Jev export for an upload unless allow_jev was explicitly true at creation.
+  Workspace cache is separate; the team paid-token ledger is shared.
+- Public production ignores refresh=true on /analysis to reuse cached results.
+
+See [formats, policy limitations and evaluation](../NEW_DATA_AND_BENCHMARK.md).

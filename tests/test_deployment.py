@@ -87,6 +87,24 @@ class DeploymentTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             create_app(self.root / 'missing')
 
+    def test_public_mode_needs_no_credentials_and_keeps_cross_origin_guard(self):
+        with patch.dict(os.environ, {'DEALCOMPASS_PUBLIC_ACCESS':'1','DEALCOMPASS_DEMO_PASSWORD':''}):
+            client = TestClient(create_app(self.dist), base_url='https://demo.test')
+            for path in ('/', '/api/deals', '/assets/app.js'):
+                self.assertEqual(client.get(path).status_code,200)
+            with patch('backend.main.analyze_deal_envelope', return_value={'ok':True}) as analyze:
+                self.assertEqual(client.post('/api/deals/DL-001/analysis',headers={'Origin':'https://other.test'}).status_code,403)
+                analyze.assert_not_called()
+                self.assertEqual(client.post('/api/deals/DL-001/analysis?refresh=true').status_code,200)
+                self.assertFalse(analyze.call_args.kwargs['refresh'])
+
+    def test_public_write_rate_is_bounded(self):
+        with patch.dict(os.environ, {'DEALCOMPASS_PUBLIC_ACCESS':'1'}):
+            client = TestClient(create_app(self.dist),base_url='https://demo.test')
+            with patch('backend.main.analyze_deal_envelope', return_value={'ok':True}):
+                for _ in range(60): self.assertEqual(client.post('/api/deals/DL-001/analysis').status_code,200)
+                self.assertEqual(client.post('/api/deals/DL-001/analysis').status_code,429)
+
     def live_env(self):
         return patch.dict(os.environ, {
             'DEALCOMPASS_ENGINE_MODE': 'jev',

@@ -7,6 +7,8 @@ import base64
 import binascii
 import os
 import secrets
+import time
+from collections import deque
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -48,7 +50,8 @@ def validate_live_storage():
 def create_app(dist: Path = DIST):
     username = os.environ.get('DEALCOMPASS_DEMO_USER', 'team')
     password = os.environ.get('DEALCOMPASS_DEMO_PASSWORD', '')
-    if not username or ':' in username or len(password) < 16:
+    public = os.environ.get('DEALCOMPASS_PUBLIC_ACCESS') == '1'
+    if not public and (not username or ':' in username or len(password) < 16):
         raise RuntimeError('Set a demo username and a password of at least 16 characters.')
     mode = os.environ.setdefault('DEALCOMPASS_ENGINE_MODE', 'rules')
     if mode not in ('rules', 'jev'):
@@ -59,6 +62,9 @@ def create_app(dist: Path = DIST):
         raise RuntimeError('Frontend build missing. Run npm --prefix frontend run build.')
 
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+
+    recent_posts = deque()
+    recent_imports = deque()
 
     @app.middleware('http')
     async def protect_demo(request: Request, call_next):
@@ -76,12 +82,23 @@ def create_app(dist: Path = DIST):
             pass
         valid_user = secrets.compare_digest(supplied_user.encode(), username.encode())
         valid_password = secrets.compare_digest(supplied_password.encode(), password.encode())
-        if not (valid_user and valid_password):
+        if not public and not (valid_user and valid_password):
             return JSONResponse({'detail': 'Demo login required.'}, status_code=401,
                                 headers={'WWW-Authenticate': 'Basic realm="DealCompass", charset="UTF-8"',
                                          'Cache-Control': 'no-store'})
         # Browser Basic credentials are automatic: reject cross-origin paid POSTs.
         if request.method not in ('GET', 'HEAD', 'OPTIONS'):
+            if public:
+                now = time.monotonic()
+                while recent_posts and recent_posts[0] < now - 60: recent_posts.popleft()
+                if len(recent_posts) >= 60:
+                    return JSONResponse({'detail': 'Demo is busy. Please retry in a minute.'}, status_code=429, headers={'Retry-After':'60'})
+                recent_posts.append(now)
+                if request.url.path == '/api/import':
+                    while recent_imports and recent_imports[0] < now - 60: recent_imports.popleft()
+                    if len(recent_imports) >= 6:
+                        return JSONResponse({'detail':'Upload limit reached. Retry in a minute.'},status_code=429,headers={'Retry-After':'60'})
+                    recent_imports.append(now)
             origin = request.headers.get('origin')
             if (request.headers.get('sec-fetch-site') == 'cross-site' or
                     (origin is not None and origin != str(request.base_url).rstrip('/'))):

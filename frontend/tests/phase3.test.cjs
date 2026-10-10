@@ -99,14 +99,24 @@ test('SYNTHETIC registry: source outside graph stays readable without inventing 
   item.evidence.push({...context.evidence[0],excerpt:'conflicting'});assert.throws(()=>p.enrichContext(context,item),/Conflicting/);
 });
 test('CORRUPTED PAYLOAD: incomplete/duplicate ranks, unknown enum, nonfinite values and wrong recommendation rejected wholesale', () => {
-  for(const mutate of [x=>x.items.pop(),x=>x.items[1].rank=x.items[0].rank,x=>x.items[0].rank=6,x=>x.items[0].rank=1.5,x=>x.items[1].deal_id=x.items[0].deal_id,x=>x.items[0].priority_kind='closing',x=>x.items[0].analysis_status='approved',x=>x.engine_mode='jev',x=>x.items[0].factors[0].value=Infinity,x=>delete x.methodology.ordered_rules,x=>x.items[0].recommendation.deal_id='wrong',x=>x.items[0].recommendation.evidence_ids.push('missing')]) {
+  for(const mutate of [x=>x.items.shift(),x=>x.items[1].rank=x.items[0].rank,x=>x.items[0].rank=6,x=>x.items[0].rank=1.5,x=>x.items[1].deal_id=x.items[0].deal_id,x=>x.items[0].priority_kind='closing',x=>x.items[0].analysis_status='approved',x=>x.engine_mode='jev',x=>x.items[0].factors[0].value=Infinity,x=>delete x.methodology.ordered_rules,x=>x.items[0].recommendation.deal_id='wrong',x=>x.items[0].recommendation.evidence_ids.push('missing')]) {
     const invalid=clone(ranking);mutate(invalid);assert.equal(p.isPriorities(invalid),false);
   }
 });
 test('CORRUPTED PAYLOAD: schema/snapshot/account/set mismatches never join by array position', () => {
-  for(const mutate of [x=>x.schema_version='v2',x=>x.snapshot_date='2026-10-02']) { const invalid=clone(ranking);mutate(invalid);assert.equal(p.isPriorities(invalid),false); }
+  for(const mutate of [x=>x.schema_version='v2',x=>x.snapshot_date='invalid-date']) { const invalid=clone(ranking);mutate(invalid);assert.equal(p.isPriorities(invalid),false); }
   for(const mutate of [x=>x.items[0].account_id='P99',x=>x.items[0].deal_id='DL-999',x=>x.snapshot_date='2026-10-02']) { const invalid=clone(ranking);mutate(invalid);assert.throws(()=>p.matchPipeline(list,invalid)); }
   const invalid=clone(diagnostic);invalid.deals[0].account_id='P99';assert.equal(p.isPipelineDiagnostic(invalid),false);
+});
+test('NEW WORKSPACE: different snapshots and six complete ranks are accepted; missing members fail the list join', () => {
+  const payload=clone(ranking); payload.snapshot_date='2026-10-10';
+  const extra=clone(payload.items[0]); extra.deal_id='OPP06'; extra.account_id='ACME06'; extra.rank=6; extra.recommendation.deal_id='OPP06';
+  payload.items.push(extra);
+  assert.ok(p.isPriorities(payload));
+  const listing={...clone(list),snapshot_date:payload.snapshot_date,items:payload.items.map(i=>({...list.items[0],deal_id:i.deal_id,account_id:i.account_id}))};
+  assert.doesNotThrow(()=>p.matchPipeline(listing,payload));
+  payload.items.pop(); assert.ok(p.isPriorities(payload));
+  assert.throws(()=>p.matchPipeline(listing,payload),/mismatch/);
 });
 test('CORRUPTED PAYLOAD: diagnostic required metrics, enums, registry and statistical nulls enforced', () => {
   for(const mutate of [x=>delete x.deals[0].metrics.interactions.customer,x=>x.deals[0].metrics.deal_age_days=NaN,x=>x.deals[0].findings[0].interpretation_type='confirmed',x=>x.deals[0].findings[0].category='outlier',x=>x.deals[0].findings[0].evidence_ids.push('missing'),x=>x.deals.push(x.deals[0]),x=>x.statistical_assessment.status='assessed',x=>x.statistical_assessment.outlier_deal_ids=[],x=>x.statistical_assessment.threshold=0,x=>delete x.statistical_assessment.reason]) {

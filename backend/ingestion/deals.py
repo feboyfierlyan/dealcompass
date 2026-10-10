@@ -3,12 +3,14 @@
 from datetime import date
 
 from backend.contracts import DealSummary
-from backend.ingestion.dataset import Dataset, SNAPSHOT_DATE, SourceRecord, get_dataset
+from backend.ingestion.dataset import Dataset, SourceRecord, get_dataset
 
 
 def deal_summary(
-    record: SourceRecord, dataset: Dataset, snapshot_date: date = SNAPSHOT_DATE,
+    record: SourceRecord, dataset: Dataset, snapshot_date: date | None = None,
 ) -> DealSummary:
+    from backend.ingestion.scope import snapshot_date as active_snapshot
+    snapshot_date = snapshot_date or active_snapshot()
     deal = record.values
     account = dataset.by_id['crm_accounts.csv'][deal['account_id']].values
     return DealSummary(
