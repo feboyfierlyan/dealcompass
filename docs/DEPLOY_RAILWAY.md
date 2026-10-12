@@ -1,10 +1,14 @@
 # Deploy DealCompass to Railway
 
-Live deployment verified on 10 October 2026 (WIB):
+Historical full deployment verification: 10 October 2026 (WIB).
+Public `/health` rechecked successfully on 12 October 2026:
 https://dealcompass-production.up.railway.app
 
 Project `helpful-appreciation`, service `dealcompass`, environment `production`.
-The service follows `integrator/english-graph-runtime` (PR #36), not `main` yet.
+PR #36 is merged into `main` (`98780f5`). The last verified service source
+branch was `integrator/english-graph-runtime`; its setting was not changed by the
+documentation closeout. Verify it before a future deployment and do not delete
+that remote branch until the service has deliberately switched to `main`.
 One 500 MB volume is attached at `/data`. The existing trial is used; no paid
 plan or subscription was selected. Public access is now requested and configured
 with `DEALCOMPASS_PUBLIC_ACCESS=1`; no username/password is needed. Stored legacy
@@ -58,8 +62,8 @@ design is intended for a single process. The ledger remains the spending guard.
    hosting plan/spending limit before provisioning paid resources. Do not assume
    this is free; TypeSafe's 100M input-token ceiling is separate from hosting cost.
 2. Create a project/service from `feboyfierlyan/dealcompass` using the **reviewed
-   commit containing this setup and the latest UI changes**. Preparation is currently
-   on `integrator/english-graph-runtime`; do not select an old `main` by accident.
+   commit on `main` containing this setup**. For an existing service, inspect and
+   deliberately change its source branch; merging a PR alone does not do that.
    Root directory is the repository root. Railway detects `Dockerfile`.
 3. Attach a volume to this service at `/data`. Keep one replica and one region.
    Do not enable PR deployments with the live key or clone live variables into previews.
@@ -92,11 +96,10 @@ design is intended for a single process. The ledger remains the spending guard.
    explicitly report rules mode. Public mode returns200 without login; private mode
    returns401 without its configured credentials.
 
-For CLI setup, the official CLI is prepared locally at
-`/tmp/dealcompass-railway-cli/node_modules/.bin/railway` (5.64.2 at preparation time).
-It is temporary and authenticated on the setup machine. Other teammates must use
-their own authorized account; do not copy local Railway login credentials.
-An already installed global CLI can instead be used as `railway`.
+The historical setup used Railway CLI 5.64.2 from a temporary local installation.
+That installation is disposable during project cleanup. Install the official CLI
+on a restored machine and authenticate with your own authorized account; do not
+copy another person's login credentials. See the official references below.
 GitHub deployment is preferable to uploading the entire working folder; it publishes
 only the selected committed revision and does not upload `.env` or the local ledger.
 

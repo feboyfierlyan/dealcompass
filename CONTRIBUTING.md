@@ -1,53 +1,50 @@
-# Kerja tim dan handoff wajib
+# Contributing to DealCompass
 
-## Branch dan tugas
+The hackathon is complete. Keep future changes focused, reproducible and honest about what the product can establish. Start with [project status](docs/PROJECT_STATUS.md), [architecture](docs/ARCHITECTURE.md) and [AGENTS.md](AGENTS.md).
 
-- Boy: `boy/frontend`, area `frontend/`.
-- Bima: `bima/data-graph`, area `backend/api/`, `backend/graph/`, `backend/ingestion/`, `backend/main.py`, `tests/bima/`.
-- Ical: `ical/decision-jev`, area `backend/decision/`, `backend/integrations/`, `evaluation/`, `tests/ical/`.
-- Main: branch `integrator/<tugas>`, kontrak bersama, dependency, CI, checklist dan integrasi.
+## Branches and ownership
 
-Branch pertama disiapkan dari fondasi yang sama. Setiap anggota clone sendiri.
-Pada mesin bersama gunakan checkout/worktree berbeda, bukan git switch bersamaan.
+| Role | Branch prefix | Primary area |
+| --- | --- | --- |
+| Boy | `boy/` | Frontend |
+| Bima | `bima/` | Ingestion, graph and API |
+| Ical | `ical/` | Decision logic, Jev and evaluation |
+| Main / integrator | `integrator/` | Cross-module integration, shared contracts, dependencies and CI |
 
-```bash
-git fetch origin
-git switch --track origin/bima/data-graph
-# Setelah membuat perubahan:
-git add backend/graph docs/handoffs/BIMA.md
-git commit -m "feat: bangun konteks deal dengan sumber bukti"
-git push
-```
+Start from current `main`. Use a separate checkout/worktree for each concurrent contributor; do not switch a shared working directory underneath another person or agent. Coordinate cross-module changes with Main and preserve other contributors' work.
 
-Sesuaikan branch dan file dengan peran. Buat PR menuju `main`; PR kecil lebih
-mudah diperiksa. Setelah perubahan main masuk, sinkronkan sebelum pekerjaan baru.
-Selesaikan konflik bersama pemilik file. Jangan force-push branch anggota lain.
+## Required handoff
 
-## Catatan WAJIB
+Every work PR must update `docs/handoffs/<ROLE>.md` using **all headings** in [the template](docs/handoffs/TEMPLATE.md). Record:
 
-Setiap PR pekerjaan wajib mengubah `docs/handoffs/<PERAN>.md` milik sendiri.
-Main/integrator memakai `docs/handoffs/MAIN.md` dan memperbarui checklist pusat.
-Template: `docs/handoffs/TEMPLATE.md`. Isi fakta aktual, bukan rencana yang
-ditandai selesai. Handoff mencantumkan commit kode sebelumnya; tidak perlu
-mencantumkan hash commit handoff itu sendiri.
+- Implemented functions/files and intended behavior.
+- Actual commands, test results, fixtures and limitations.
+- Contract/dependency changes, blockers and next steps.
+- The update time in Asia/Jakarta (WIB).
 
-PR dengan perubahan lintas kepemilikan diajukan kepada Main. Perubahan kontrak
-atau dependency dikerjakan Main pada PR terpisah, kemudian anggota sinkronkan.
-Jangan membuat loader, schema, atau aturan diskon duplikat di frontend.
+Contributors report at most `READY_FOR_REVIEW`; Main assigns `VERIFIED` or `MERGED` after checking the evidence. Historical coordination documents remain available, but old task assignments are not current completion claims.
+
+## Verification before a PR
 
 ```bash
-python scripts/check_handoff.py --base origin/main --head HEAD --branch bima/data-graph
+python -m unittest discover -s tests -v
+python scripts/check_handoff.py --all
+npm --prefix frontend run build
+python scripts/check_handoff.py --base origin/main --head HEAD --branch integrator/your-task
 ```
 
-CI mengecek file handoff berubah, heading wajib, scope file, serta dataset asli
-tidak ikut diubah. CI tidak dapat membuktikan isi laporan benar: Main tetap
-memeriksa kode, bukti pengujian, dan integrasi. Status proteksi merge aktual
-dicatat di `docs/coordination/MAIN.md`.
+Use your actual branch name. The last command checks committed PR differences; run it after committing the handoff. CI also checks ownership and protects original dataset files. Add focused frontend/API checks when changing those areas; build success alone does not prove business correctness.
 
-## ChatGPT atau Claude tanpa akses repo langsung
+## Data and evaluation rules
 
-Berikan AGENTS.md, prompt peran, kontrak, dan file yang relevan kepada AI.
-Minta isi file lengkap/diff dan catatan handoff. Pemilik manusia menyimpan,
-menjalankan pemeriksaan, commit, push, dan membuka PR. Jangan mengklaim AI
-sudah mengubah repo jika hanya memberikan teks di chat.
+- Preserve the original dataset and its snapshot. Test changes with separate synthetic inputs.
+- Keep provenance and distinguish direct relationships from inference.
+- An approval request is not approval. Discounts above 10% need the applicable VP Sales approval and decision-log record.
+- Never invent ranking, confidence, approvals, test passes or closing outcomes.
+- Keep first-run benchmark receipts. Fixes evaluated on those cases are regression tests, not a fresh blind benchmark.
+- Keep real secrets, private uploads and live usage ledgers out of the repository and frontend.
+- Use rules/mock tests by default. Paid Jev calls must use the canonical shared ledger; never fork or reset accounting.
 
+## AI-assisted contributions
+
+AI tools do not communicate across team chats automatically. The human owner forwards tasks and verifies the resulting files, tests and handoff. Proposed text is not evidence that a repository change has been made. PR descriptions should explain the concrete behavior change and actual validation.
