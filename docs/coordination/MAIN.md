@@ -3,6 +3,19 @@
 Pemilik: Boy + AI pada chat koordinasi. Tanggal: 9 Oktober 2026, WIB.
 Deadline: 10 Oktober 2026 09.00 WIB. CP2 20.00-22.00, CP3 08.00-09.00.
 
+## Project closeout — 12 October 2026
+
+The hackathon is complete. PR #36 is MERGED (`98780f5`); no PR was open at the
+start of closeout. Historical percentages and outstanding rehearsal assignments
+below are retained as development history, not current tasks.
+
+MAIN-CLOSEOUT: documentation/assets VERIFIED locally on `integrator/project-closeout`;
+remote CI/merge and local cleanup pending at this checkpoint.
+[Product status](../PROJECT_STATUS.md), [documentation index](../README.md) and
+[restore guide](../MAINTENANCE.md) supersede the old README entry flow. The user
+requested push/merge, then removal of local checkouts after remote verification.
+Cloud resources and the canonical Railway usage ledger are outside local cleanup.
+
 ## Live demo — 10 Oktober 2026
 
 **VERIFIED:** https://dealcompass-production.up.railway.app — Rules + Jev cloud,
