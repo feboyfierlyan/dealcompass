@@ -26,6 +26,9 @@ def arrow(ax,a,b,color=GREEN,dashed=False):
 def save(fig,name):
     for ext in ('png','svg'):
         fig.savefig(OUT/f'{name}.{ext}',facecolor=fig.get_facecolor())
+        if ext == 'svg':
+            path=OUT/f'{name}.{ext}'
+            path.write_text(path.read_text().replace("font-family: 'DejaVu Sans'", "font-family: 'DejaVu Sans', Arial, sans-serif"))
     plt.close(fig)
 
 fig,ax=canvas(1600,560,INK)

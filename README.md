@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/banner.svg" alt="DealCompass — Know which deal needs you. See the evidence. Take the next step." width="100%" />
+  <img src="docs/assets/banner.png" alt="DealCompass — Know which deal needs you. See the evidence. Take the next step." width="100%" />
 </p>
 
 <p align="center">
@@ -67,7 +67,7 @@ The initial view focuses on supporting paths. Search and expansion reveal additi
 
 ## Architecture
 
-![DealCompass architecture: source records enter the FastAPI graph and decision pipeline, then become actions and evidence in React; Jev is optional](docs/assets/architecture.svg)
+![DealCompass architecture: source records enter the FastAPI graph and decision pipeline, then become actions and evidence in React; Jev is optional](docs/assets/architecture.png)
 
 - **Frontend:** React, TypeScript and Vite; English desktop UI with progressive disclosure.
 - **Backend:** FastAPI and Pydantic contracts; a NetworkX context graph with row-level provenance.

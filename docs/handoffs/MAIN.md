@@ -46,6 +46,9 @@ canonical counter; local historical databases must never replace it.
   rules [16,12,12,10], hybrid [16,12,12,11]. No new provider calls.
 - Browser local rules runtime8091: actual P04 next step and context graph captured;
   exported screenshots, banner and architecture visually reviewed without clipping.
+- GitHub README browser check: all primary images load. README embeds PNGs to
+  preserve typography on machines without DejaVu Sans; editable SVGs include a
+  standard sans-serif fallback.
 - Public HTTPS /health200 with v1 and 2026-10-01 snapshot. Health only, not new
   live semantic/provider validation.
 - `git diff --check`: PASS. Full backend CI runs on the PR; not rerun locally for

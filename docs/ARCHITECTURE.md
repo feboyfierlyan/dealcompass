@@ -2,7 +2,7 @@
 
 DealCompass connects source records to sales actions while retaining the evidence behind each relationship. This document describes the implemented hackathon prototype, not a proposed distributed platform.
 
-![System architecture](assets/architecture.svg)
+![System architecture](assets/architecture.png)
 
 ## Source model
 
